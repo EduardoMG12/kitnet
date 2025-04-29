@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Página Inicial</title>
+</head>
+<body>
+<h1>Bem-vindo à Página Inicial!</h1>
+<p>Esta página é acessível a todos.</p>
+<p><a th:href="@{/login}">Ir para a página de login</a></p>
+<p><a th:href="@{/admin/dashboard}">Ir para o Dashboard (requer autenticação)</a></p>
+</body>
+</html>
