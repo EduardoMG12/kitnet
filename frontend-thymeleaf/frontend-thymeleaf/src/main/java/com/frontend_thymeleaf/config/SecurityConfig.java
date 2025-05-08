@@ -18,7 +18,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/login", "/register","/css/**", "/js/**").permitAll()
+                        .requestMatchers("/", "/login", "/register","/css/**", "/js/**", "/assets/**").permitAll()
                         .requestMatchers("/auth/**").authenticated() // Páginas /admin/** requerem autenticação
                         .anyRequest().authenticated() // Qualquer outra requisição requer autenticação
                 )
