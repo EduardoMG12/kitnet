@@ -1,4 +1,4 @@
-package com.kitnet.kitnet.controllers;
+package com.kitnet.kitnet.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
