@@ -3,6 +3,7 @@ package com.kitnet.kitnet.controller;
 import com.kitnet.kitnet.dto.PropertyRequestDto;
 import com.kitnet.kitnet.dto.PropertyResponseDto;
 import com.kitnet.kitnet.service.PropertyService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class PropertyController {
     private PropertyService propertyService;
 
     @PostMapping
-    public PropertyResponseDto create(@RequestBody PropertyRequestDto dto) {
+    public PropertyResponseDto create(@Valid @RequestBody PropertyRequestDto dto) {
         return propertyService.create(dto);
     }
 

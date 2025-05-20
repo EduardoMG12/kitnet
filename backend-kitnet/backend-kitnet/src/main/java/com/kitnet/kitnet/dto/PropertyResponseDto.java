@@ -1,12 +1,12 @@
 package com.kitnet.kitnet.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PropertyResponseDto {
     private Long id;
     private String propertyType;
