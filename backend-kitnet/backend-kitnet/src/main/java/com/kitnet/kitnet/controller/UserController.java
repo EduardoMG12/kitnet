@@ -17,7 +17,7 @@ public class UserController {
 
     @PostMapping("/register")
     public User register(@RequestBody @Valid UserRegisterDTO dto) throws Exception {
-        return userService.register(dto);
+             return userService.register(dto);
     }
 
     @PostMapping("/login")

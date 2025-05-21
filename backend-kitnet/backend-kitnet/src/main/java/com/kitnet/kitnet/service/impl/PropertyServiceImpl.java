@@ -4,6 +4,7 @@ import com.kitnet.kitnet.dto.PropertyRequestDto;
 import com.kitnet.kitnet.dto.PropertyResponseDto;
 import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.repository.PropertyRepository;
+
 import com.kitnet.kitnet.service.PropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
