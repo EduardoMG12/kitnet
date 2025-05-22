@@ -12,7 +12,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PropertyRequestDtoTest {
+class PropertyRequestDTOTest {
 
     private static Validator validator;
 
@@ -24,7 +24,7 @@ class PropertyRequestDtoTest {
 
     @Test
     void testNoArgsConstructor() {
-        PropertyRequestDto dto = new PropertyRequestDto();
+        PropertyRequestDTO dto = new PropertyRequestDTO();
         assertNotNull(dto);
         assertNull(dto.getOwnerId());
         assertNull(dto.getAdTitle());
@@ -60,7 +60,7 @@ class PropertyRequestDtoTest {
         Boolean ownerConfirmation = true;
         Boolean termsAgreement = true;
 
-        PropertyRequestDto dto = new PropertyRequestDto(
+        PropertyRequestDTO dto = new PropertyRequestDTO(
                 ownerId, propertyType, adTitle, description, purpose, rentValue, zipCode, state, city,
                 neighborhood, address, number, complement, hideExactAddress, squareMeters,
                 builtArea, bedrooms, bathrooms, parkingSpaces, amenities, floor,
@@ -96,7 +96,7 @@ class PropertyRequestDtoTest {
 
     @Test
     void testSetters() {
-        PropertyRequestDto dto = new PropertyRequestDto();
+        PropertyRequestDTO dto = new PropertyRequestDTO();
 
         UUID ownerId = UUID.randomUUID();
         dto.setOwnerId(ownerId);
@@ -114,8 +114,8 @@ class PropertyRequestDtoTest {
 
     @Test
     void testValidationConstraints() {
-        PropertyRequestDto dto = new PropertyRequestDto();
-        Set<ConstraintViolation<PropertyRequestDto>> violations = validator.validate(dto);
+        PropertyRequestDTO dto = new PropertyRequestDTO();
+        Set<ConstraintViolation<PropertyRequestDTO>> violations = validator.validate(dto);
 
         assertFalse(violations.isEmpty());
         assertEquals(4, violations.size()); // @NotBlank para propertyType, adTitle, purpose; @NotNull para ownerConfirmation, termsAgreement
@@ -146,17 +146,17 @@ class PropertyRequestDtoTest {
     @Test
     void testEqualsAndHashCode() {
         UUID ownerId = UUID.randomUUID();
-        PropertyRequestDto dto1 = new PropertyRequestDto();
+        PropertyRequestDTO dto1 = new PropertyRequestDTO();
         dto1.setOwnerId(ownerId);
         dto1.setAdTitle("Test Ad");
         dto1.setRentValue(1000.0);
 
-        PropertyRequestDto dto2 = new PropertyRequestDto();
+        PropertyRequestDTO dto2 = new PropertyRequestDTO();
         dto2.setOwnerId(ownerId);
         dto2.setAdTitle("Test Ad");
         dto2.setRentValue(1000.0);
 
-        PropertyRequestDto dto3 = new PropertyRequestDto();
+        PropertyRequestDTO dto3 = new PropertyRequestDTO();
         dto3.setOwnerId(UUID.randomUUID());
         dto3.setAdTitle("Another Ad");
         dto3.setRentValue(2000.0);

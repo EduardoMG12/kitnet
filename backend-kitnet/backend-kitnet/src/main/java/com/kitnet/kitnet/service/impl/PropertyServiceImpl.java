@@ -1,7 +1,7 @@
 package com.kitnet.kitnet.service.impl;
 
-import com.kitnet.kitnet.dto.PropertyRequestDto;
-import com.kitnet.kitnet.dto.PropertyResponseDto;
+import com.kitnet.kitnet.dto.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.PropertyResponseDTO;
 import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.repository.PropertyRepository;
@@ -25,8 +25,8 @@ public class PropertyServiceImpl implements PropertyService {
     @Autowired
     private UserRepository userRepository;
 
-    private PropertyResponseDto toDto(Property property) {
-        PropertyResponseDto dto = new PropertyResponseDto();
+    private PropertyResponseDTO toDto(Property property) {
+        PropertyResponseDTO dto = new PropertyResponseDTO();
         dto.setId(property.getId());
         dto.setPropertyType(property.getPropertyType());
         dto.setAdTitle(property.getAdTitle());
@@ -58,7 +58,7 @@ public class PropertyServiceImpl implements PropertyService {
         return dto;
     }
 
-    private Property fromDto(PropertyRequestDto dto) {
+    private Property fromDto(PropertyRequestDTO dto) {
         Property p = new Property();
         User owner = userRepository.findById(dto.getOwnerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Proprietário com ID " + dto.getOwnerId() + " não encontrado."));
@@ -91,27 +91,27 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public PropertyResponseDto create(PropertyRequestDto dto) {
+    public PropertyResponseDTO create(PropertyRequestDTO dto) {
         Property property = propertyRepository.save(fromDto(dto));
         return toDto(property);
     }
 
     @Override
-    public List<PropertyResponseDto> findAll() {
+    public List<PropertyResponseDTO> findAll() {
         return propertyRepository.findAll().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public PropertyResponseDto findById(UUID id) {
+    public PropertyResponseDTO findById(UUID id) {
         return propertyRepository.findById(id)
                 .map(this::toDto)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propriedade não encontrada"));
     }
 
     @Override
-    public PropertyResponseDto update(UUID id, PropertyRequestDto dto) {
+    public PropertyResponseDTO update(UUID id, PropertyRequestDTO dto) {
         Property existing = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propriedade não encontrada"));
         if (!existing.getOwner().getId().equals(dto.getOwnerId())) {
@@ -158,7 +158,7 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public List<PropertyResponseDto> findByOwner(User currentUser) {
+    public List<PropertyResponseDTO> findByOwner(User currentUser) {
         if (currentUser == null || currentUser.getId() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
         }

@@ -1,13 +1,12 @@
 package com.kitnet.kitnet.service.impl;
 
-import com.kitnet.kitnet.dto.PropertyRequestDto;
-import com.kitnet.kitnet.dto.PropertyResponseDto;
+import com.kitnet.kitnet.dto.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.PropertyResponseDTO;
 import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.model.UserType;
 import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.UserRepository;
-import com.kitnet.kitnet.service.PropertyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,9 +38,9 @@ class PropertyServiceImplTest {
     @InjectMocks
     private PropertyServiceImpl propertyService;
 
-    private PropertyRequestDto sampleRequestDto;
+    private PropertyRequestDTO sampleRequestDto;
     private Property sampleProperty;
-    private PropertyResponseDto sampleResponseDto;
+    private PropertyResponseDTO sampleResponseDto;
     private User sampleOwner;
     private UUID sampleOwnerId;
     private UUID samplePropertyId;
@@ -64,7 +63,7 @@ class PropertyServiceImplTest {
 
 
 
-        sampleRequestDto = new PropertyRequestDto();
+        sampleRequestDto = new PropertyRequestDTO();
         sampleRequestDto.setOwnerId(sampleOwnerId);
         sampleRequestDto.setAdTitle("Test Kitnet");
         sampleRequestDto.setCity("Sample City");
@@ -121,7 +120,7 @@ class PropertyServiceImplTest {
         sampleProperty.setPhotos("photo1.jpg");
 
 
-        sampleResponseDto = new PropertyResponseDto();
+        sampleResponseDto = new PropertyResponseDTO();
         sampleResponseDto.setId(samplePropertyId);
         sampleResponseDto.setAdTitle("Test Kitnet");
         sampleResponseDto.setCity("Sample City");
@@ -141,7 +140,7 @@ class PropertyServiceImplTest {
 
         when(propertyRepository.save(any(Property.class))).thenReturn(sampleProperty);
 
-        PropertyResponseDto result = propertyService.create(sampleRequestDto);
+        PropertyResponseDTO result = propertyService.create(sampleRequestDto);
 
 
         assertNotNull(result);
@@ -177,7 +176,7 @@ class PropertyServiceImplTest {
 
         when(propertyRepository.findAll()).thenReturn(Arrays.asList(sampleProperty));
 
-        List<PropertyResponseDto> results = propertyService.findAll();
+        List<PropertyResponseDTO> results = propertyService.findAll();
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
@@ -193,7 +192,7 @@ class PropertyServiceImplTest {
 
         when(propertyRepository.findById(samplePropertyId)).thenReturn(Optional.of(sampleProperty));
 
-        PropertyResponseDto result = propertyService.findById(samplePropertyId);
+        PropertyResponseDTO result = propertyService.findById(samplePropertyId);
 
         assertNotNull(result);
         assertEquals(sampleProperty.getId(), result.getId());
@@ -231,7 +230,7 @@ class PropertyServiceImplTest {
         sampleRequestDto.setAdTitle("Updated Kitnet Title");
         sampleRequestDto.setRentValue(1200.0);
 
-        PropertyResponseDto result = propertyService.update(samplePropertyId, sampleRequestDto);
+        PropertyResponseDTO result = propertyService.update(samplePropertyId, sampleRequestDto);
 
         assertNotNull(result);
         assertEquals(samplePropertyId, result.getId());
@@ -419,7 +418,7 @@ class PropertyServiceImplTest {
 
         when(propertyRepository.findByOwnerId(ownerUserId)).thenReturn(Arrays.asList(prop1, prop2));
 
-        List<PropertyResponseDto> results = propertyService.findByOwner(ownerUser);
+        List<PropertyResponseDTO> results = propertyService.findByOwner(ownerUser);
 
         assertNotNull(results);
         assertEquals(2, results.size());
@@ -482,7 +481,7 @@ class PropertyServiceImplTest {
 
         when(propertyRepository.findByOwnerId(ownerUserId)).thenReturn(Collections.emptyList());
 
-        List<PropertyResponseDto> results = propertyService.findByOwner(ownerUser);
+        List<PropertyResponseDTO> results = propertyService.findByOwner(ownerUser);
 
         assertNotNull(results);
         assertTrue(results.isEmpty());

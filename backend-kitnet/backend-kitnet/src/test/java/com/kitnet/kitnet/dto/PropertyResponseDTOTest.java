@@ -6,11 +6,11 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PropertyResponseDtoTest {
+class PropertyResponseDTOTest {
 
     @Test
     void testNoArgsConstructor() {
-        PropertyResponseDto dto = new PropertyResponseDto();
+        PropertyResponseDTO dto = new PropertyResponseDTO();
         assertNotNull(dto);
         assertNull(dto.getId());
         assertNull(dto.getAdTitle());
@@ -45,7 +45,7 @@ class PropertyResponseDtoTest {
         Boolean termsAgreement = true;
         String ownerEmail = "owner@test.com";
 
-        PropertyResponseDto dto = new PropertyResponseDto(
+        PropertyResponseDTO dto = new PropertyResponseDTO(
                 id, propertyType, adTitle, description, purpose, rentValue, zipCode, state, city,
                 neighborhood, address, number, complement, hideExactAddress, squareMeters,
                 builtArea, bedrooms, bathrooms, parkingSpaces, amenities, floor,
@@ -82,7 +82,7 @@ class PropertyResponseDtoTest {
 
     @Test
     void testSetters() {
-        PropertyResponseDto dto = new PropertyResponseDto();
+        PropertyResponseDTO dto = new PropertyResponseDTO();
 
         UUID id = UUID.randomUUID();
         dto.setId(id);
@@ -101,15 +101,15 @@ class PropertyResponseDtoTest {
     @Test
     void testEqualsAndHashCode() {
         UUID id = UUID.randomUUID();
-        PropertyResponseDto dto1 = new PropertyResponseDto();
+        PropertyResponseDTO dto1 = new PropertyResponseDTO();
         dto1.setId(id);
         dto1.setAdTitle("Test Ad");
 
-        PropertyResponseDto dto2 = new PropertyResponseDto();
+        PropertyResponseDTO dto2 = new PropertyResponseDTO();
         dto2.setId(id);
         dto2.setAdTitle("Test Ad");
 
-        PropertyResponseDto dto3 = new PropertyResponseDto();
+        PropertyResponseDTO dto3 = new PropertyResponseDTO();
         dto3.setId(UUID.randomUUID());
         dto3.setAdTitle("Another Ad");
 

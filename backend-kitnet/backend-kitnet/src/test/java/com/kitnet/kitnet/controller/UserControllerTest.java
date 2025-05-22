@@ -1,7 +1,7 @@
 package com.kitnet.kitnet.controller;
 
-import com.kitnet.kitnet.dto.PropertyRequestDto;
-import com.kitnet.kitnet.dto.PropertyResponseDto;
+import com.kitnet.kitnet.dto.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.PropertyResponseDTO;
 import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.repository.PropertyRepository;
@@ -36,9 +36,9 @@ class PropertyServiceImplTest {
     @InjectMocks
     private PropertyServiceImpl propertyService;
 
-    private PropertyRequestDto sampleRequestDto;
+    private PropertyRequestDTO sampleRequestDto;
     private Property sampleProperty;
-    private PropertyResponseDto sampleResponseDto;
+    private PropertyResponseDTO sampleResponseDto;
     private User sampleUser;
     private UUID userId;
     private UUID propertyId;
@@ -52,7 +52,7 @@ class PropertyServiceImplTest {
         sampleUser.setId(userId);
         sampleUser.setEmail("test@test.com");
 
-        sampleRequestDto = new PropertyRequestDto();
+        sampleRequestDto = new PropertyRequestDTO();
         sampleRequestDto.setOwnerId(userId);
         sampleRequestDto.setAdTitle("Test Kitnet");
         sampleRequestDto.setCity("Sample City");
@@ -107,7 +107,7 @@ class PropertyServiceImplTest {
         sampleProperty.setCondominiumFee(150.0);
         sampleProperty.setPhotos("photo1.jpg");
 
-        sampleResponseDto = new PropertyResponseDto();
+        sampleResponseDto = new PropertyResponseDTO();
         sampleResponseDto.setId(propertyId);
         sampleResponseDto.setAdTitle("Test Kitnet");
         sampleResponseDto.setCity("Sample City");
@@ -141,7 +141,7 @@ class PropertyServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(sampleUser));
         when(propertyRepository.save(any(Property.class))).thenReturn(sampleProperty);
 
-        PropertyResponseDto result = propertyService.create(sampleRequestDto);
+        PropertyResponseDTO result = propertyService.create(sampleRequestDto);
 
         assertNotNull(result);
         assertEquals(sampleProperty.getId(), result.getId());
@@ -176,7 +176,7 @@ class PropertyServiceImplTest {
     void testFindAllProperties() {
         when(propertyRepository.findAll()).thenReturn(Arrays.asList(sampleProperty));
 
-        List<PropertyResponseDto> results = propertyService.findAll();
+        List<PropertyResponseDTO> results = propertyService.findAll();
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
@@ -191,7 +191,7 @@ class PropertyServiceImplTest {
     void testFindPropertyByIdFound() {
         when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(sampleProperty));
 
-        PropertyResponseDto result = propertyService.findById(propertyId);
+        PropertyResponseDTO result = propertyService.findById(propertyId);
 
         assertNotNull(result);
         assertEquals(sampleProperty.getId(), result.getId());
@@ -219,7 +219,7 @@ class PropertyServiceImplTest {
     void testFindByOwner() {
         when(propertyRepository.findByOwnerId(userId)).thenReturn(Arrays.asList(sampleProperty));
 
-        List<PropertyResponseDto> results = propertyService.findByOwner(sampleUser);
+        List<PropertyResponseDTO> results = propertyService.findByOwner(sampleUser);
 
         assertNotNull(results);
         assertFalse(results.isEmpty());
@@ -247,7 +247,7 @@ class PropertyServiceImplTest {
         when(userRepository.findById(userId)).thenReturn(Optional.of(sampleUser));
         when(propertyRepository.save(any(Property.class))).thenReturn(sampleProperty);
 
-        PropertyResponseDto result = propertyService.update(propertyId, sampleRequestDto);
+        PropertyResponseDTO result = propertyService.update(propertyId, sampleRequestDto);
 
         assertNotNull(result);
         assertEquals(sampleProperty.getId(), result.getId());
@@ -366,7 +366,7 @@ class PropertyServiceImplTest {
 
         when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(propertyWithNulls));
 
-        PropertyResponseDto result = propertyService.findById(propertyId);
+        PropertyResponseDTO result = propertyService.findById(propertyId);
 
         assertNotNull(result);
         assertEquals(0, result.getBedrooms());

@@ -1,8 +1,8 @@
 package com.kitnet.kitnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kitnet.kitnet.dto.PropertyRequestDto;
-import com.kitnet.kitnet.dto.PropertyResponseDto;
+import com.kitnet.kitnet.dto.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.PropertyResponseDTO;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.PropertyService;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +57,7 @@ class PropertyControllerTest {
 
     @Test
     void testGetAllProperties() throws Exception {
-        PropertyResponseDto responseDto = new PropertyResponseDto();
+        PropertyResponseDTO responseDto = new PropertyResponseDTO();
         responseDto.setId(UUID.randomUUID());
         responseDto.setAdTitle("Nice Kitnet");
         responseDto.setCity("Curitiba");
@@ -77,7 +77,7 @@ class PropertyControllerTest {
 
     @Test
     void testGetMyProperties() throws Exception {
-        PropertyResponseDto responseDto = new PropertyResponseDto();
+        PropertyResponseDTO responseDto = new PropertyResponseDTO();
         responseDto.setId(UUID.randomUUID());
         responseDto.setAdTitle("My Kitnet");
         responseDto.setCity("Curitiba");
@@ -100,7 +100,7 @@ class PropertyControllerTest {
 
     @Test
     void testCreateProperty() throws Exception {
-        PropertyRequestDto requestDto = new PropertyRequestDto();
+        PropertyRequestDTO requestDto = new PropertyRequestDTO();
         requestDto.setAdTitle("Nice Kitnet");
         requestDto.setCity("Curitiba");
         requestDto.setState("PR");
@@ -110,7 +110,7 @@ class PropertyControllerTest {
         requestDto.setOwnerConfirmation(true);
         requestDto.setTermsAgreement(true);
 
-        PropertyResponseDto responseDto = new PropertyResponseDto();
+        PropertyResponseDTO responseDto = new PropertyResponseDTO();
         responseDto.setId(UUID.randomUUID());
         responseDto.setAdTitle("Nice Kitnet");
         responseDto.setCity("Curitiba");

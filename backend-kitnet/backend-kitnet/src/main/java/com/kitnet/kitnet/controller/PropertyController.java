@@ -1,7 +1,7 @@
 package com.kitnet.kitnet.controller;
 
-import com.kitnet.kitnet.dto.PropertyRequestDto;
-import com.kitnet.kitnet.dto.PropertyResponseDto;
+import com.kitnet.kitnet.dto.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.PropertyResponseDTO;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.PropertyService;
 import jakarta.validation.Valid;
@@ -23,25 +23,25 @@ public class PropertyController {
     private PropertyService propertyService;
 
     @PostMapping
-    public ResponseEntity<PropertyResponseDto> create(
-            @Valid @RequestBody PropertyRequestDto dto,
+    public ResponseEntity<PropertyResponseDTO> create(
+            @Valid @RequestBody PropertyRequestDTO dto,
             @AuthenticationPrincipal User currentUser) {
         System.out.println("POST /properties, User: " + currentUser);
         if (currentUser == null || currentUser.getId() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         dto.setOwnerId(currentUser.getId());
-        PropertyResponseDto createdProperty = propertyService.create(dto);
+        PropertyResponseDTO createdProperty = propertyService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProperty);
     }
 
     @GetMapping
-    public List<PropertyResponseDto> getAll() {
+    public List<PropertyResponseDTO> getAll() {
         return propertyService.findAll();
     }
 
     @GetMapping("/my-properties")
-    public List<PropertyResponseDto> getMyProperties(@AuthenticationPrincipal User currentUser) {
+    public List<PropertyResponseDTO> getMyProperties(@AuthenticationPrincipal User currentUser) {
         System.out.println("GET /properties/my-properties, User: " + currentUser);
         if (currentUser == null || currentUser.getId() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
@@ -50,19 +50,19 @@ public class PropertyController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PropertyResponseDto> getById(@PathVariable UUID id) {
-        PropertyResponseDto property = propertyService.findById(id);
+    public ResponseEntity<PropertyResponseDTO> getById(@PathVariable UUID id) {
+        PropertyResponseDTO property = propertyService.findById(id);
         return ResponseEntity.ok(property);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PropertyResponseDto> update(@PathVariable UUID id, @Valid @RequestBody PropertyRequestDto dto, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<PropertyResponseDTO> update(@PathVariable UUID id, @Valid @RequestBody PropertyRequestDTO dto, @AuthenticationPrincipal User currentUser) {
         System.out.println("PUT /properties/" + id + ", DTO: " + dto + ", User: " + currentUser);
         if (currentUser == null || currentUser.getId() == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
         }
         dto.setOwnerId(currentUser.getId());
-        PropertyResponseDto updatedProperty = propertyService.update(id, dto);
+        PropertyResponseDTO updatedProperty = propertyService.update(id, dto);
         return ResponseEntity.ok(updatedProperty);
     }
 

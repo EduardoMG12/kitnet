@@ -12,7 +12,7 @@ import java.util.UUID; // Importar UUID
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PropertyRequestDto {
+public class PropertyRequestDTO {
 
     // REMOVIDO: @NotNull(message = "O ID do proprietário é obrigatório")
     private UUID ownerId; // Este campo será preenchido pelo backend a partir do usuário logado
