@@ -18,22 +18,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody @Valid UserRegisterDTO dto) {
-        try {
-            User registeredUser = userService.register(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<User> register(@RequestBody @Valid UserRegisterDTO dto) throws Exception {
+        User registeredUser = userService.register(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody @Valid UserLoginDTO dto) {
-        try {
-            User loggedInUser = userService.login(dto);
-            return ResponseEntity.ok(loggedInUser);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<User> login(@RequestBody @Valid UserLoginDTO dto) throws Exception {
+        User loggedInUser = userService.login(dto);
+        return ResponseEntity.ok(loggedInUser);
     }
 }

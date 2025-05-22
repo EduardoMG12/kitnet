@@ -22,7 +22,7 @@ public class PropertyServiceImpl implements PropertyService {
 
     @Autowired
     private UserRepository userRepository;
-// fix services, in controller data user is implemented, but in service i need validate if user egual a necessary user or user exist for create a property
+
     private PropertyResponseDto toDto(Property property) {
         PropertyResponseDto dto = new PropertyResponseDto();
         dto.setId(property.getId());
@@ -35,7 +35,7 @@ public class PropertyServiceImpl implements PropertyService {
         dto.setDescription(property.getDescription());
         dto.setOwnerConfirmation(property.getOwnerConfirmation());
         if (property.getOwner() != null) {
-            dto.setOwnerId(property.getOwner().getEmail());
+            dto.setOwnerEmail(property.getOwner().getEmail());
         }
         return dto;
     }

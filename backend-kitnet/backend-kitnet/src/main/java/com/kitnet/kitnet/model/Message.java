@@ -11,15 +11,18 @@ public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // O ID da mensagem pode continuar sendo Long se preferir
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sender_id", nullable = false) // Garante que a coluna referencie o UUID do User
     private User sender;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiver_id", nullable = false) // Garante que a coluna referencie o UUID do User
     private User receiver;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY) // Assumindo que Property ainda usa Long como ID
+    @JoinColumn(name = "property_id")
     private Property property;
 
     @Column(columnDefinition = "TEXT")

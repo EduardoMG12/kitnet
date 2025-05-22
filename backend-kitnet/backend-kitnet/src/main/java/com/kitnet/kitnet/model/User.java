@@ -9,6 +9,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "users")
@@ -18,8 +21,13 @@ import lombok.AllArgsConstructor;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
     @NotBlank(message = "O nome não pode estar em branco")
     @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
@@ -58,5 +66,8 @@ public class User {
     @Column(columnDefinition = "MEDIUMBLOB")
     private byte[] documentImageWithUser;
 
-
+    @NotNull(message = "O tipo de usuário é obrigatório")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserType userType;
 }

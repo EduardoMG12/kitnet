@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.dto;
 
+import com.kitnet.kitnet.model.UserType; // Importar UserType
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,4 +37,7 @@ public class UserRegisterDTO {
     private String cpf;
 
     private byte[] documentImageWithUser;
+
+    @NotNull(message = "O tipo de usuário é obrigatório")
+    private UserType userType; // Adicionado: Tipo de usuário
 }

@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID; // Importar UUID
 
 @RestController
 @RequestMapping("/properties")
@@ -46,12 +47,9 @@ public class PropertyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PropertyResponseDto> update(@PathVariable Long id, @Valid @RequestBody PropertyRequestDto dto,@AuthenticationPrincipal User currentUser) {
-        if (currentUser == null || currentUser.getId() == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        dto.setOwnerId(currentUser.getId());
+    public ResponseEntity<PropertyResponseDto> update(@PathVariable Long id, @Valid @RequestBody PropertyRequestDto dto, @AuthenticationPrincipal User currentUser) {
 
+        dto.setOwnerId(currentUser.getId());
         PropertyResponseDto updatedProperty = propertyService.update(id, dto);
         return ResponseEntity.ok(updatedProperty);
     }
@@ -59,7 +57,6 @@ public class PropertyController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
-        // Aqui você também pode querer verificar se o currentUser.getId() é o proprietário da propriedade
         propertyService.delete(id);
     }
 }

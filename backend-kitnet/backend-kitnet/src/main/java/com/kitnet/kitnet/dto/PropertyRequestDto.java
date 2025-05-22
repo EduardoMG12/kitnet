@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.UUID; // Importar UUID
+
 @Getter
 @Setter
 @Data
@@ -13,7 +15,7 @@ import lombok.*;
 public class PropertyRequestDto {
 
     @NotNull(message = "O ID do proprietário é obrigatório")
-    private Long ownerId;
+    private UUID ownerId;
 
     @NotBlank(message = "O tipo de propriedade não pode estar em branco")
     private String propertyType;
