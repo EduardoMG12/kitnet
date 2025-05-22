@@ -1,11 +1,11 @@
 package com.kitnet.kitnet.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull; // Manter para outros campos
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.util.UUID; // Importar UUID
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,8 +14,7 @@ import java.util.UUID; // Importar UUID
 @AllArgsConstructor
 public class PropertyRequestDTO {
 
-    // REMOVIDO: @NotNull(message = "O ID do proprietário é obrigatório")
-    private UUID ownerId; // Este campo será preenchido pelo backend a partir do usuário logado
+    private UUID ownerId;
 
     @NotBlank(message = "O tipo de propriedade não pode estar em branco")
     private String propertyType;

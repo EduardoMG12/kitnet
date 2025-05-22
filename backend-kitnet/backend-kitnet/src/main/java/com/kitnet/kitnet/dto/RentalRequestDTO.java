@@ -1,11 +1,11 @@
 package com.kitnet.kitnet.dto;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.FutureOrPresent; // Para datas de início/fim
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.UUID; // Importar UUID
+import java.util.UUID;
 
 @Data
 public class RentalRequestDTO {

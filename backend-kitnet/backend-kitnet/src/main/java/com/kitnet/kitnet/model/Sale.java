@@ -11,13 +11,13 @@ public class Sale {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // O ID da venda pode continuar sendo Long se preferir
+    private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "buyer_id", nullable = false) // Garante que a coluna referencie o UUID do User
+    @JoinColumn(name = "buyer_id", nullable = false)
     private User buyer;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY) // Assumindo que Property ainda usa Long como ID
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "property_id", nullable = false)
     private Property property;
 

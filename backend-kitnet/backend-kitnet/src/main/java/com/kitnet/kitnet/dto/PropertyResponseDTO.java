@@ -10,7 +10,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PropertyResponseDTO {
-    private UUID id; // Alterado de Long para UUID
+    private UUID id;
     private String propertyType;
     private String adTitle;
     private String description;

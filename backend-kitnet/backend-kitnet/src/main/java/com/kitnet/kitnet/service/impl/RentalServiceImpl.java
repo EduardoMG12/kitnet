@@ -13,7 +13,7 @@ import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.RentalRepository;
 import com.kitnet.kitnet.repository.UserRepository;
 import com.kitnet.kitnet.service.RentalService;
-import org.springframework.beans.BeanUtils; // Para copiar propriedades
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -57,7 +57,6 @@ public class RentalServiceImpl implements RentalService {
 
         // Regra de Negócio: O locador/corretor (dono da propriedade) deve criar o aluguel
         // ou o locatário está criando uma proposta que o locador/corretor precisa aprovar.
-        // Para simplificar, vamos assumir que o criador inicial é o locador/corretor.
         if (!property.getOwner().getId().equals(authenticatedUser.getId()) &&
                 authenticatedUser.getUserType() != UserType.REAL_ESTATE_AGENT) { // Apenas proprietário ou corretor pode iniciar
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o proprietário ou um corretor pode criar um aluguel para esta propriedade.");
@@ -67,9 +66,8 @@ public class RentalServiceImpl implements RentalService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data de início não pode ser depois da data de término.");
         }
 
-        // Você pode adicionar validação para verificar se a propriedade já está alugada no período.
+        // adicionar validação para verificar se a propriedade já está alugada no período.
         // List<Rental> existingRentals = rentalRepository.findByPropertyIdAndActiveTrue(property.getId());
-        // ... (lógica para verificar sobreposição de datas) ...
 
         Rental rental = new Rental();
         BeanUtils.copyProperties(rentalDto, rental);
@@ -204,7 +202,7 @@ public class RentalServiceImpl implements RentalService {
 
         rental.setProposedMonthlyRent(newPrice);
         rental.setStatus(RentalStatus.PENDING_APPROVAL);
-        rental.setLastPriceUpdateDate(LocalDate.now()); // Registra a data da proposta
+        rental.setLastPriceUpdateDate(LocalDate.now());
 
         Rental updatedRental = rentalRepository.save(rental);
         return convertToDto(updatedRental);
@@ -226,8 +224,8 @@ public class RentalServiceImpl implements RentalService {
         }
 
         rental.setMonthlyRent(rental.getProposedMonthlyRent()); // Aplica o novo preço
-        rental.setProposedMonthlyRent(null); // Limpa o valor proposto
-        rental.setStatus(RentalStatus.ACTIVE); // Retorna ao status ativo
+        rental.setProposedMonthlyRent(null);
+        rental.setStatus(RentalStatus.ACTIVE);
 
         Rental updatedRental = rentalRepository.save(rental);
         return convertToDto(updatedRental);
@@ -249,7 +247,7 @@ public class RentalServiceImpl implements RentalService {
         }
 
         rental.setProposedMonthlyRent(null); // Limpa o valor proposto
-        rental.setStatus(RentalStatus.ACTIVE); // Retorna ao status ativo (com o preço original)
+        rental.setStatus(RentalStatus.ACTIVE);
 
         Rental updatedRental = rentalRepository.save(rental);
         return convertToDto(updatedRental);
@@ -269,15 +267,11 @@ public class RentalServiceImpl implements RentalService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o locador/corretor ou locatário pode solicitar o término do contrato.");
         }
 
-        // Você pode adicionar uma lógica para "proposta de término" se for necessário aprovação do outro lado
-        // Por enquanto, vamos assumir que se um dos lados solicita, o contrato é terminado.
-        // Ou exigir que ambos concordem, se for o caso de um término "amigável" antes da data final.
-
         if (rental.getStatus() != RentalStatus.ACTIVE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O contrato não está ativo para ser terminado.");
         }
 
-        rental.setEndDate(LocalDate.now()); // Ajusta a data de término para hoje
+        rental.setEndDate(LocalDate.now());
         rental.setActive(false);
         rental.setStatus(RentalStatus.TERMINATED);
 
@@ -303,9 +297,10 @@ public class RentalServiceImpl implements RentalService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O contrato não está ativo para ser quebrado.");
         }
 
-        // Em uma aplicação real, "quebra de contrato" implicaria multas, etc.
+
         // Aqui, estamos apenas mudando o status e desativando.
-        rental.setEndDate(LocalDate.now()); // Contrato termina hoje
+        // futuramente implementar que "quebra de contrato" implicara em multa, etc.
+        rental.setEndDate(LocalDate.now());
         rental.setActive(false);
         rental.setStatus(RentalStatus.BROKEN);
 
