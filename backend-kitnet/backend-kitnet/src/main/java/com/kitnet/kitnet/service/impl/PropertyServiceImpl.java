@@ -61,7 +61,7 @@ public class PropertyServiceImpl implements PropertyService {
     private Property fromDto(PropertyRequestDto dto) {
         Property p = new Property();
         User owner = userRepository.findById(dto.getOwnerId())
-                .orElseThrow(() -> new RuntimeException("Proprietário com ID " + dto.getOwnerId() + " não encontrado."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Proprietário com ID " + dto.getOwnerId() + " não encontrado."));
         p.setOwner(owner);
         p.setPropertyType(dto.getPropertyType());
         p.setAdTitle(dto.getAdTitle());
@@ -107,23 +107,19 @@ public class PropertyServiceImpl implements PropertyService {
     public PropertyResponseDto findById(UUID id) {
         return propertyRepository.findById(id)
                 .map(this::toDto)
-                .orElseThrow(() -> new RuntimeException("Property not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propriedade não encontrada"));
     }
 
     @Override
     public PropertyResponseDto update(UUID id, PropertyRequestDto dto) {
         Property existing = propertyRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Propriedade não encontrada"));
-
-        // Verificar se o usuário autenticado é o proprietário da propriedade
         if (!existing.getOwner().getId().equals(dto.getOwnerId())) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o proprietário pode atualizar esta propriedade");
         }
-
         User owner = userRepository.findById(dto.getOwnerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Proprietário com ID " + dto.getOwnerId() + " não encontrado."));
         existing.setOwner(owner);
-
         existing.setPropertyType(dto.getPropertyType());
         existing.setAdTitle(dto.getAdTitle());
         existing.setDescription(dto.getDescription());
@@ -148,7 +144,6 @@ public class PropertyServiceImpl implements PropertyService {
         existing.setPhotos(dto.getPhotos());
         existing.setOwnerConfirmation(dto.getOwnerConfirmation());
         existing.setTermsAgreement(dto.getTermsAgreement());
-
         return toDto(propertyRepository.save(existing));
     }
 
@@ -160,5 +155,15 @@ public class PropertyServiceImpl implements PropertyService {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o proprietário pode excluir esta propriedade");
         }
         propertyRepository.deleteById(id);
+    }
+
+    @Override
+    public List<PropertyResponseDto> findByOwner(User currentUser) {
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
+        }
+        return propertyRepository.findByOwnerId(currentUser.getId()).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 }

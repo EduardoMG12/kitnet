@@ -2,7 +2,6 @@ package com.kitnet.kitnet.controller;
 
 import com.kitnet.kitnet.dto.PropertyRequestDto;
 import com.kitnet.kitnet.dto.PropertyResponseDto;
-import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.PropertyService;
 import jakarta.validation.Valid;
@@ -39,6 +38,15 @@ public class PropertyController {
     @GetMapping
     public List<PropertyResponseDto> getAll() {
         return propertyService.findAll();
+    }
+
+    @GetMapping("/my-properties")
+    public List<PropertyResponseDto> getMyProperties(@AuthenticationPrincipal User currentUser) {
+        System.out.println("GET /properties/my-properties, User: " + currentUser);
+        if (currentUser == null || currentUser.getId() == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Usuário não autenticado");
+        }
+        return propertyService.findByOwner(currentUser);
     }
 
     @GetMapping("/{id}")

@@ -12,5 +12,6 @@ public interface PropertyService {
     List<PropertyResponseDto> findAll();
     PropertyResponseDto findById(UUID id);
     PropertyResponseDto update(UUID id, PropertyRequestDto dto);
-    void delete(UUID id, User currentUser); // Atualizado para incluir currentUser
+    void delete(UUID id, User currentUser);
+    List<PropertyResponseDto> findByOwner(User currentUser); // Novo método
 }
