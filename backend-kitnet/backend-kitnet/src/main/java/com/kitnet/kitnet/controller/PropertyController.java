@@ -25,7 +25,7 @@ public class PropertyController {
     public ResponseEntity<PropertyResponseDto> create(
             @Valid @RequestBody PropertyRequestDto dto,
             @AuthenticationPrincipal User currentUser) {
-
+System.out.println(currentUser);
         if (currentUser == null || currentUser.getId() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

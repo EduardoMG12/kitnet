@@ -1,56 +1,79 @@
-//package com.kitnet.kitnet.config;
-//
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//
-//@Configuration
-//public class SecurityConfig {
-//
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-//}
-
-
 package com.kitnet.kitnet.config;
 
+import com.kitnet.kitnet.filter.JwtRequestFilter;
+import com.kitnet.kitnet.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity // Habilita a segurança web do Spring
+@EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtRequestFilter jwtRequestFilter; // Este filtro será injetado e adicionado à cadeia
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    // O AuthenticationManager é usado para autenticar o usuário (no login)
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    // O DaoAuthenticationProvider é quem realmente lida com a lógica de autenticação
+    // usando o UserDetailsService e o PasswordEncoder
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService); // Seu serviço de detalhes do usuário
+        authProvider.setPasswordEncoder(passwordEncoder()); // Seu codificador de senha
+        return authProvider;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para facilitar testes e APIs stateless
+                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs RESTful stateless
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permite acesso público aos endpoints de registro e login de usuários
+                        // Rotas públicas (não exigem autenticação)
                         .requestMatchers("/api/users/register", "/api/users/login").permitAll()
-                        // Permite acesso público aos endpoints de propriedades (se desejar que sejam públicos)
-                        // Se /properties deve ser público para GET, mas restrito para POST/PUT/DELETE
-                        .requestMatchers("/properties").permitAll() // Exemplo: permite GET para /properties
-                        .requestMatchers("/properties/**").permitAll() // Permite acesso a todos os subcaminhos de /properties
-                        // Todas as outras requisições exigem autenticação
+                        .requestMatchers(HttpMethod.GET, "/properties").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/properties/{id}").permitAll()
+
+                        // Rotas protegidas (exigem autenticação)
+                        .requestMatchers(HttpMethod.POST, "/properties").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/properties/{id}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/properties/{id}").authenticated()
+
+                        // Todas as outras requisições exigem autenticação por padrão
                         .anyRequest().authenticated()
+                )
+                .sessionManagement(session -> session
+                        // Gerenciamento de sessão STATELESS (sem estado) - essencial para JWT
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-        // Você pode adicionar configurações de login aqui, se necessário (ex: formLogin, httpBasic)
-        // .httpBasic(Customizer.withDefaults()); // Habilita autenticação Basic HTTP
-        // .formLogin(Customizer.withDefaults()); // Habilita autenticação por formulário
+
+        // Adiciona o JwtRequestFilter antes do filtro padrão de autenticação por nome de usuário/senha.
+        // Isso garante que nosso filtro JWT seja executado primeiro para processar o token.
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
