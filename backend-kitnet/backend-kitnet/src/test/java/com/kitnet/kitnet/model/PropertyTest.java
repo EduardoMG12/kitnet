@@ -1,6 +1,9 @@
 package com.kitnet.kitnet.model;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PropertyTest {
@@ -12,12 +15,15 @@ class PropertyTest {
         assertNull(property.getId());
         assertNull(property.getAdTitle());
         assertNull(property.getRentValue());
+        assertNull(property.getOwner());
     }
 
     @Test
     void testSettersAndGetters() {
         Property property = new Property();
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
+        User owner = new User();
+        owner.setId(UUID.randomUUID());
         String propertyType = "Apartment";
         String adTitle = "Beautiful Apartment";
         String description = "A cozy place in the city center.";
@@ -44,6 +50,7 @@ class PropertyTest {
         Boolean termsAgreement = true;
 
         property.setId(id);
+        property.setOwner(owner);
         property.setPropertyType(propertyType);
         property.setAdTitle(adTitle);
         property.setDescription(description);
@@ -70,6 +77,7 @@ class PropertyTest {
         property.setTermsAgreement(termsAgreement);
 
         assertEquals(id, property.getId());
+        assertEquals(owner, property.getOwner());
         assertEquals(propertyType, property.getPropertyType());
         assertEquals(adTitle, property.getAdTitle());
         assertEquals(description, property.getDescription());
@@ -98,24 +106,30 @@ class PropertyTest {
 
     @Test
     void testEqualsAndHashCode() {
+        UUID id = UUID.randomUUID();
+        User owner = new User();
+        owner.setId(UUID.randomUUID());
+
         Property property1 = new Property();
-        property1.setId(1L);
+        property1.setId(id);
+        property1.setOwner(owner);
         property1.setAdTitle("Test Ad");
         property1.setPropertyType("House");
 
         Property property2 = new Property();
-        property2.setId(1L);
+        property2.setId(id);
+        property2.setOwner(owner);
         property2.setAdTitle("Test Ad");
         property2.setPropertyType("House");
 
         Property property3 = new Property();
-        property3.setId(2L);
+        property3.setId(UUID.randomUUID());
+        property3.setOwner(new User());
         property3.setAdTitle("Another Ad");
         property3.setPropertyType("Apartment");
 
         assertEquals(property1, property2);
         assertEquals(property1.hashCode(), property2.hashCode());
-
 
         assertNotEquals(property1, property3);
     }
@@ -123,13 +137,14 @@ class PropertyTest {
     @Test
     void testToString() {
         Property property = new Property();
-        property.setId(1L);
+        UUID id = UUID.randomUUID();
+        property.setId(id);
         property.setAdTitle("Test Ad");
         property.setPropertyType("House");
 
         String toStringResult = property.toString();
         assertNotNull(toStringResult);
-        assertTrue(toStringResult.contains("id=1"));
+        assertTrue(toStringResult.contains("id=" + id));
         assertTrue(toStringResult.contains("adTitle=Test Ad"));
         assertTrue(toStringResult.contains("propertyType=House"));
     }

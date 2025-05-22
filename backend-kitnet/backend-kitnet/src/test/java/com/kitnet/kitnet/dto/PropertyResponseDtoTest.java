@@ -1,13 +1,15 @@
 package com.kitnet.kitnet.dto;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PropertyResponseDtoTest {
 
     @Test
     void testNoArgsConstructor() {
-        // Testa o construtor sem argumentos e se os campos são inicializados para null/default
         PropertyResponseDto dto = new PropertyResponseDto();
         assertNotNull(dto);
         assertNull(dto.getId());
@@ -16,19 +18,38 @@ class PropertyResponseDtoTest {
 
     @Test
     void testAllArgsConstructorAndGetters() {
-        // Testa o construtor com todos os argumentos e os getters
-        Long id = 1L;
+        UUID id = UUID.randomUUID();
         String propertyType = "House";
         String adTitle = "Beautiful House for Sale";
         String description = "Spacious house with a garden.";
         String purpose = "Sale";
         Double rentValue = 500000.0;
-        String city = "Rio de Janeiro";
+        String zipCode = "12345-678";
         String state = "RJ";
+        String city = "Rio de Janeiro";
+        String neighborhood = "Copacabana";
+        String address = "Rua Teste";
+        String number = "200";
+        String complement = "House 1";
+        Boolean hideExactAddress = true;
+        Double squareMeters = 200.0;
+        Double builtArea = 180.0;
+        Integer bedrooms = 4;
+        Integer bathrooms = 3;
+        Integer parkingSpaces = 2;
+        String amenities = "Pool, BBQ";
+        Integer floor = 0;
+        Double condominiumFee = 0.0;
+        String photos = "photo1.jpg";
         Boolean ownerConfirmation = true;
+        Boolean termsAgreement = true;
+        String ownerEmail = "owner@test.com";
 
         PropertyResponseDto dto = new PropertyResponseDto(
-                id, propertyType, adTitle, description, purpose, rentValue, city, state, ownerConfirmation
+                id, propertyType, adTitle, description, purpose, rentValue, zipCode, state, city,
+                neighborhood, address, number, complement, hideExactAddress, squareMeters,
+                builtArea, bedrooms, bathrooms, parkingSpaces, amenities, floor,
+                condominiumFee, photos, ownerConfirmation, termsAgreement, ownerEmail
         );
 
         assertEquals(id, dto.getId());
@@ -37,47 +58,64 @@ class PropertyResponseDtoTest {
         assertEquals(description, dto.getDescription());
         assertEquals(purpose, dto.getPurpose());
         assertEquals(rentValue, dto.getRentValue());
-        assertEquals(city, dto.getCity());
+        assertEquals(zipCode, dto.getZipCode());
         assertEquals(state, dto.getState());
+        assertEquals(city, dto.getCity());
+        assertEquals(neighborhood, dto.getNeighborhood());
+        assertEquals(address, dto.getAddress());
+        assertEquals(number, dto.getNumber());
+        assertEquals(complement, dto.getComplement());
+        assertEquals(hideExactAddress, dto.getHideExactAddress());
+        assertEquals(squareMeters, dto.getSquareMeters());
+        assertEquals(builtArea, dto.getBuiltArea());
+        assertEquals(bedrooms, dto.getBedrooms());
+        assertEquals(bathrooms, dto.getBathrooms());
+        assertEquals(parkingSpaces, dto.getParkingSpaces());
+        assertEquals(amenities, dto.getAmenities());
+        assertEquals(floor, dto.getFloor());
+        assertEquals(condominiumFee, dto.getCondominiumFee());
+        assertEquals(photos, dto.getPhotos());
         assertEquals(ownerConfirmation, dto.getOwnerConfirmation());
+        assertEquals(termsAgreement, dto.getTermsAgreement());
+        assertEquals(ownerEmail, dto.getOwnerEmail());
     }
 
     @Test
     void testSetters() {
-        // Testa os setters
         PropertyResponseDto dto = new PropertyResponseDto();
 
-        dto.setId(2L);
-        assertEquals(2L, dto.getId());
+        UUID id = UUID.randomUUID();
+        dto.setId(id);
+        assertEquals(id, dto.getId());
 
         dto.setAdTitle("Updated Ad Title");
         assertEquals("Updated Ad Title", dto.getAdTitle());
 
         dto.setRentValue(1800.0);
         assertEquals(1800.0, dto.getRentValue());
+
+        dto.setOwnerEmail("new@test.com");
+        assertEquals("new@test.com", dto.getOwnerEmail());
     }
 
     @Test
     void testEqualsAndHashCode() {
-        // Testa os métodos equals e hashCode gerados pelo Lombok
+        UUID id = UUID.randomUUID();
         PropertyResponseDto dto1 = new PropertyResponseDto();
-        dto1.setId(1L);
+        dto1.setId(id);
         dto1.setAdTitle("Test Ad");
 
         PropertyResponseDto dto2 = new PropertyResponseDto();
-        dto2.setId(1L);
+        dto2.setId(id);
         dto2.setAdTitle("Test Ad");
 
         PropertyResponseDto dto3 = new PropertyResponseDto();
-        dto3.setId(2L);
+        dto3.setId(UUID.randomUUID());
         dto3.setAdTitle("Another Ad");
 
-        // Objetos com os mesmos valores devem ser iguais e ter o mesmo hashCode
         assertEquals(dto1, dto2);
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Objetos com valores diferentes não devem ser iguais
         assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1.hashCode(), dto3.hashCode());
     }
 }

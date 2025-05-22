@@ -4,25 +4,35 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.AfterAll; // Importar AfterAll
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
+import java.util.UUID; // Importar UUID
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class UserTest {
 
+    private static ValidatorFactory validatorFactory; // Mudar para static para ser fechado no AfterAll
     private static Validator validator;
 
     private User user;
 
     @BeforeAll
     static void setUpValidator() {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
+        validatorFactory = Validation.buildDefaultValidatorFactory();
+        validator = validatorFactory.getValidator();
+    }
+
+    @AfterAll
+    static void tearDownValidator() {
+        if (validatorFactory != null) {
+            validatorFactory.close();
+        }
     }
 
     @BeforeEach
@@ -36,6 +46,23 @@ class UserTest {
         user.setAcceptTerms(true);
         user.setCpf("12345678900");
         user.setDocumentImageWithUser(new byte[]{1, 2, 3});
+        user.setUserType(UserType.LESSEE); // Definir um UserType padrão para testes válidos
+    }
+
+    // Helper para criar um usuário válido com um ID UUID opcional
+    private User createValidUser(UUID id) {
+        User validUser = new User();
+        validUser.setId(id);
+        validUser.setFirstName("Valid");
+        validUser.setLastName("User");
+        validUser.setEmail("valid.user@example.com");
+        validUser.setPhone("99988877766");
+        validUser.setPassword("ValidPass123!");
+        validUser.setAcceptTerms(true);
+        validUser.setCpf("00011122233");
+        validUser.setDocumentImageWithUser(new byte[]{});
+        validUser.setUserType(UserType.LESSOR);
+        return validUser;
     }
 
     @Test
@@ -48,7 +75,8 @@ class UserTest {
         assertThat(user.getAcceptTerms()).isTrue();
         assertThat(user.getCpf()).isEqualTo("12345678900");
         assertArrayEquals(new byte[]{1, 2, 3}, user.getDocumentImageWithUser());
-        assertThat(user.getId()).isNull();
+        assertThat(user.getUserType()).isEqualTo(UserType.LESSEE);
+        assertThat(user.getId()).isNull(); // ID é nulo antes de ser persistido
     }
 
     @Test
@@ -101,8 +129,8 @@ class UserTest {
     void testUserWithEmptyEmail() {
         user.setEmail("");
         Set<ConstraintViolation<User>> violations = validator.validate(user);
-        // MUDANÇA AQUI: Espera 1 violação, pois @Email não falha para string vazia
-        assertThat(violations).hasSize(1); // Ajustado para 1
+        // @NotBlank e @Email podem gerar 2 violações para string vazia, dependendo da ordem e implementação
+        assertThat(violations).hasSize(1); // @NotBlank
         assertThat(violations.iterator().next().getPropertyPath().toString()).isEqualTo("email");
         assertThat(violations.iterator().next().getMessage()).isEqualTo("O email não pode estar em branco");
     }
@@ -115,7 +143,6 @@ class UserTest {
         assertThat(violations.iterator().next().getPropertyPath().toString()).isEqualTo("email");
         assertThat(violations.iterator().next().getMessage()).isEqualTo("Formato de email inválido");
     }
-
 
     @Test
     void testUserWithNullPassword() {
@@ -166,29 +193,92 @@ class UserTest {
         assertThat(violations.iterator().next().getMessage()).isEqualTo("O CPF deve conter 11 dígitos numéricos");
     }
 
+    @Test
+    void testUserWithNullUserType() {
+        user.setUserType(null);
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertThat(violations).hasSize(1);
+        assertThat(violations.iterator().next().getPropertyPath().toString()).isEqualTo("userType");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo("O tipo de usuário é obrigatório");
+    }
 
     @Test
     void testEqualsAndHashCode() {
-        User user1 = new User();
-        user1.setId(1L);
-        user1.setFirstName("A"); user1.setLastName("B"); user1.setEmail("a@example.com"); user1.setPhone("1"); user1.setPassword("p"); user1.setAcceptTerms(true); user1.setCpf("11111111111"); user1.setDocumentImageWithUser(new byte[]{});
+        // Gera UUIDs aleatórios para os IDs
+        UUID id1 = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID(); // Diferente de id1
 
-        User user2 = new User();
-        user2.setId(1L);
-        user2.setFirstName("A"); user2.setLastName("B"); user2.setEmail("a@example.com"); user2.setPhone("1"); user2.setPassword("p"); user2.setAcceptTerms(true); user2.setCpf("11111111111"); user2.setDocumentImageWithUser(new byte[]{});
+        User user1 = createValidUser(id1);
+        user1.setEmail("user1@example.com");
+        user1.setCpf("11111111111");
 
-        User user3 = new User();
-        user3.setId(2L);
-        user3.setFirstName("C"); user3.setLastName("D"); user3.setEmail("c@example.com"); user3.setPhone("2"); user3.setPassword("q"); user3.setAcceptTerms(false); user3.setCpf("22222222222"); user3.setDocumentImageWithUser(new byte[]{});
+        User user2 = createValidUser(id1); // Mesmo ID que user1
+        user2.setEmail("user1@example.com"); // Mesmos outros dados para equals
+        user2.setCpf("11111111111");
 
+        User user3 = createValidUser(id2); // ID diferente
+        user3.setEmail("user3@example.com");
+        user3.setCpf("33333333333");
+
+        // Objetos com os mesmos IDs e outros campos devem ser iguais
         assertThat(user1).isEqualTo(user2);
         assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
 
+        // Objetos com IDs diferentes não devem ser iguais
         assertThat(user1).isNotEqualTo(user3);
-        assertThat(user1.hashCode()).isNotEqualTo(user3.hashCode());
+        // Hash codes podem colidir, mas geralmente não para objetos diferentes
+        // assertThat(user1.hashCode()).isNotEqualTo(user3.hashCode()); // Esta asserção é mais frágil
 
-        assertThat(user1).isEqualTo(user1);
-        assertThat(user1).isNotEqualTo(null);
-        assertThat(user1).isNotEqualTo(new Object());
+        // Testes de borda para equals
+        assertThat(user1).isEqualTo(user1); // Comparar com ele mesmo
+        assertThat(user1).isNotEqualTo(null); // Comparar com nulo
+        assertThat(user1).isNotEqualTo(new Object()); // Comparar com objeto de tipo diferente
+    }
+
+    @Test
+    void testGetAuthorities() {
+        user.setUserType(UserType.LESSEE);
+        assertThat(user.getAuthorities()).hasSize(1);
+        assertThat(user.getAuthorities()).extracting("authority").containsExactly("ROLE_LESSEE");
+
+        user.setUserType(UserType.LESSOR);
+        assertThat(user.getAuthorities()).hasSize(1);
+        assertThat(user.getAuthorities()).extracting("authority").containsExactly("ROLE_LESSOR");
+    }
+
+    @Test
+    void testGetUsername() {
+        user.setEmail("test@email.com");
+        assertThat(user.getUsername()).isEqualTo("test@email.com");
+    }
+
+    @Test
+    void testGetPassword() {
+        user.setPassword("mySecurePassword");
+        assertThat(user.getPassword()).isEqualTo("mySecurePassword");
+    }
+
+    @Test
+    void testIsAccountNonExpired() {
+        assertThat(user.isAccountNonExpired()).isTrue();
+    }
+
+    @Test
+    void testIsAccountNonLocked() {
+        assertThat(user.isAccountNonLocked()).isTrue();
+    }
+
+    @Test
+    void testIsCredentialsNonExpired() {
+        assertThat(user.isCredentialsNonExpired()).isTrue();
+    }
+
+    @Test
+    void testIsEnabled() {
+        user.setAcceptTerms(true);
+        assertThat(user.isEnabled()).isTrue();
+
+        user.setAcceptTerms(false);
+        assertThat(user.isEnabled()).isFalse();
     }
 }

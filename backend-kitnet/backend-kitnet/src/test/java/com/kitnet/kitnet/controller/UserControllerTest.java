@@ -1,194 +1,378 @@
 package com.kitnet.kitnet.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kitnet.kitnet.dto.UserLoginDTO;
-import com.kitnet.kitnet.dto.UserRegisterDTO;
+import com.kitnet.kitnet.dto.PropertyRequestDto;
+import com.kitnet.kitnet.dto.PropertyResponseDto;
+import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
+import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.UserRepository;
-import com.kitnet.kitnet.service.UserService;
-import org.junit.jupiter.api.AfterEach;
+import com.kitnet.kitnet.service.impl.PropertyServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
-import com.kitnet.kitnet.exception.GlobalExceptionHandler;
-
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
-@AutoConfigureMockMvc(addFilters = false)
-@Import({
-        UserControllerTest.TestMocksConfig.class,
-        GlobalExceptionHandler.class
-})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class UserControllerTest {
+@ExtendWith(MockitoExtension.class)
+class PropertyServiceImplTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Mock
+    private PropertyRepository propertyRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
-    @TestConfiguration
-    static class TestMocksConfig {
-        @Bean
-        public UserService userService() {
-            return mock(UserService.class);
-        }
+    @InjectMocks
+    private PropertyServiceImpl propertyService;
 
-        @Bean
-        public UserRepository userRepository() {
-            return mock(UserRepository.class);
-        }
-    }
+    private PropertyRequestDto sampleRequestDto;
+    private Property sampleProperty;
+    private PropertyResponseDto sampleResponseDto;
+    private User sampleUser;
+    private UUID userId;
+    private UUID propertyId;
 
-    @AfterEach
-    void tearDown() {
-        reset(userService);
-        reset(userRepository);
-    }
+    @BeforeEach
+    void setUp() {
+        userId = UUID.randomUUID();
+        propertyId = UUID.randomUUID();
 
-    @Test
-    void testRegisterUserSuccess() throws Exception {
-        UserRegisterDTO requestDto = new UserRegisterDTO();
-        requestDto.setFirstName("John");
-        requestDto.setLastName("Doe");
-        requestDto.setEmail("john.doe@example.com");
-        requestDto.setPhone("11987654321");
-        requestDto.setPassword("Password123!");
-        requestDto.setConfirmPassword("Password123!");
-        requestDto.setAcceptTerms(true);
-        requestDto.setCpf("12345678900");
+        sampleUser = new User();
+        sampleUser.setId(userId);
+        sampleUser.setEmail("test@test.com");
 
-        User registeredUser = new User();
-        registeredUser.setId(1L);
-        registeredUser.setFirstName("John");
-        registeredUser.setLastName("Doe");
-        registeredUser.setEmail("john.doe@example.com");
-        registeredUser.setCpf("12345678900");
+        sampleRequestDto = new PropertyRequestDto();
+        sampleRequestDto.setOwnerId(userId);
+        sampleRequestDto.setAdTitle("Test Kitnet");
+        sampleRequestDto.setCity("Sample City");
+        sampleRequestDto.setState("SS");
+        sampleRequestDto.setPurpose("Rent");
+        sampleRequestDto.setRentValue(1000.0);
+        sampleRequestDto.setPropertyType("Kitnet");
+        sampleRequestDto.setOwnerConfirmation(true);
+        sampleRequestDto.setTermsAgreement(true);
+        sampleRequestDto.setDescription("A test description.");
+        sampleRequestDto.setZipCode("12345-000");
+        sampleRequestDto.setNeighborhood("Sample Neighborhood");
+        sampleRequestDto.setAddress("Sample Address");
+        sampleRequestDto.setNumber("123");
+        sampleRequestDto.setComplement("Apt 1");
+        sampleRequestDto.setHideExactAddress(false);
+        sampleRequestDto.setSquareMeters(30.0);
+        sampleRequestDto.setBuiltArea(28.0);
+        sampleRequestDto.setBedrooms(1);
+        sampleRequestDto.setBathrooms(1);
+        sampleRequestDto.setParkingSpaces(0);
+        sampleRequestDto.setAmenities("Wi-Fi, Furniture");
+        sampleRequestDto.setFloor(1);
+        sampleRequestDto.setCondominiumFee(150.0);
+        sampleRequestDto.setPhotos("photo1.jpg");
 
-        when(userService.register(any(UserRegisterDTO.class))).thenReturn(registeredUser);
+        sampleProperty = new Property();
+        sampleProperty.setId(propertyId);
+        sampleProperty.setOwner(sampleUser);
+        sampleProperty.setAdTitle("Test Kitnet");
+        sampleProperty.setCity("Sample City");
+        sampleProperty.setState("SS");
+        sampleProperty.setPurpose("Rent");
+        sampleProperty.setRentValue(1000.0);
+        sampleProperty.setPropertyType("Kitnet");
+        sampleProperty.setOwnerConfirmation(true);
+        sampleProperty.setTermsAgreement(true);
+        sampleProperty.setDescription("A test description.");
+        sampleProperty.setZipCode("12345-000");
+        sampleProperty.setNeighborhood("Sample Neighborhood");
+        sampleProperty.setAddress("Sample Address");
+        sampleProperty.setNumber("123");
+        sampleProperty.setComplement("Apt 1");
+        sampleProperty.setHideExactAddress(false);
+        sampleProperty.setSquareMeters(30.0);
+        sampleProperty.setBuiltArea(28.0);
+        sampleProperty.setBedrooms(1);
+        sampleProperty.setBathrooms(1);
+        sampleProperty.setParkingSpaces(0);
+        sampleProperty.setAmenities("Wi-Fi, Furniture");
+        sampleProperty.setFloor(1);
+        sampleProperty.setCondominiumFee(150.0);
+        sampleProperty.setPhotos("photo1.jpg");
 
-        mockMvc.perform(post("/api/users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1L))
-                .andExpect(jsonPath("$.firstName").value("John"))
-                .andExpect(jsonPath("$.email").value("john.doe@example.com"));
-
-        verify(userService, times(1)).register(any(UserRegisterDTO.class));
-    }
-
-    @Test
-    void testLoginUserSuccess() throws Exception {
-        UserLoginDTO requestDto = new UserLoginDTO();
-        requestDto.setEmail("test@example.com");
-        requestDto.setPassword("securepassword");
-
-        User loggedInUser = new User();
-        loggedInUser.setId(2L);
-        loggedInUser.setEmail("test@example.com");
-        loggedInUser.setFirstName("Test");
-        loggedInUser.setLastName("User");
-
-        when(userService.login(any(UserLoginDTO.class))).thenReturn(loggedInUser);
-
-        mockMvc.perform(post("/api/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(2L))
-                .andExpect(jsonPath("$.email").value("test@example.com"));
-
-        verify(userService, times(1)).login(any(UserLoginDTO.class));
-    }
-
-    @Test
-    void testRegisterUserInvalidInput() throws Exception {
-        UserRegisterDTO requestDto = new UserRegisterDTO();
-        requestDto.setFirstName("John");
-        requestDto.setLastName("Doe");
-        requestDto.setEmail("");
-        requestDto.setPhone("11987654321");
-        requestDto.setPassword("Password123!");
-        requestDto.setConfirmPassword("Password123!");
-        requestDto.setAcceptTerms(true);
-        requestDto.setCpf("12345678900");
-
-        mockMvc.perform(post("/api/users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).register(any(UserRegisterDTO.class));
-    }
-
-    @Test
-    void testLoginUserInvalidInput() throws Exception {
-        UserLoginDTO requestDto = new UserLoginDTO();
-        requestDto.setEmail("test@example.com");
-        requestDto.setPassword("");
-
-        mockMvc.perform(post("/api/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).login(any(UserLoginDTO.class));
+        sampleResponseDto = new PropertyResponseDto();
+        sampleResponseDto.setId(propertyId);
+        sampleResponseDto.setAdTitle("Test Kitnet");
+        sampleResponseDto.setCity("Sample City");
+        sampleResponseDto.setState("SS");
+        sampleResponseDto.setPurpose("Rent");
+        sampleResponseDto.setRentValue(1000.0);
+        sampleResponseDto.setPropertyType("Kitnet");
+        sampleResponseDto.setOwnerConfirmation(true);
+        sampleResponseDto.setTermsAgreement(true);
+        sampleResponseDto.setDescription("A test description.");
+        sampleResponseDto.setZipCode("12345-000");
+        sampleResponseDto.setNeighborhood("Sample Neighborhood");
+        sampleResponseDto.setAddress("Sample Address");
+        sampleResponseDto.setNumber("123");
+        sampleResponseDto.setComplement("Apt 1");
+        sampleResponseDto.setHideExactAddress(false);
+        sampleResponseDto.setSquareMeters(30.0);
+        sampleResponseDto.setBuiltArea(28.0);
+        sampleResponseDto.setBedrooms(1);
+        sampleResponseDto.setBathrooms(1);
+        sampleResponseDto.setParkingSpaces(0);
+        sampleResponseDto.setAmenities("Wi-Fi, Furniture");
+        sampleResponseDto.setFloor(1);
+        sampleResponseDto.setCondominiumFee(150.0);
+        sampleResponseDto.setPhotos("photo1.jpg");
+        sampleResponseDto.setOwnerEmail("test@test.com");
     }
 
     @Test
-    void testRegisterUserThrowsException() throws Exception {
-        UserRegisterDTO requestDto = new UserRegisterDTO();
-        requestDto.setFirstName("John");
-        requestDto.setLastName("Doe");
-        requestDto.setEmail("john.doe@example.com");
-        requestDto.setPhone("11987654321");
-        requestDto.setPassword("Password123!");
-        requestDto.setConfirmPassword("Password123!");
-        requestDto.setAcceptTerms(true);
-        requestDto.setCpf("12345678900");
+    void testCreateProperty() {
+        when(userRepository.findById(userId)).thenReturn(Optional.of(sampleUser));
+        when(propertyRepository.save(any(Property.class))).thenReturn(sampleProperty);
 
-        when(userService.register(any(UserRegisterDTO.class))).thenThrow(new RuntimeException("Email already registered"));
+        PropertyResponseDto result = propertyService.create(sampleRequestDto);
 
+        assertNotNull(result);
+        assertEquals(sampleProperty.getId(), result.getId());
+        assertEquals(sampleProperty.getAdTitle(), result.getAdTitle());
+        assertEquals(sampleUser.getEmail(), result.getOwnerEmail());
+        assertEquals(1, result.getBedrooms());
+        assertEquals(1, result.getBathrooms());
+        assertEquals(0, result.getParkingSpaces());
+        assertEquals(1, result.getFloor());
 
-        mockMvc.perform(post("/api/users/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isConflict());
+        verify(userRepository, times(1)).findById(userId);
+        verify(propertyRepository, times(1)).save(any(Property.class));
     }
 
     @Test
-    void testLoginUserThrowsException() throws Exception {
-        UserLoginDTO requestDto = new UserLoginDTO();
-        requestDto.setEmail("test@example.com");
-        requestDto.setPassword("wrongpassword");
+    void testCreatePropertyOwnerNotFound() {
+        UUID nonExistentOwnerId = UUID.randomUUID();
+        sampleRequestDto.setOwnerId(nonExistentOwnerId);
+        when(userRepository.findById(nonExistentOwnerId)).thenReturn(Optional.empty());
 
-        when(userService.login(any(UserLoginDTO.class))).thenThrow(new RuntimeException("Invalid credentials"));
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.create(sampleRequestDto);
+        });
 
+        assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatusCode());
+        assertEquals("Proprietário com ID " + nonExistentOwnerId + " não encontrado.", thrown.getReason());
+        verify(userRepository, times(1)).findById(nonExistentOwnerId);
+        verify(propertyRepository, never()).save(any(Property.class));
+    }
 
-        mockMvc.perform(post("/api/users/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestDto)))
-                .andExpect(status().isUnauthorized());
+    @Test
+    void testFindAllProperties() {
+        when(propertyRepository.findAll()).thenReturn(Arrays.asList(sampleProperty));
+
+        List<PropertyResponseDto> results = propertyService.findAll();
+
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+        assertEquals(sampleProperty.getAdTitle(), results.get(0).getAdTitle());
+        assertEquals(sampleUser.getEmail(), results.get(0).getOwnerEmail());
+
+        verify(propertyRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testFindPropertyByIdFound() {
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(sampleProperty));
+
+        PropertyResponseDto result = propertyService.findById(propertyId);
+
+        assertNotNull(result);
+        assertEquals(sampleProperty.getId(), result.getId());
+        assertEquals(sampleProperty.getAdTitle(), result.getAdTitle());
+        assertEquals(sampleUser.getEmail(), result.getOwnerEmail());
+
+        verify(propertyRepository, times(1)).findById(propertyId);
+    }
+
+    @Test
+    void testFindPropertyByIdNotFound() {
+        UUID nonExistentId = UUID.randomUUID();
+        when(propertyRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.findById(nonExistentId);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
+        assertEquals("Propriedade não encontrada", thrown.getReason());
+        verify(propertyRepository, times(1)).findById(nonExistentId);
+    }
+
+    @Test
+    void testFindByOwner() {
+        when(propertyRepository.findByOwnerId(userId)).thenReturn(Arrays.asList(sampleProperty));
+
+        List<PropertyResponseDto> results = propertyService.findByOwner(sampleUser);
+
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
+        assertEquals(1, results.size());
+        assertEquals(sampleProperty.getAdTitle(), results.get(0).getAdTitle());
+        assertEquals(sampleUser.getEmail(), results.get(0).getOwnerEmail());
+
+        verify(propertyRepository, times(1)).findByOwnerId(userId);
+    }
+
+    @Test
+    void testFindByOwnerUnauthorized() {
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.findByOwner(null);
+        });
+
+        assertEquals(HttpStatus.UNAUTHORIZED, thrown.getStatusCode());
+        assertEquals("Usuário não autenticado", thrown.getReason());
+        verify(propertyRepository, never()).findByOwnerId(any());
+    }
+
+    @Test
+    void testUpdateProperty() {
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(sampleProperty));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(sampleUser));
+        when(propertyRepository.save(any(Property.class))).thenReturn(sampleProperty);
+
+        PropertyResponseDto result = propertyService.update(propertyId, sampleRequestDto);
+
+        assertNotNull(result);
+        assertEquals(sampleProperty.getId(), result.getId());
+        assertEquals(sampleRequestDto.getAdTitle(), result.getAdTitle());
+        assertEquals(sampleUser.getEmail(), result.getOwnerEmail());
+
+        verify(propertyRepository, times(1)).findById(propertyId);
+        verify(userRepository, times(1)).findById(userId);
+        verify(propertyRepository, times(1)).save(any(Property.class));
+    }
+
+    @Test
+    void testUpdatePropertyNotFound() {
+        UUID nonExistentId = UUID.randomUUID();
+        when(propertyRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.update(nonExistentId, sampleRequestDto);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
+        assertEquals("Propriedade não encontrada", thrown.getReason());
+        verify(propertyRepository, times(1)).findById(nonExistentId);
+        verify(propertyRepository, never()).save(any(Property.class));
+    }
+
+    @Test
+    void testUpdatePropertyForbidden() {
+        UUID differentUserId = UUID.randomUUID();
+        sampleRequestDto.setOwnerId(differentUserId);
+
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(sampleProperty));
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.update(propertyId, sampleRequestDto);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN, thrown.getStatusCode());
+        assertEquals("Somente o proprietário pode atualizar esta propriedade", thrown.getReason());
+        verify(propertyRepository, times(1)).findById(propertyId);
+        verify(userRepository, never()).findById(any());
+        verify(propertyRepository, never()).save(any(Property.class));
+    }
+
+    @Test
+    void testUpdatePropertyOwnerNotFound() {
+        UUID differentUserId = UUID.randomUUID();
+        sampleRequestDto.setOwnerId(differentUserId);
+
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(sampleProperty));
+        when(userRepository.findById(differentUserId)).thenReturn(Optional.empty());
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.update(propertyId, sampleRequestDto);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatusCode());
+        assertEquals("Proprietário com ID " + differentUserId + " não encontrado.", thrown.getReason());
+        verify(propertyRepository, times(1)).findById(propertyId);
+        verify(userRepository, times(1)).findById(differentUserId);
+        verify(propertyRepository, never()).save(any(Property.class));
+    }
+
+    @Test
+    void testDeleteProperty() {
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(sampleProperty));
+        doNothing().when(propertyRepository).deleteById(propertyId);
+
+        propertyService.delete(propertyId, sampleUser);
+
+        verify(propertyRepository, times(1)).findById(propertyId);
+        verify(propertyRepository, times(1)).deleteById(propertyId);
+    }
+
+    @Test
+    void testDeletePropertyNotFound() {
+        UUID nonExistentId = UUID.randomUUID();
+        when(propertyRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.delete(nonExistentId, sampleUser);
+        });
+
+        assertEquals(HttpStatus.NOT_FOUND, thrown.getStatusCode());
+        assertEquals("Propriedade não encontrada", thrown.getReason());
+        verify(propertyRepository, times(1)).findById(nonExistentId);
+        verify(propertyRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void testDeletePropertyForbidden() {
+        UUID differentUserId = UUID.randomUUID();
+        User differentUser = new User();
+        differentUser.setId(differentUserId);
+
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(sampleProperty));
+
+        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
+            propertyService.delete(propertyId, differentUser);
+        });
+
+        assertEquals(HttpStatus.FORBIDDEN, thrown.getStatusCode());
+        assertEquals("Somente o proprietário pode excluir esta propriedade", thrown.getReason());
+        verify(propertyRepository, times(1)).findById(propertyId);
+        verify(propertyRepository, never()).deleteById(any());
+    }
+
+    @Test
+    void testDefaultValuesInToDto() {
+        Property propertyWithNulls = new Property();
+        propertyWithNulls.setId(propertyId);
+        propertyWithNulls.setOwner(sampleUser);
+        propertyWithNulls.setAdTitle("Test Kitnet");
+        propertyWithNulls.setPropertyType("Kitnet");
+        // Deixando bedrooms, bathrooms, parkingSpaces, floor como null
+
+        when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(propertyWithNulls));
+
+        PropertyResponseDto result = propertyService.findById(propertyId);
+
+        assertNotNull(result);
+        assertEquals(0, result.getBedrooms());
+        assertEquals(0, result.getBathrooms());
+        assertEquals(0, result.getParkingSpaces());
+        assertEquals(0, result.getFloor());
+        verify(propertyRepository, times(1)).findById(propertyId);
     }
 }

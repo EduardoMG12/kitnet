@@ -1,15 +1,32 @@
 package com.kitnet.kitnet.dto;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PropertyRequestDtoTest {
 
+    private static Validator validator;
+
+    @BeforeAll
+    static void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        validator = factory.getValidator();
+    }
+
     @Test
     void testNoArgsConstructor() {
-        // Testa o construtor sem argumentos e se os campos são inicializados para null/default
         PropertyRequestDto dto = new PropertyRequestDto();
-        assertNotNull(dto); // Garante que o objeto foi criado
+        assertNotNull(dto);
+        assertNull(dto.getOwnerId());
         assertNull(dto.getAdTitle());
         assertNull(dto.getRentValue());
         assertNull(dto.getOwnerConfirmation());
@@ -17,7 +34,7 @@ class PropertyRequestDtoTest {
 
     @Test
     void testAllArgsConstructorAndGetters() {
-        // Testa o construtor com todos os argumentos e os getters
+        UUID ownerId = UUID.randomUUID();
         String propertyType = "Apartment";
         String adTitle = "Cozy Apartment for Rent";
         String description = "A beautiful apartment in the city center.";
@@ -44,12 +61,13 @@ class PropertyRequestDtoTest {
         Boolean termsAgreement = true;
 
         PropertyRequestDto dto = new PropertyRequestDto(
-                propertyType, adTitle, description, purpose, rentValue, zipCode, state, city,
+                ownerId, propertyType, adTitle, description, purpose, rentValue, zipCode, state, city,
                 neighborhood, address, number, complement, hideExactAddress, squareMeters,
                 builtArea, bedrooms, bathrooms, parkingSpaces, amenities, floor,
                 condominiumFee, photos, ownerConfirmation, termsAgreement
         );
 
+        assertEquals(ownerId, dto.getOwnerId());
         assertEquals(propertyType, dto.getPropertyType());
         assertEquals(adTitle, dto.getAdTitle());
         assertEquals(description, dto.getDescription());
@@ -78,8 +96,11 @@ class PropertyRequestDtoTest {
 
     @Test
     void testSetters() {
-        // Testa os setters
         PropertyRequestDto dto = new PropertyRequestDto();
+
+        UUID ownerId = UUID.randomUUID();
+        dto.setOwnerId(ownerId);
+        assertEquals(ownerId, dto.getOwnerId());
 
         dto.setAdTitle("New Ad Title");
         assertEquals("New Ad Title", dto.getAdTitle());
@@ -92,26 +113,57 @@ class PropertyRequestDtoTest {
     }
 
     @Test
+    void testValidationConstraints() {
+        PropertyRequestDto dto = new PropertyRequestDto();
+        Set<ConstraintViolation<PropertyRequestDto>> violations = validator.validate(dto);
+
+        assertFalse(violations.isEmpty());
+        assertEquals(4, violations.size()); // @NotBlank para propertyType, adTitle, purpose; @NotNull para ownerConfirmation, termsAgreement
+
+        violations.forEach(violation -> {
+            String propertyPath = violation.getPropertyPath().toString();
+            String message = violation.getMessage();
+            switch (propertyPath) {
+                case "propertyType":
+                    assertEquals("O tipo de propriedade não pode estar em branco", message);
+                    break;
+                case "adTitle":
+                    assertEquals("O título do anúncio não pode estar em branco", message);
+                    break;
+                case "purpose":
+                    assertEquals("A finalidade não pode estar em branco", message);
+                    break;
+                case "ownerConfirmation":
+                    assertEquals("A confirmação de proprietário é obrigatória", message);
+                    break;
+                case "termsAgreement":
+                    assertEquals("A aceitação dos termos é obrigatória", message);
+                    break;
+            }
+        });
+    }
+
+    @Test
     void testEqualsAndHashCode() {
-        // Testa os métodos equals e hashCode gerados pelo Lombok
+        UUID ownerId = UUID.randomUUID();
         PropertyRequestDto dto1 = new PropertyRequestDto();
+        dto1.setOwnerId(ownerId);
         dto1.setAdTitle("Test Ad");
         dto1.setRentValue(1000.0);
 
         PropertyRequestDto dto2 = new PropertyRequestDto();
+        dto2.setOwnerId(ownerId);
         dto2.setAdTitle("Test Ad");
         dto2.setRentValue(1000.0);
 
         PropertyRequestDto dto3 = new PropertyRequestDto();
+        dto3.setOwnerId(UUID.randomUUID());
         dto3.setAdTitle("Another Ad");
         dto3.setRentValue(2000.0);
 
-        // Objetos com os mesmos valores devem ser iguais e ter o mesmo hashCode
         assertEquals(dto1, dto2);
         assertEquals(dto1.hashCode(), dto2.hashCode());
 
-        // Objetos com valores diferentes não devem ser iguais
         assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1.hashCode(), dto3.hashCode()); // Hash codes podem colidir, mas geralmente não para objetos diferentes
     }
 }
