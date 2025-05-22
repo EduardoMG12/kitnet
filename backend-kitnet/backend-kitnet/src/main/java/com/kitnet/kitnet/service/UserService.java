@@ -8,7 +8,10 @@ import com.kitnet.kitnet.exception.InvalidCredentialsException;
 import com.kitnet.kitnet.exception.PasswordMismatchException;
 import com.kitnet.kitnet.exception.UserNotFoundException;
 
+import java.util.UUID;
+
 public interface UserService {
     User register(UserRegisterDTO dto) throws EmailAlreadyInUseException, PasswordMismatchException;
     User login(UserLoginDTO dto) throws UserNotFoundException, InvalidCredentialsException;
+    User findById(UUID id) throws UserNotFoundException;
 }

@@ -64,4 +64,10 @@ public class UserServiceImpl implements UserService {
 
         return user;
     }
+
+    @Override
+    public User findById(UUID id) throws UserNotFoundException {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("Usuário com ID " + id + " não encontrado."));
+    }
 }

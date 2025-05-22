@@ -2,73 +2,85 @@ package com.kitnet.kitnet.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.util.UUID;
 
 @Entity
 @Table(name = "properties")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Property {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY) // Relação Many-ToOne com User
-    @JoinColumn(name = "owner_id", nullable = false) // Coluna que armazena o ID do proprietário
-    private User owner; // Adicionado: Proprietário da propriedade
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
     @Column(nullable = false)
-    private String propertyType; // Type of property (Apartment, Commercial, House, Studio, Land)
+    private String propertyType;
 
     @Column(nullable = false)
-    private String adTitle; // announcement title
+    private String adTitle;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
-    private String purpose; // purpose (Rent, Sale, Both)
+    private String purpose;
 
     private Double rentValue;
 
-    private String zipCode; // CEP
+    private String zipCode;
 
-    private String state; // Estado
+    private String state;
 
-    private String city; // Cidade
+    private String city;
 
-    private String neighborhood; // Bairro
+    private String neighborhood;
 
-    private String address; // Endereço
+    private String address;
 
-    private String number; // Número
+    private String number;
 
-    private String complement; // Complemento
+    private String complement;
 
-    private Boolean hideExactAddress; // Não mostrar endereço exato no anúncio
+    private Boolean hideExactAddress;
 
-    private Double squareMeters; // Metros quadrados
+    private Double squareMeters;
 
-    private Double builtArea; // Área construída (metros quadrados)
+    private Double builtArea;
 
-    private Integer bedrooms; // Quartos
+    private Integer bedrooms;
 
-    private Integer bathrooms; // Banheiros
+    private Integer bathrooms;
 
-    private Integer parkingSpaces; // Vagas de garagem
-
-    @Column(columnDefinition = "TEXT")
-    private String amenities; // Comodidades
-
-    private Integer floor; // Andar (se aplicável)
-
-    private Double condominiumFee; // Valor do condomínio
+    private Integer parkingSpaces;
 
     @Column(columnDefinition = "TEXT")
-    private String photos; // Caminhos das fotos
+    private String amenities;
+
+    private Integer floor;
+
+    private Double condominiumFee;
+
+    @Column(columnDefinition = "TEXT")
+    private String photos;
 
     @Column(nullable = false)
-    private Boolean ownerConfirmation; // Confirmo que sou proprietário ou autorizado
+    private Boolean ownerConfirmation;
 
     @Column(nullable = false)
-    private Boolean termsAgreement; // Concordo com os Termos de Uso
+    private Boolean termsAgreement;
 }

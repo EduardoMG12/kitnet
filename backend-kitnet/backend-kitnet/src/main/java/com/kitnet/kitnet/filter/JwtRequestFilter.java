@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
@@ -37,27 +38,26 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
 
-        String username = null;
+        UUID userId = null;
         String jwt = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
             logger.debug("Token JWT extraído: {}", jwt);
             try {
-                username = jwtUtil.extractUsername(jwt);
-                logger.debug("Username extraído do JWT: {}", username);
+                userId = jwtUtil.extractUserId(jwt);
+                logger.debug("ID do usuário extraído do JWT: {}", userId);
             } catch (Exception e) {
-                logger.warn("Erro ao extrair username do JWT ou token inválido: {}", e.getMessage());
+                logger.warn("Erro ao extrair userId do JWT ou token inválido: {}", e.getMessage());
             }
         } else {
             logger.debug("Cabeçalho Authorization não encontrado ou não começa com Bearer");
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = null;
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             try {
-                userDetails = this.userDetailsService.loadUserByUsername(username);
-                logger.debug("UserDetails carregado para: {}", username);
+                UserDetails userDetails = userDetailsService.loadUserById(userId);
+                logger.debug("UserDetails carregado para ID: {}", userId);
 
                 if (jwtUtil.validateToken(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
@@ -65,12 +65,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     usernamePasswordAuthenticationToken
                             .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-                    logger.debug("Usuário {} autenticado e SecurityContextHolder populado.", username);
+                    logger.debug("Usuário com ID {} autenticado e SecurityContextHolder populado.", userId);
                 } else {
-                    logger.warn("Validação do token JWT falhou para o usuário: {}", username);
+                    logger.warn("Validação do token JWT falhou para o ID: {}", userId);
                 }
             } catch (Exception e) {
-                logger.warn("Erro ao carregar UserDetails ou validar token para {}: {}", username, e.getMessage());
+                logger.warn("Erro ao carregar UserDetails ou validar token para ID {}: {}", userId, e.getMessage());
             }
         }
 

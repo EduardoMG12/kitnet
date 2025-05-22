@@ -14,6 +14,7 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 @Component
@@ -27,6 +28,11 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public UUID extractUserId(String token) {
+        String userId = extractClaim(token, claims -> claims.get("userId", String.class));
+        return UUID.fromString(userId);
     }
 
     public Date extractExpiration(String token) {
@@ -48,7 +54,6 @@ public class JwtUtil {
 
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-
         claims.put("userId", user.getId().toString());
         claims.put("userType", user.getUserType().name());
         return createToken(claims, user.getEmail());
@@ -66,7 +71,10 @@ public class JwtUtil {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        final UUID userId = extractUserId(token);
+        return (username.equals(userDetails.getUsername()) &&
+                userId.toString().equals(((User) userDetails).getId().toString()) &&
+                !isTokenExpired(token));
     }
 
     private Key getSigningKey() {

@@ -4,11 +4,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PropertyResponseDto {
-    private Long id;
+    private UUID id; // Alterado de Long para UUID
     private String propertyType;
     private String adTitle;
     private String description;
