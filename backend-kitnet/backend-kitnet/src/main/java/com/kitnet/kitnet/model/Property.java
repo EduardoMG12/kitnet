@@ -12,6 +12,10 @@ public class Property {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY) // Relação Many-ToOne com User
+    @JoinColumn(name = "owner_id", nullable = false) // Coluna que armazena o ID do proprietário
+    private User owner; // Adicionado: Proprietário da propriedade
+
     @Column(nullable = false)
     private String propertyType; // Type of property (Apartment, Commercial, House, Studio, Land)
 
@@ -53,14 +57,14 @@ public class Property {
     private Integer parkingSpaces; // Vagas de garagem
 
     @Column(columnDefinition = "TEXT")
-    private String amenities; // Comodidades (pode ser armazenado como uma string separada por vírgulas ou em uma tabela separada - decidiremos depois)
+    private String amenities; // Comodidades
 
     private Integer floor; // Andar (se aplicável)
 
     private Double condominiumFee; // Valor do condomínio
 
     @Column(columnDefinition = "TEXT")
-    private String photos; // Caminhos das fotos (pode ser armazenado como uma string separada por vírgulas ou em uma tabela separada - decidiremos depois)
+    private String photos; // Caminhos das fotos
 
     @Column(nullable = false)
     private Boolean ownerConfirmation; // Confirmo que sou proprietário ou autorizado

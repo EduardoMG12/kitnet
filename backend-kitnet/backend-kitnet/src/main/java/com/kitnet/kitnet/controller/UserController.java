@@ -6,6 +6,8 @@ import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,12 +18,22 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/register")
-    public User register(@RequestBody @Valid UserRegisterDTO dto) throws Exception {
-             return userService.register(dto);
+    public ResponseEntity<User> register(@RequestBody @Valid UserRegisterDTO dto) {
+        try {
+            User registeredUser = userService.register(dto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody @Valid UserLoginDTO dto) throws Exception {
-        return userService.login(dto);
+    public ResponseEntity<User> login(@RequestBody @Valid UserLoginDTO dto) {
+        try {
+            User loggedInUser = userService.login(dto);
+            return ResponseEntity.ok(loggedInUser);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

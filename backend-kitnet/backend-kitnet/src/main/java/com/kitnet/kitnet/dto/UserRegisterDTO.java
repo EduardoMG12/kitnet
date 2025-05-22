@@ -8,29 +8,31 @@ import lombok.Setter;
 @Setter
 public class UserRegisterDTO {
 
-    @NotBlank
+    @NotBlank(message = "O nome não pode estar em branco")
     private String firstName;
 
-    @NotBlank
+    @NotBlank(message = "O sobrenome não pode estar em branco")
     private String lastName;
 
-    @Email
-    @NotBlank
+    @Email(message = "Formato de email inválido")
+    @NotBlank(message = "O email não pode estar em branco")
     private String email;
 
+    @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
     private String phone;
 
-    @NotBlank
-    @Size(min = 6)
+    @NotBlank(message = "A senha não pode estar em branco")
+    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "A confirmação de senha não pode estar em branco")
     private String confirmPassword;
 
-    @NotNull
+    @NotNull(message = "A aceitação dos termos é obrigatória")
     private Boolean acceptTerms;
 
-    @NotBlank
+    @NotBlank(message = "O CPF não pode estar em branco")
+    @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 dígitos numéricos")
     private String cpf;
 
     private byte[] documentImageWithUser;
