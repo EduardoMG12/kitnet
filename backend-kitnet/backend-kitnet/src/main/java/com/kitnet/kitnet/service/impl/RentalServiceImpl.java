@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -55,10 +56,8 @@ public class RentalServiceImpl implements RentalService {
         Property property = propertyRepository.findById(rentalDto.getPropertyId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Propriedade não encontrada."));
 
-        // Regra de Negócio: O locador/corretor (dono da propriedade) deve criar o aluguel
-        // ou o locatário está criando uma proposta que o locador/corretor precisa aprovar.
         if (!property.getOwner().getId().equals(authenticatedUser.getId()) &&
-                authenticatedUser.getUserType() != UserType.REAL_ESTATE_AGENT) { // Apenas proprietário ou corretor pode iniciar
+                authenticatedUser.getUserType() != UserType.REAL_ESTATE_AGENT) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o proprietário ou um corretor pode criar um aluguel para esta propriedade.");
         }
 
@@ -66,8 +65,16 @@ public class RentalServiceImpl implements RentalService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data de início não pode ser depois da data de término.");
         }
 
-        // adicionar validação para verificar se a propriedade já está alugada no período.
-        // List<Rental> existingRentals = rentalRepository.findByPropertyIdAndActiveTrue(property.getId());
+        List<Rental> conflictingRentals = rentalRepository.findConflictingRentals(
+                property.getId(),
+                rentalDto.getStartDate(),
+                rentalDto.getEndDate(),
+                Arrays.asList(RentalStatus.ACTIVE, RentalStatus.PENDING_APPROVAL) // Considere esses status como bloqueadores
+        );
+
+        if (!conflictingRentals.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "A propriedade já está alugada ou tem uma proposta pendente para o período solicitado.");
+        }
 
         Rental rental = new Rental();
         BeanUtils.copyProperties(rentalDto, rental);
