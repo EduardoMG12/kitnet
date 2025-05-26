@@ -99,7 +99,15 @@ public class PropertyServiceImpl implements PropertyService {
     @Override
     public List<PropertyResponseDTO> findAll() {
         return propertyRepository.findAll().stream()
-                .map(this::toDto)
+                .map(property -> {
+                    PropertyResponseDTO dto = toDto(property);
+                    if (property.getHideExactAddress() != null && property.getHideExactAddress()) {
+                        dto.setAddress(null);
+                        dto.setNumber(null);
+                        dto.setComplement(null);
+                    }
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
