@@ -16,6 +16,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet; // Use HashSet para garantir unicidade e bom desempenho
+import java.util.Set;    // Use Set para a coleção de roles
 import java.util.UUID;
 
 @Entity
@@ -34,15 +36,18 @@ public class User implements UserDetails {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
-    @NotBlank(message = "O nome não pode estar em branco")
-    @Size(max = 100, message = "O nome deve ter no máximo 100 caracteres")
+    @NotBlank(message = "O nome/razão social não pode estar em branco")
+    @Size(max = 200, message = "O nome/razão social deve ter no máximo 200 caracteres")
     @Column(nullable = false)
-    private String firstName;
+    private String name;
 
-    @NotBlank(message = "O sobrenome não pode estar em branco")
-    @Size(max = 100, message = "O sobrenome deve ter no máximo 100 caracteres")
-    @Column(nullable = false)
-    private String lastName;
+    @Pattern(regexp = "^\\d{11}$|^\\d{14}$", message = "O documento legal deve conter 11 (CPF) ou 14 (CNPJ) dígitos numéricos")
+    @Column(unique = true, nullable = true)
+    private String legalDocument;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
+    private LegalPersonType legalPersonType;
 
     @NotBlank(message = "O email não pode estar em branco")
     @Email(message = "Formato de email inválido")
@@ -51,6 +56,7 @@ public class User implements UserDetails {
     private String email;
 
     @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
+    @Column(nullable = true)
     private String phone;
 
     @NotBlank(message = "A senha não pode estar em branco")
@@ -62,23 +68,39 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Boolean acceptTerms;
 
-    @NotBlank(message = "O CPF não pode estar em branco")
-    @Pattern(regexp = "\\d{11}", message = "O CPF deve conter 11 dígitos numéricos")
-    @Column(nullable = false, unique = true)
-    private String cpf;
+    @Size(max = 500, message = "A URL da foto de perfil deve ter no máximo 500 caracteres")
+    private String profilePictureUrl;
 
-    @Lob
-    @Column(columnDefinition = "MEDIUMBLOB")
-    private byte[] documentImageWithUser;
+    // --- Nova relação para roles ---
+    @ManyToMany(fetch = FetchType.EAGER) // EAGER para facilitar a autenticação (buscar roles junto com o user)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>(); // Inicialize para evitar NullPointerException
+    // --- Fim da nova relação ---
 
-    @NotNull(message = "O tipo de usuário é obrigatório")
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private UserType userType;
+    private VerificationStatus accountVerificationStatus = VerificationStatus.NOT_SUBMITTED;
+
+    private Double monthlyGrossIncome;
+    private Boolean hasCreditRestrictions = false;
+    private Boolean isIdentityConfirmed = false;
+    private Boolean isEmailVerified = false;
+    private Boolean isPhoneVerified = false;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + userType.name()));
+        // Mapeia as roles para GrantedAuthority
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
+    public boolean hasRole(RoleName roleName) {
+        return this.roles.stream().anyMatch(role -> role.getName() == roleName);
     }
 
     @Override
