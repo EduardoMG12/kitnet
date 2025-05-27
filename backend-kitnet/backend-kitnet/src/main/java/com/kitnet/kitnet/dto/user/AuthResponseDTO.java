@@ -1,6 +1,5 @@
-package com.kitnet.kitnet.dto;
+package com.kitnet.kitnet.dto.user;
 
-import com.kitnet.kitnet.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AuthResponseDTO {
-    private User user;
+    private UserSimpleResponseDTO user;
     private String jwtToken;
 }
