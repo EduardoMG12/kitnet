@@ -1,19 +1,10 @@
 crie uma simples
 
-
-
 docker run --name mysql-kitnet -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=kitnet -p 3306:3306 -d mysql/mysql-server:8.0
-
-
 
 docker exec -it mysql-kitnet bash
 
-
-
 mysql -u root -proot
-
-
-
 
 
 -- Garante que o usuário 'root' para 'localhost' tenha a senha 'root'
