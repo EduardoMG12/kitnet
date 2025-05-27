@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.util;
 
+import com.kitnet.kitnet.model.Role; // Import Role
 import com.kitnet.kitnet.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -13,9 +14,11 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List; // Import List
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Collectors; // Import Collectors
 
 @Component
 public class JwtUtil {
@@ -34,6 +37,12 @@ public class JwtUtil {
         String userId = extractClaim(token, claims -> claims.get("userId", String.class));
         return UUID.fromString(userId);
     }
+
+    // You might want to extract roles as well if you need them directly from the token
+    public List<String> extractRoles(String token) {
+        return extractClaim(token, claims -> (List<String>) claims.get("roles")); // Change userType to roles
+    }
+
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
@@ -55,7 +64,9 @@ public class JwtUtil {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", user.getId().toString());
-        claims.put("userType", user.getUserType().name());
+        claims.put("roles", user.getRoles().stream()
+                .map(role -> role.getName().name())
+                .collect(Collectors.toList()));
         return createToken(claims, user.getEmail());
     }
 
