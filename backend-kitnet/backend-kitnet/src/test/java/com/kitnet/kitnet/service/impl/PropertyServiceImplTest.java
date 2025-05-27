@@ -1,10 +1,10 @@
 package com.kitnet.kitnet.service.impl;
 
-import com.kitnet.kitnet.dto.PropertyRequestDTO;
-import com.kitnet.kitnet.dto.PropertyResponseDTO;
+import com.kitnet.kitnet.dto.property.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.property.PropertyResponseDTO;
 import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.UserType;
+import com.kitnet.kitnet.model.RoleName;
 import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ class PropertyServiceImplTest {
         sampleOwner.setPassword("hashedpass");
         sampleOwner.setAcceptTerms(true);
         sampleOwner.setCpf("11122233344");
-        sampleOwner.setUserType(UserType.LESSOR);
+        sampleOwner.setRoleName(RoleName.LESSOR);
 
 
 
@@ -269,7 +269,7 @@ class PropertyServiceImplTest {
         differentUser.setPassword("pass");
         differentUser.setAcceptTerms(true);
         differentUser.setCpf("99988877766");
-        differentUser.setUserType(UserType.LESSEE);
+        differentUser.setRoleName(RoleName.LESSEE);
 
 
         when(propertyRepository.findById(samplePropertyId)).thenReturn(Optional.of(sampleProperty));
@@ -310,7 +310,7 @@ class PropertyServiceImplTest {
         authorizedUser.setPassword("pass");
         authorizedUser.setAcceptTerms(true);
         authorizedUser.setCpf("12345678900");
-        authorizedUser.setUserType(UserType.LESSOR);
+        authorizedUser.setRoleName(RoleName.LESSOR);
 
 
         propertyService.delete(samplePropertyId, authorizedUser);
@@ -334,7 +334,7 @@ class PropertyServiceImplTest {
         anyUser.setPassword("pass");
         anyUser.setAcceptTerms(true);
         anyUser.setCpf("11122233344");
-        anyUser.setUserType(UserType.LESSEE);
+        anyUser.setRoleName(RoleName.LESSEE);
 
 
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
@@ -361,7 +361,7 @@ class PropertyServiceImplTest {
         differentUser.setPassword("pass");
         differentUser.setAcceptTerms(true);
         differentUser.setCpf("99988877766");
-        differentUser.setUserType(UserType.LESSEE);
+        differentUser.setRoleName(RoleName.LESSEE);
 
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             propertyService.delete(samplePropertyId, differentUser);
@@ -385,7 +385,7 @@ class PropertyServiceImplTest {
         ownerUser.setPassword("hashedpass");
         ownerUser.setAcceptTerms(true);
         ownerUser.setCpf("11122233344");
-        ownerUser.setUserType(UserType.LESSOR);
+        ownerUser.setRoleName(RoleName.LESSOR);
 
 
         Property prop1 = new Property();
@@ -454,7 +454,7 @@ class PropertyServiceImplTest {
         userWithNullId.setPassword("pass");
         userWithNullId.setAcceptTerms(true);
         userWithNullId.setCpf("11122233344");
-        userWithNullId.setUserType(UserType.LESSEE);
+        userWithNullId.setRoleName(RoleName.LESSEE);
 
         ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
             propertyService.findByOwner(userWithNullId);
@@ -476,7 +476,7 @@ class PropertyServiceImplTest {
         ownerUser.setPassword("hashedpass");
         ownerUser.setAcceptTerms(true);
         ownerUser.setCpf("11122233344");
-        ownerUser.setUserType(UserType.LESSOR);
+        ownerUser.setRoleName(RoleName.LESSOR);
 
 
         when(propertyRepository.findByOwnerId(ownerUserId)).thenReturn(Collections.emptyList());

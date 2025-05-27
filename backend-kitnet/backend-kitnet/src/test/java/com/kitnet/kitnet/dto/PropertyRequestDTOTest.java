@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.dto;
 
+import com.kitnet.kitnet.dto.property.PropertyRequestDTO;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

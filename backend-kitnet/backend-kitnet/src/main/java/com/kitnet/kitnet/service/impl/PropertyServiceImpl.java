@@ -1,9 +1,11 @@
 package com.kitnet.kitnet.service.impl;
 
-import com.kitnet.kitnet.dto.PropertyRequestDTO;
-import com.kitnet.kitnet.dto.PropertyResponseDTO;
+import com.kitnet.kitnet.dto.property.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.property.PropertyResponseDTO;
 import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
+import com.kitnet.kitnet.model.RoleName;
+import com.kitnet.kitnet.model.VerificationStatus;
 import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.UserRepository;
 import com.kitnet.kitnet.service.PropertyService;
@@ -91,7 +93,20 @@ public class PropertyServiceImpl implements PropertyService {
     }
 
     @Override
-    public PropertyResponseDTO create(PropertyRequestDTO dto) {
+    public PropertyResponseDTO create(PropertyRequestDTO dto, User authenticatedUser) {
+        // CORRIGIDO: Usando hasRole() para verificar as roles
+        if ((authenticatedUser.hasRole(RoleName.LESSOR) || authenticatedUser.hasRole(RoleName.REAL_ESTATE_AGENT)) &&
+                authenticatedUser.getAccountVerificationStatus() != VerificationStatus.APPROVED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Seu perfil precisa ser verificado para anunciar propriedades.");
+        }
+
+        if (authenticatedUser.getAccountVerificationStatus() != VerificationStatus.APPROVED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Sua conta precisa ser verificada para realizar esta ação.");
+        }
+
+        User owner = userRepository.findById(dto.getOwnerId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Proprietário com ID " + dto.getOwnerId() + " não encontrado."));
+
         Property property = propertyRepository.save(fromDto(dto));
         return toDto(property);
     }

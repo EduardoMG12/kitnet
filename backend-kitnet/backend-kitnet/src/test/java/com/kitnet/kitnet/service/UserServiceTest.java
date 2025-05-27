@@ -1,9 +1,8 @@
 package com.kitnet.kitnet.service; // Mantenha o pacote do serviço, não da implementação
 
-import com.kitnet.kitnet.dto.UserLoginDTO;
-import com.kitnet.kitnet.dto.UserRegisterDTO;
+import com.kitnet.kitnet.dto.user.UserLoginDTO;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.UserType; // Importar UserType
+import com.kitnet.kitnet.model.RoleName; // Importar UserType
 import com.kitnet.kitnet.repository.UserRepository;
 import com.kitnet.kitnet.service.impl.UserServiceImpl; // Importar a implementação real do serviço
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +54,7 @@ class UserServiceTest {
         registerDto.setAcceptTerms(true);
         registerDto.setDocumentImageWithUser(new byte[]{});
         registerDto.setCpf("12345678900");
-        registerDto.setUserType(UserType.LESSEE); // Definir UserType
+        registerDto.setRoleName(RoleName.LESSEE); // Definir UserType
 
         // DTO de login
         loginDto = new UserLoginDTO();
@@ -72,7 +71,7 @@ class UserServiceTest {
         existingUser.setPassword("encodedCorrectPassword123!");
         existingUser.setAcceptTerms(true);
         existingUser.setCpf("00011122233");
-        existingUser.setUserType(UserType.LESSOR); // Definir UserType
+        existingUser.setRoleName(RoleName.LESSOR); // Definir UserType
     }
 
 

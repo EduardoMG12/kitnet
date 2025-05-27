@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.dto;
 
+import com.kitnet.kitnet.dto.user.UserLoginDTO;
 import org.junit.jupiter.api.AfterAll; // Importar AfterAll
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

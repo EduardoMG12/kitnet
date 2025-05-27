@@ -1,8 +1,8 @@
 package com.kitnet.kitnet.controller;
 
-import com.kitnet.kitnet.dto.RentalRequestDTO;
-import com.kitnet.kitnet.dto.RentalResponseDTO;
-import com.kitnet.kitnet.dto.RentalUpdateDTO;
+import com.kitnet.kitnet.dto.rental.RentalRequestDTO;
+import com.kitnet.kitnet.dto.rental.RentalResponseDTO;
+import com.kitnet.kitnet.dto.rental.RentalUpdateDTO;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.RentalService;
 import org.springframework.beans.factory.annotation.Autowired;

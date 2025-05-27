@@ -1,4 +1,4 @@
-package com.kitnet.kitnet.dto;
+package com.kitnet.kitnet.dto.rental;
 
 import com.kitnet.kitnet.model.RentalStatus;
 import lombok.Data;

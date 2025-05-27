@@ -1,14 +1,10 @@
 package com.kitnet.kitnet.service.impl;
 
-import com.kitnet.kitnet.dto.RentalRequestDTO;
-import com.kitnet.kitnet.dto.RentalResponseDTO;
-import com.kitnet.kitnet.dto.RentalUpdateDTO;
+import com.kitnet.kitnet.dto.rental.RentalRequestDTO;
+import com.kitnet.kitnet.dto.rental.RentalResponseDTO;
+import com.kitnet.kitnet.dto.rental.RentalUpdateDTO;
 
-import com.kitnet.kitnet.model.Property;
-import com.kitnet.kitnet.model.Rental;
-import com.kitnet.kitnet.model.RentalStatus;
-import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.UserType;
+import com.kitnet.kitnet.model.*;
 import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.RentalRepository;
 import com.kitnet.kitnet.repository.UserRepository;
@@ -56,20 +52,33 @@ public class RentalServiceImpl implements RentalService {
         Property property = propertyRepository.findById(rentalDto.getPropertyId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Propriedade não encontrada."));
 
-        if (!property.getOwner().getId().equals(authenticatedUser.getId()) &&
-                authenticatedUser.getUserType() != UserType.REAL_ESTATE_AGENT) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o proprietário ou um corretor pode criar um aluguel para esta propriedade.");
+        // CORRIGIDO: Usando hasRole()
+        if (authenticatedUser.hasRole(RoleName.LESSEE) &&
+                (authenticatedUser.getMonthlyGrossIncome() == null || authenticatedUser.getMonthlyGrossIncome() <= 0 || authenticatedUser.getHasCreditRestrictions())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Seu perfil financeiro não atende aos requisitos para alugar. Por favor, complete seu cadastro ou entre em contato com o suporte.");
+        }
+
+        // CORRIGIDO: Usando hasRole()
+        if ((!property.getOwner().getId().equals(authenticatedUser.getId()) &&
+                !authenticatedUser.hasRole(RoleName.REAL_ESTATE_AGENT)) || // Corrigido para verificar se NÃO é REAL_ESTATE_AGENT
+                (authenticatedUser.hasRole(RoleName.LESSOR) && authenticatedUser.getAccountVerificationStatus() != VerificationStatus.APPROVED) ||
+                (authenticatedUser.hasRole(RoleName.REAL_ESTATE_AGENT) && authenticatedUser.getAccountVerificationStatus() != VerificationStatus.APPROVED)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente um proprietário ou corretor verificado pode criar um aluguel para esta propriedade.");
         }
 
         if (rentalDto.getStartDate().isAfter(rentalDto.getEndDate())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A data de início não pode ser depois da data de término.");
         }
 
+        if (authenticatedUser.getAccountVerificationStatus() != VerificationStatus.APPROVED) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Sua conta precisa ser verificada para realizar esta ação.");
+        }
+
         List<Rental> conflictingRentals = rentalRepository.findConflictingRentals(
                 property.getId(),
                 rentalDto.getStartDate(),
                 rentalDto.getEndDate(),
-                Arrays.asList(RentalStatus.ACTIVE, RentalStatus.PENDING_APPROVAL) // Considere esses status como bloqueadores
+                Arrays.asList(RentalStatus.ACTIVE, RentalStatus.PENDING_APPROVAL)
         );
 
         if (!conflictingRentals.isEmpty()) {
@@ -91,12 +100,14 @@ public class RentalServiceImpl implements RentalService {
     public List<RentalResponseDTO> findAllRentals(User authenticatedUser) {
         // Filtrar aluguéis com base no tipo de usuário autenticado
         List<Rental> rentals;
-        if (authenticatedUser.getUserType() == UserType.LESSOR || authenticatedUser.getUserType() == UserType.REAL_ESTATE_AGENT) {
+        // CORRIGIDO: Usando hasRole()
+        if (authenticatedUser.hasRole(RoleName.LESSOR) || authenticatedUser.hasRole(RoleName.REAL_ESTATE_AGENT)) {
             // Locadores/Corretores podem ver todos os aluguéis das suas propriedades
             rentals = rentalRepository.findAll().stream()
                     .filter(r -> r.getProperty().getOwner().getId().equals(authenticatedUser.getId()))
                     .collect(Collectors.toList());
-        } else if (authenticatedUser.getUserType() == UserType.LESSEE) {
+            // CORRIGIDO: Usando hasRole()
+        } else if (authenticatedUser.hasRole(RoleName.LESSEE)) {
             // Locatários veem apenas os seus próprios aluguéis
             rentals = rentalRepository.findByTenantId(authenticatedUser.getId());
         } else {
@@ -111,8 +122,9 @@ public class RentalServiceImpl implements RentalService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel não encontrado."));
 
         // Permissão: Locador/Corretor da propriedade OU Locatário do aluguel
+        // CORRIGIDO: Usando hasRole()
         boolean isOwnerOrAgent = (rental.getProperty().getOwner().getId().equals(authenticatedUser.getId()) ||
-                authenticatedUser.getUserType() == UserType.REAL_ESTATE_AGENT);
+                authenticatedUser.hasRole(RoleName.REAL_ESTATE_AGENT));
         boolean isTenant = rental.getTenant().getId().equals(authenticatedUser.getId());
 
         if (!isOwnerOrAgent && !isTenant) {
@@ -128,8 +140,9 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel não encontrado."));
 
+        // CORRIGIDO: Usando hasRole()
         boolean isOwnerOrAgent = (rental.getProperty().getOwner().getId().equals(authenticatedUser.getId()) ||
-                authenticatedUser.getUserType() == UserType.REAL_ESTATE_AGENT);
+                authenticatedUser.hasRole(RoleName.REAL_ESTATE_AGENT));
         boolean isTenant = rental.getTenant().getId().equals(authenticatedUser.getId());
 
         // Lógica de ações específicas
@@ -181,8 +194,9 @@ public class RentalServiceImpl implements RentalService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel não encontrado."));
 
         // Somente o proprietário da propriedade ou um corretor pode deletar um aluguel
+        // CORRIGIDO: Usando hasRole()
         boolean isOwnerOrAgent = (rental.getProperty().getOwner().getId().equals(authenticatedUser.getId()) ||
-                authenticatedUser.getUserType() == UserType.REAL_ESTATE_AGENT);
+                authenticatedUser.hasRole(RoleName.REAL_ESTATE_AGENT));
 
         if (!isOwnerOrAgent) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o proprietário ou corretor pode excluir este aluguel.");
@@ -197,8 +211,9 @@ public class RentalServiceImpl implements RentalService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel não encontrado."));
 
         // O solicitante deve ser o proprietário da propriedade ou um corretor
+        // CORRIGIDO: Usando hasRole()
         boolean isOwnerOrAgent = (rental.getProperty().getOwner().getId().equals(requestingUser.getId()) ||
-                requestingUser.getUserType() == UserType.REAL_ESTATE_AGENT);
+                requestingUser.hasRole(RoleName.REAL_ESTATE_AGENT));
         if (!isOwnerOrAgent) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Somente o proprietário ou corretor pode propor alteração de preço.");
         }
@@ -266,8 +281,9 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel não encontrado."));
 
+        // CORRIGIDO: Usando hasRole()
         boolean isOwnerOrAgent = (rental.getProperty().getOwner().getId().equals(requestingUser.getId()) ||
-                requestingUser.getUserType() == UserType.REAL_ESTATE_AGENT);
+                requestingUser.hasRole(RoleName.REAL_ESTATE_AGENT));
         boolean isTenant = rental.getTenant().getId().equals(requestingUser.getId());
 
         if (!isOwnerOrAgent && !isTenant) {
@@ -292,8 +308,9 @@ public class RentalServiceImpl implements RentalService {
         Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel não encontrado."));
 
+        // CORRIGIDO: Usando hasRole()
         boolean isOwnerOrAgent = (rental.getProperty().getOwner().getId().equals(requestingUser.getId()) ||
-                requestingUser.getUserType() == UserType.REAL_ESTATE_AGENT);
+                requestingUser.hasRole(RoleName.REAL_ESTATE_AGENT));
         boolean isTenant = rental.getTenant().getId().equals(requestingUser.getId());
 
         if (!isOwnerOrAgent && !isTenant) {
@@ -303,7 +320,6 @@ public class RentalServiceImpl implements RentalService {
         if (rental.getStatus() != RentalStatus.ACTIVE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O contrato não está ativo para ser quebrado.");
         }
-
 
         // Aqui, estamos apenas mudando o status e desativando.
         // futuramente implementar que "quebra de contrato" implicara em multa, etc.

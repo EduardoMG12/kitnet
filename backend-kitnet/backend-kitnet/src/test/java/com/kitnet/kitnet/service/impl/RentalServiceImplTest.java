@@ -1,13 +1,13 @@
 package com.kitnet.kitnet.service.impl;
 
-import com.kitnet.kitnet.dto.RentalRequestDTO;
-import com.kitnet.kitnet.dto.RentalResponseDTO;
+import com.kitnet.kitnet.dto.rental.RentalRequestDTO;
+import com.kitnet.kitnet.dto.rental.RentalResponseDTO;
 
 import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.Rental;
 import com.kitnet.kitnet.model.RentalStatus;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.UserType;
+import com.kitnet.kitnet.model.RoleName;
 import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.RentalRepository;
 import com.kitnet.kitnet.repository.UserRepository;
@@ -22,7 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -56,7 +55,7 @@ class RentalServiceImplTest {
         tenantUser = new User();
         tenantUser.setId(UUID.randomUUID());
         tenantUser.setEmail("tenant@example.com");
-        tenantUser.setUserType(UserType.LESSEE);
+        tenantUser.setRoleName(RoleName.LESSEE);
         tenantUser.setFirstName("Tenant");
         tenantUser.setLastName("User");
         tenantUser.setPassword("password");
@@ -66,7 +65,7 @@ class RentalServiceImplTest {
         ownerUser = new User();
         ownerUser.setId(UUID.randomUUID());
         ownerUser.setEmail("owner@example.com");
-        ownerUser.setUserType(UserType.LESSOR);
+        ownerUser.setRoleName(RoleName.LESSOR);
         ownerUser.setFirstName("Owner");
         ownerUser.setLastName("User");
         ownerUser.setPassword("password");
@@ -76,7 +75,7 @@ class RentalServiceImplTest {
         realEstateAgentUser = new User();
         realEstateAgentUser.setId(UUID.randomUUID());
         realEstateAgentUser.setEmail("agent@example.com");
-        realEstateAgentUser.setUserType(UserType.REAL_ESTATE_AGENT);
+        realEstateAgentUser.setRoleName(RoleName.REAL_ESTATE_AGENT);
         realEstateAgentUser.setFirstName("Agent");
         realEstateAgentUser.setLastName("User");
         realEstateAgentUser.setPassword("password");
@@ -86,7 +85,7 @@ class RentalServiceImplTest {
         unauthorizedUser = new User();
         unauthorizedUser.setId(UUID.randomUUID());
         unauthorizedUser.setEmail("unauthorized@example.com");
-        unauthorizedUser.setUserType(UserType.LESSEE);
+        unauthorizedUser.setRoleName(RoleName.LESSEE);
         unauthorizedUser.setFirstName("Unauthorized");
         unauthorizedUser.setLastName("User");
         unauthorizedUser.setPassword("password");

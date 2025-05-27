@@ -46,7 +46,7 @@ class UserTest {
         user.setAcceptTerms(true);
         user.setCpf("12345678900");
         user.setDocumentImageWithUser(new byte[]{1, 2, 3});
-        user.setUserType(UserType.LESSEE); // Definir um UserType padrão para testes válidos
+        user.setRoleName(RoleName.LESSEE); // Definir um UserType padrão para testes válidos
     }
 
     // Helper para criar um usuário válido com um ID UUID opcional
@@ -61,7 +61,7 @@ class UserTest {
         validUser.setAcceptTerms(true);
         validUser.setCpf("00011122233");
         validUser.setDocumentImageWithUser(new byte[]{});
-        validUser.setUserType(UserType.LESSOR);
+        validUser.setRoleName(RoleName.LESSOR);
         return validUser;
     }
 
@@ -75,7 +75,7 @@ class UserTest {
         assertThat(user.getAcceptTerms()).isTrue();
         assertThat(user.getCpf()).isEqualTo("12345678900");
         assertArrayEquals(new byte[]{1, 2, 3}, user.getDocumentImageWithUser());
-        assertThat(user.getUserType()).isEqualTo(UserType.LESSEE);
+        assertThat(user.getRoleName()).isEqualTo(RoleName.LESSEE);
         assertThat(user.getId()).isNull(); // ID é nulo antes de ser persistido
     }
 
@@ -195,7 +195,7 @@ class UserTest {
 
     @Test
     void testUserWithNullUserType() {
-        user.setUserType(null);
+        user.setRoleName(null);
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getPropertyPath().toString()).isEqualTo("userType");
@@ -237,11 +237,11 @@ class UserTest {
 
     @Test
     void testGetAuthorities() {
-        user.setUserType(UserType.LESSEE);
+        user.setRoleName(RoleName.LESSEE);
         assertThat(user.getAuthorities()).hasSize(1);
         assertThat(user.getAuthorities()).extracting("authority").containsExactly("ROLE_LESSEE");
 
-        user.setUserType(UserType.LESSOR);
+        user.setRoleName(RoleName.LESSOR);
         assertThat(user.getAuthorities()).hasSize(1);
         assertThat(user.getAuthorities()).extracting("authority").containsExactly("ROLE_LESSOR");
     }

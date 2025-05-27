@@ -25,7 +25,7 @@ public class SecurityConfig {
     private CustomUserDetailsService userDetailsService;
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter; // Este filtro será injetado e adicionado à cadeia
+    private JwtRequestFilter jwtRequestFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,13 +38,11 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // O DaoAuthenticationProvider é quem realmente lida com a lógica de autenticação
-    // usando o UserDetailsService e o PasswordEncoder
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService); // Seu serviço de detalhes do usuário
-        authProvider.setPasswordEncoder(passwordEncoder()); // Seu codificador de senha
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
 
@@ -54,7 +52,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs RESTful stateless
                 .authorizeHttpRequests(authorize -> authorize
                         // Rotas públicas (não exigem autenticação)
-                        .requestMatchers("/api/users/register", "/api/users/login").permitAll()
+                        .requestMatchers("/api/auth/register-simple", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties/{id}").permitAll()
 

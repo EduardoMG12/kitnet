@@ -1,4 +1,4 @@
-package com.kitnet.kitnet.dto;
+package com.kitnet.kitnet.dto.rental;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.FutureOrPresent;

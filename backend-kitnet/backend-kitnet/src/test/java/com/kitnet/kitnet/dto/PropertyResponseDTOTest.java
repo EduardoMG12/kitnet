@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.dto;
 
+import com.kitnet.kitnet.dto.property.PropertyResponseDTO;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

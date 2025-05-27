@@ -1,8 +1,8 @@
 package com.kitnet.kitnet.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kitnet.kitnet.dto.PropertyRequestDTO;
-import com.kitnet.kitnet.dto.PropertyResponseDTO;
+import com.kitnet.kitnet.dto.property.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.property.PropertyResponseDTO;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.PropertyService;
 import org.junit.jupiter.api.BeforeEach;

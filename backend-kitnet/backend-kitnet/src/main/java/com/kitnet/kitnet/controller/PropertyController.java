@@ -1,7 +1,7 @@
 package com.kitnet.kitnet.controller;
 
-import com.kitnet.kitnet.dto.PropertyRequestDTO;
-import com.kitnet.kitnet.dto.PropertyResponseDTO;
+import com.kitnet.kitnet.dto.property.PropertyRequestDTO;
+import com.kitnet.kitnet.dto.property.PropertyResponseDTO;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.PropertyService;
 import jakarta.validation.Valid;
@@ -31,7 +31,7 @@ public class PropertyController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         dto.setOwnerId(currentUser.getId());
-        PropertyResponseDTO createdProperty = propertyService.create(dto);
+        PropertyResponseDTO createdProperty = propertyService.create(dto, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProperty);
     }
 

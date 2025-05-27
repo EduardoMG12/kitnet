@@ -1,4 +1,4 @@
-package com.kitnet.kitnet.dto;
+package com.kitnet.kitnet.dto.rental;
 
 import lombok.Data;
 import jakarta.validation.constraints.FutureOrPresent;
