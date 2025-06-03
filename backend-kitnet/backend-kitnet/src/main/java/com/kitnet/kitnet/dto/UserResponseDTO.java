@@ -1,10 +1,10 @@
 package com.kitnet.kitnet.dto;
 
-import com.kitnet.kitnet.model.LegalPersonType;
-import com.kitnet.kitnet.model.RoleName;
-import com.kitnet.kitnet.model.VerificationStatus;
+import com.kitnet.kitnet.model.enums.RoleName;
+import com.kitnet.kitnet.model.enums.VerificationStatus;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
@@ -16,12 +16,27 @@ public class UserResponseDTO {
     private String phone;
     private String profilePictureUrl;
     private Set<RoleName> roles;
-    private LegalPersonType legalPersonType;
-    private String legalDocument;
     private VerificationStatus accountVerificationStatus;
-    private Double monthlyGrossIncome;
-    private Boolean hasCreditRestrictions;
     private Boolean isIdentityConfirmed;
     private Boolean isEmailVerified;
     private Boolean isPhoneVerified;
+
+    // Novos campos para os termos aceitos
+    private Boolean acceptTerms;
+    private String acceptedTermsVersion; // Versão dos termos de uso aceitos
+    private LocalDate termsAcceptanceDate; // Data de aceitação dos termos de uso
+    private Boolean isTermsOfUseOutdated; // Indica se os termos de uso estão desatualizados
+
+    private Boolean agreeToLgpdTerms;
+    private String acceptedLgpdTermsVersion; // Versão dos termos LGPD aceitos
+    private LocalDate lgpdTermsAcceptanceDate; // Data de aceitação dos termos LGPD
+    private Boolean isLgpdTermsOutdated; // Indica se os termos LGPD estão desatualizados
+
+    private Boolean acceptPrivacyPolicy; // Novo campo
+    private String acceptedPrivacyPolicyVersion; // Versão da política de privacidade aceita
+    private LocalDate privacyPolicyAcceptanceDate; // Data de aceitação da política de privacidade
+    private Boolean isPrivacyPolicyOutdated; // Indica se a política de privacidade está desatualizada
+
+    private Boolean authorizeCreditCheckAndCommunication;
+    private Boolean acceptMarketingCommunications;
 }

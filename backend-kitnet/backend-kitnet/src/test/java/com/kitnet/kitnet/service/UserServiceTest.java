@@ -2,7 +2,7 @@ package com.kitnet.kitnet.service; // Mantenha o pacote do serviço, não da imp
 
 import com.kitnet.kitnet.dto.user.UserLoginDTO;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.RoleName; // Importar UserType
+import com.kitnet.kitnet.model.enums.RoleName; // Importar UserType
 import com.kitnet.kitnet.repository.UserRepository;
 import com.kitnet.kitnet.service.impl.UserServiceImpl; // Importar a implementação real do serviço
 import org.junit.jupiter.api.BeforeEach;

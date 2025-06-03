@@ -1,6 +1,6 @@
 package com.kitnet.kitnet.dto;
 
-import com.kitnet.kitnet.model.DocumentType;
+import com.kitnet.kitnet.model.enums.DocumentType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

@@ -1,6 +1,5 @@
 package com.kitnet.kitnet.dto.user;
 
-import com.kitnet.kitnet.model.RoleName;
 import lombok.Data;
 
 import java.util.Set;

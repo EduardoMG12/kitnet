@@ -1,5 +1,7 @@
 package com.kitnet.kitnet.model;
 
+import com.kitnet.kitnet.model.enums.DocumentType;
+import com.kitnet.kitnet.model.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

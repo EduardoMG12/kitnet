@@ -1,9 +1,6 @@
 package com.kitnet.kitnet.config;
 
-import com.kitnet.kitnet.repository.ContactMessageRepository;
 import com.kitnet.kitnet.repository.UserRepository;
-import com.kitnet.kitnet.service.ContactMessageService;
-import com.kitnet.kitnet.service.PropertyService;
 import com.kitnet.kitnet.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

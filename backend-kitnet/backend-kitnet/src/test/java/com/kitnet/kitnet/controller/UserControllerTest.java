@@ -2,11 +2,8 @@ package com.kitnet.kitnet.controller;
 
 import com.kitnet.kitnet.dto.property.PropertyRequestDTO;
 import com.kitnet.kitnet.dto.property.PropertyResponseDTO;
-import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.repository.PropertyRepository;
 import com.kitnet.kitnet.repository.UserRepository;
-import com.kitnet.kitnet.service.impl.PropertyServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

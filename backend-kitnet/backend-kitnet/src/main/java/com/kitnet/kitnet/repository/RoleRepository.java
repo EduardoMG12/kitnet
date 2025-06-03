@@ -1,7 +1,7 @@
 package com.kitnet.kitnet.repository;
 
 import com.kitnet.kitnet.model.Role;
-import com.kitnet.kitnet.model.RoleName;
+import com.kitnet.kitnet.model.enums.RoleName;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

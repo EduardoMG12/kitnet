@@ -3,13 +3,10 @@ package com.kitnet.kitnet.service.impl;
 import com.kitnet.kitnet.dto.rental.RentalRequestDTO;
 import com.kitnet.kitnet.dto.rental.RentalResponseDTO;
 
-import com.kitnet.kitnet.model.Property;
 import com.kitnet.kitnet.model.Rental;
-import com.kitnet.kitnet.model.RentalStatus;
+import com.kitnet.kitnet.model.enums.RentalStatus;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.RoleName;
-import com.kitnet.kitnet.repository.PropertyRepository;
-import com.kitnet.kitnet.repository.RentalRepository;
+import com.kitnet.kitnet.model.enums.RoleName;
 import com.kitnet.kitnet.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

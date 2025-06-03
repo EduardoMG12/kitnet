@@ -2,7 +2,7 @@ package com.kitnet.kitnet.controller;
 
 import com.kitnet.kitnet.dto.UserResponseDTO;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.VerificationStatus;
+import com.kitnet.kitnet.model.enums.VerificationStatus;
 import com.kitnet.kitnet.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -68,11 +68,11 @@ public class AdminUserController {
         dto.setRoles(user.getRoles().stream()
                 .map(role -> role.getName())
                 .collect(java.util.stream.Collectors.toSet()));
-        dto.setLegalPersonType(user.getLegalPersonType());
-        dto.setLegalDocument(user.getLegalDocument());
+//        dto.setLegalPersonType(user.getLegalPersonType());
+//        dto.setLegalDocument(user.getLegalDocument());
         dto.setAccountVerificationStatus(user.getAccountVerificationStatus());
-        dto.setMonthlyGrossIncome(user.getMonthlyGrossIncome());
-        dto.setHasCreditRestrictions(user.getHasCreditRestrictions());
+//        dto.setMonthlyGrossIncome(user.getMonthlyGrossIncome());
+//        dto.setHasCreditRestrictions(user.getHasCreditRestrictions());
         dto.setIsIdentityConfirmed(user.getIsIdentityConfirmed());
         dto.setIsEmailVerified(user.getIsEmailVerified());
         dto.setIsPhoneVerified(user.getIsPhoneVerified());

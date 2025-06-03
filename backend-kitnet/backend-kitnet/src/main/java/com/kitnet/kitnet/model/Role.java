@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.model;
 
+import com.kitnet.kitnet.model.enums.RoleName;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

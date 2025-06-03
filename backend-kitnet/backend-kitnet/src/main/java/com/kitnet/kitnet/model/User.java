@@ -1,5 +1,9 @@
 package com.kitnet.kitnet.model;
 
+import com.kitnet.kitnet.model.enums.LegalDocumentType;
+import com.kitnet.kitnet.model.enums.LegalPersonType;
+import com.kitnet.kitnet.model.enums.RoleName;
+import com.kitnet.kitnet.model.enums.VerificationStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,10 +18,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.time.LocalDate;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet; // Use HashSet para garantir unicidade e bom desempenho
-import java.util.Set;    // Use Set para a coleção de roles
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -64,22 +68,36 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @NotNull(message = "A aceitação dos termos é obrigatória")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserLegalDocument> userLegalDocuments = new HashSet<>();
+
+    @NotNull(message = "A autorização para verificação de crédito e comunicação é obrigatória")
     @Column(nullable = false)
-    private Boolean acceptTerms;
+    private Boolean authorizeCreditCheckAndCommunication;
+
+    @Column(nullable = false)
+    private Boolean acceptMarketingCommunications = false;
 
     @Size(max = 500, message = "A URL da foto de perfil deve ter no máximo 500 caracteres")
     private String profilePictureUrl;
 
-    // --- Nova relação para roles ---
-    @ManyToMany(fetch = FetchType.EAGER) // EAGER para facilitar a autenticação (buscar roles junto com o user)
+    @Column(nullable = true, length = 100)
+    private String profession;
+
+    @Column(nullable = true, length = 200)
+    private String emergencyContactName;
+
+    @Column(nullable = true, length = 20)
+    private String emergencyContactPhone;
+
+    // --- Relação para roles ---
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles = new HashSet<>(); // Inicialize para evitar NullPointerException
-    // --- Fim da nova relação ---
+    private Set<Role> roles = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -93,7 +111,6 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Mapeia as roles para GrantedAuthority
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName().name()))
                 .collect(java.util.stream.Collectors.toSet());
@@ -130,6 +147,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return acceptTerms;
+        return this.userLegalDocuments.stream()
+                .anyMatch(doc -> doc.getLegalDocument().getType() == LegalDocumentType.TERMS_OF_USE);
     }
 }

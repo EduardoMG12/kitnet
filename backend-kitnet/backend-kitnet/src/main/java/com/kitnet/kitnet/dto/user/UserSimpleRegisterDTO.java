@@ -15,17 +15,16 @@ public class UserSimpleRegisterDTO {
 
     @NotBlank(message = "O email não pode estar em branco")
     @Email(message = "Formato de email inválido")
-    @Size(max = 255, message = "O email deve ter no máximo 255 caracteres")
     private String email;
 
     @NotBlank(message = "A senha não pode estar em branco")
-    @Size(min = 8, max = 255, message = "A senha deve ter entre 8 e 255 caracteres")
+    @Size(min = 8, message = "A senha deve ter no mínimo 8 caracteres")
     private String password;
 
-    @NotBlank(message = "A confirmação de senha não pode estar em branco")
+    @NotBlank(message = "A confirmação da senha não pode estar em branco")
     private String confirmPassword;
 
-    @NotNull(message = "A aceitação dos termos é obrigatória")
+    @NotNull(message = "A aceitação dos termos de uso é obrigatória")
     private Boolean acceptTerms;
 
 }

@@ -1,7 +1,7 @@
 package com.kitnet.kitnet.repository;
 
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.VerificationStatus;
+import com.kitnet.kitnet.model.enums.VerificationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

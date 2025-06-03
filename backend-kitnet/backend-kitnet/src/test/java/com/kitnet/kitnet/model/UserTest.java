@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.model;
 
+import com.kitnet.kitnet.model.enums.RoleName;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

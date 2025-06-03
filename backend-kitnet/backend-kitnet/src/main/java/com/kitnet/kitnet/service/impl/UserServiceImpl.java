@@ -1,19 +1,17 @@
 package com.kitnet.kitnet.service.impl;
 
-import com.kitnet.kitnet.dto.*;
+import com.kitnet.kitnet.dto.UserDocumentUploadDTO;
+import com.kitnet.kitnet.dto.emailVerification.EmailVerificationResponseDTO;
 import com.kitnet.kitnet.dto.user.*;
-import com.kitnet.kitnet.model.Role;
-import com.kitnet.kitnet.model.RoleName;
-import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.VerificationStatus;
-import com.kitnet.kitnet.repository.UserRepository;
+import com.kitnet.kitnet.exception.*;
+import com.kitnet.kitnet.model.*;
+import com.kitnet.kitnet.model.enums.*;
+import com.kitnet.kitnet.repository.*;
+import com.kitnet.kitnet.service.EmailService;
 import com.kitnet.kitnet.service.UserService;
-import com.kitnet.kitnet.exception.EmailAlreadyInUseException;
-import com.kitnet.kitnet.exception.InvalidCredentialsException;
-import com.kitnet.kitnet.exception.PasswordMismatchException;
-import com.kitnet.kitnet.exception.UserNotFoundException;
 import com.kitnet.kitnet.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,9 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
-import com.kitnet.kitnet.repository.RoleRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,16 +35,37 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
+    private EmailVerificationTokenRepository emailVerificationTokenRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Value("${app.base-url:https://seusite.com}")
+    private String baseUrl;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private RoleRepository roleRepository;
 
     @Autowired
+    private LegalDocumentRepository legalDocumentRepository;
+
+    @Autowired
     private MessageSource messageSource;
 
     @Autowired
     private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private UserDocumentRepository userDocumentRepository;
+
+
+    private static final Pattern UUID_PATTERN = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+//    @Autowired
+//    private EmploymentHistoryRepository employmentHistoryRepository;
+
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -69,11 +90,16 @@ public class UserServiceImpl implements UserService {
             throw new EmailAlreadyInUseException();
         }
 
+        if (!dto.getAcceptTerms()) {
+            throw new TermsNotAcceptedException();
+        }
+
         User user = new User();
         user.setName(dto.getName());
         user.setEmail(dto.getEmail());
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
-        user.setAcceptTerms(dto.getAcceptTerms());
+        user.setAuthorizeCreditCheckAndCommunication(false);
+        user.setAcceptMarketingCommunications(false);
         user.setPhone(null);
         user.setLegalDocument(null);
         user.setLegalPersonType(null);
@@ -89,6 +115,21 @@ public class UserServiceImpl implements UserService {
         user.setProfilePictureUrl(null);
         user.setIsEmailVerified(false);
         user.setIsPhoneVerified(false);
+
+        if (dto.getAcceptTerms()) {
+            LegalDocument termsOfUse = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.TERMS_OF_USE)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Termos de uso ativos não encontrados."));
+
+            UserLegalDocument userLegalDoc = UserLegalDocument.builder()
+                    .user(user)
+                    .legalDocument(termsOfUse)
+                    .type(termsOfUse.getType())
+                    .acceptanceDate(LocalDate.now())
+                    .build();
+            user.getUserLegalDocuments().add(userLegalDoc);
+        } else {
+            throw new TermsNotAcceptedException();
+        }
 
         userRepository.save(user);
 
@@ -110,29 +151,209 @@ public class UserServiceImpl implements UserService {
         return new AuthResponseDTO(userResponse, jwt);
     }
 
-    // Dentro de UserServiceImpl, adicione um método para adicionar roles:
+    @Override
     @Transactional
-    public User addRoleToUser(UUID userId, RoleName roleName) throws UserNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException());
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role " + roleName + " não encontrada."));
+    public User completeRegistrationDetails(UUID userId, UserCompleteRegistrationDTO dto)
+            throws UserNotFoundException, EmailAlreadyInUseException, EmailNotVerifiedException, TermsNotAcceptedException {
+        Locale locale = LocaleContextHolder.getLocale();
 
-        user.getRoles().add(role);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(
+                        messageSource.getMessage("error.user.not.found", null, locale)));
+
+        // Verificar se o e-mail está verificado
+        if (!user.getIsEmailVerified()) {
+            throw new EmailNotVerifiedException(
+                    messageSource.getMessage("error.email.not.verified", null, locale));
+        }
+
+        // Validar legalDocument
+        if (dto.getLegalDocument() != null && !dto.getLegalDocument().isEmpty()) {
+            Optional<User> existingUserWithDoc = userRepository.findByLegalDocument(dto.getLegalDocument());
+            if (existingUserWithDoc.isPresent() && !existingUserWithDoc.get().getId().equals(user.getId())) {
+                throw new EmailAlreadyInUseException(
+                        messageSource.getMessage("error.legal.document.in.use", null, locale));
+            }
+            user.setLegalDocument(dto.getLegalDocument());
+            user.setLegalPersonType(dto.getLegalDocument().length() == 11 ? LegalPersonType.PF : LegalPersonType.PJ);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    messageSource.getMessage("error.validation.field.missing", new Object[]{"legalDocument"}, locale));
+        }
+
+        // Validar phone
+        if (dto.getPhone() != null && !dto.getPhone().isEmpty()) {
+            if (!dto.getPhone().equals(user.getPhone())) {
+                user.setPhone(dto.getPhone());
+                user.setIsPhoneVerified(false);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    messageSource.getMessage("error.phone.required", null, locale));
+        }
+
+        // Associar termos de LGPD e Privacidade
+        if (!dto.getAcceptTermsOfLGPD()) {
+            throw new TermsNotAcceptedException(
+                    messageSource.getMessage("error.lgpd.terms.required", null, locale));
+        }
+        if (!dto.getAcceptTermsOfPrivacy()) {
+            throw new TermsNotAcceptedException(
+                    messageSource.getMessage("error.privacy.policy.required", null, locale));
+        }
+
+        // Buscar documentos legais ativos
+        LegalDocument lgpdTerms = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.LGPD_TERMS)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        messageSource.getMessage("error.legal.document.not.found.active",
+                                new Object[]{LegalDocumentType.LGPD_TERMS}, locale)));
+        LegalDocument privacyPolicy = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.PRIVACY_POLICY)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        messageSource.getMessage("error.legal.document.not.found.active",
+                                new Object[]{LegalDocumentType.PRIVACY_POLICY}, locale)));
+
+        // Criar UserLegalDocuments
+        UserLegalDocument lgpdDoc = UserLegalDocument.builder()
+                .user(user)
+                .legalDocument(lgpdTerms)
+                .type(lgpdTerms.getType())
+                .acceptanceDate(LocalDate.now())
+                .build();
+        UserLegalDocument privacyDoc = UserLegalDocument.builder()
+                .user(user)
+                .legalDocument(privacyPolicy)
+                .type(privacyPolicy.getType())
+                .acceptanceDate(LocalDate.now())
+                .build();
+        user.getUserLegalDocuments().add(lgpdDoc);
+        user.getUserLegalDocuments().add(privacyDoc);
+
+        // Validar authorizeCreditCheckAndCommunication
+        if (dto.getAuthorizeCreditCheckAndCommunication() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    messageSource.getMessage("error.validation.field.missing",
+                            new Object[]{"authorizeCreditCheckAndCommunication"}, locale));
+        }
+        user.setAuthorizeCreditCheckAndCommunication(dto.getAuthorizeCreditCheckAndCommunication());
+
+        // Configurar acceptMarketingCommunications
+        user.setAcceptMarketingCommunications(dto.getAcceptMarketingCommunications() != null
+                ? dto.getAcceptMarketingCommunications() : false);
+
+        // Configurar campos opcionais
+        user.setProfession(dto.getProfession());
+        user.setEmergencyContactName(dto.getEmergencyContactName());
+        user.setEmergencyContactPhone(dto.getEmergencyContactPhone());
+
+        // Salvar documentos
+        if (dto.getDocuments() != null && !dto.getDocuments().isEmpty()) {
+            // Validar documentos obrigatórios
+            validateRequiredDocuments(dto.getDocuments(), user.getLegalPersonType());
+            for (UserDocumentUploadDTO docDto : dto.getDocuments()) {
+                saveOrUpdateUserDocument(user, docDto.getDocumentType(), docDto.getDocumentUrl());
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    messageSource.getMessage("error.documents.required", null, locale));
+        }
+
+        // Adicionar roles adicionais
+        if (dto.getAdditionalRoles() != null && !dto.getAdditionalRoles().isEmpty()) {
+            for (RoleName roleName : dto.getAdditionalRoles()) {
+                Role role = roleRepository.findByName(roleName)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                                messageSource.getMessage("error.role.not.found",
+                                        new Object[]{roleName}, locale)));
+                user.getRoles().add(role);
+            }
+        }
+
+        // Atualizar status de verificação
+        user.setAccountVerificationStatus(VerificationStatus.PENDING);
+        user.setIsIdentityConfirmed(false);
+
         return userRepository.save(user);
     }
 
-    // E para remover:
-    @Transactional
-    public User removeRoleFromUser(UUID userId, RoleName roleName) throws UserNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException());
-        Role role = roleRepository.findByName(roleName)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role " + roleName + " não encontrada."));
+    private void validateRequiredDocuments(List<UserDocumentUploadDTO> documents, LegalPersonType legalPersonType) {
+        List<DocumentType> requiredDocs = legalPersonType == LegalPersonType.PF
+                ? List.of(DocumentType.CPF, DocumentType.SELFIE_COM_DOCUMENTO, DocumentType.COMPROVANTE_RESIDENCIA)
+                : List.of(DocumentType.CNPJ, DocumentType.CONTRATO_SOCIAL, DocumentType.COMPROVANTE_RESIDENCIA);
 
-        user.getRoles().remove(role);
-        return userRepository.save(user);
+        // Verificar se todos os documentos obrigatórios estão presentes
+        for (DocumentType requiredDoc : requiredDocs) {
+            boolean found = documents.stream().anyMatch(doc -> doc.getDocumentType() == requiredDoc);
+            if (!found) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        messageSource.getMessage("error.document.required",
+                                new Object[]{requiredDoc}, LocaleContextHolder.getLocale()));
+            }
+        }
+
+        // Para PF, verificar se RG ou CNH foi enviado
+        if (legalPersonType == LegalPersonType.PF) {
+            boolean hasRg = documents.stream().anyMatch(doc ->
+                    doc.getDocumentType() == DocumentType.RG_FRENTE || doc.getDocumentType() == DocumentType.RG_VERSO);
+            boolean hasCnh = documents.stream().anyMatch(doc ->
+                    doc.getDocumentType() == DocumentType.CNH_FRENTE || doc.getDocumentType() == DocumentType.CNH_VERSO);
+            if (!hasRg && !hasCnh) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        messageSource.getMessage("error.identity.document.required", null, LocaleContextHolder.getLocale()));
+            }
+        }
+
+        // Para REAL_ESTATE_AGENT, verificar CRECI
+        if (documents.stream().anyMatch(doc -> doc.getDocumentType() == DocumentType.CRECI)) {
+            boolean hasCreci = documents.stream().anyMatch(doc -> doc.getDocumentType() == DocumentType.CRECI);
+            if (!hasCreci) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        messageSource.getMessage("error.creci.required", null, LocaleContextHolder.getLocale()));
+            }
+        }
     }
+
+    private void saveOrUpdateUserDocument(User user, DocumentType type, String url) {
+        Optional<UserDocument> existingDoc = userDocumentRepository.findByUserIdAndDocumentType(user.getId(), type);
+        UserDocument document;
+        if (existingDoc.isPresent()) {
+            document = existingDoc.get();
+            document.setDocumentUrl(url);
+            document.setUploadDate(LocalDate.now());
+            document.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
+            document.setRejectionReason(null);
+        } else {
+            document = new UserDocument();
+            document.setUser(user);
+            document.setDocumentType(type);
+            document.setDocumentUrl(url);
+            document.setUploadDate(LocalDate.now());
+            document.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
+        }
+        userDocumentRepository.save(document);
+    }
+
+//    @Transactional
+//    public User addRoleToUser(UUID userId, RoleName roleName) throws UserNotFoundException {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new UserNotFoundException());
+//        Role role = roleRepository.findByName(roleName)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role " + roleName + " não encontrada."));
+//
+//        user.getRoles().add(role);
+//        return userRepository.save(user);
+//    }
+//
+//    // E para remover:
+//    @Transactional
+//    public User removeRoleFromUser(UUID userId, RoleName roleName) throws UserNotFoundException {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new UserNotFoundException());
+//        Role role = roleRepository.findByName(roleName)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role " + roleName + " não encontrada."));
+//
+//        user.getRoles().remove(role);
+//        return userRepository.save(user);
+//    }
 
     @Override
     @Transactional
@@ -190,68 +411,36 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    // --- Métodos de Verificação de Email e Telefone (Simulados) ---
-
-    @Override
-    @Transactional
-    public User initiateEmailVerification(UUID userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
-        // Em um sistema real, aqui você enviaria um e-mail com SIMULATED_EMAIL_CODE para user.getEmail()
-        System.out.println("DEBUG: Enviando código de e-mail " + SIMULATED_EMAIL_CODE + " para " + user.getEmail());
-        // Para um projeto de faculdade, você não precisa armazenar o código no User,
-        // pois a validação é simplificada.
-        return user; // Não há mudança persistente aqui, apenas "inicia" o processo
-    }
-
-    @Override
-    @Transactional
-    public User completeEmailVerification(UUID userId, String code) throws UserNotFoundException, InvalidCredentialsException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
-
-        if (user.getIsEmailVerified()) {
-            throw new InvalidCredentialsException("E-mail já verificado.");
-        }
-
-        if (SIMULATED_EMAIL_CODE.equals(code)) { // Simulação: código fixo
-            user.setIsEmailVerified(true);
-            return userRepository.save(user);
-        } else {
-            throw new InvalidCredentialsException("Código de verificação de e-mail inválido.");
-        }
-    }
-
-    @Override
-    @Transactional
-    public User initiatePhoneVerification(UUID userId) throws UserNotFoundException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
-        if (user.getPhone() == null || user.getPhone().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Telefone não cadastrado para verificação.");
-        }
-        // Em um sistema real, aqui você enviaria um SMS com SIMULATED_PHONE_CODE para user.getPhone()
-        System.out.println("DEBUG: Enviando código de telefone " + SIMULATED_PHONE_CODE + " para " + user.getPhone());
-        return user; // Não há mudança persistente aqui
-    }
-
-    @Override
-    @Transactional
-    public User completePhoneVerification(UUID userId, String code) throws UserNotFoundException, InvalidCredentialsException {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
-
-        if (user.getIsPhoneVerified()) {
-            throw new InvalidCredentialsException("Telefone já verificado.");
-        }
-
-        if (SIMULATED_PHONE_CODE.equals(code)) { // Simulação: código fixo
-            user.setIsPhoneVerified(true);
-            return userRepository.save(user);
-        } else {
-            throw new InvalidCredentialsException("Código de verificação de telefone inválido.");
-        }
-    }
+//    @Override
+//    @Transactional
+//    public User initiatePhoneVerification(UUID userId) throws UserNotFoundException {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
+//        if (user.getPhone() == null || user.getPhone().isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Telefone não cadastrado para verificação.");
+//        }
+//        // Em um sistema real, aqui você enviaria um SMS com SIMULATED_PHONE_CODE para user.getPhone()
+//        System.out.println("DEBUG: Enviando código de telefone " + SIMULATED_PHONE_CODE + " para " + user.getPhone());
+//        return user; // Não há mudança persistente aqui
+//    }
+//
+//    @Override
+//    @Transactional
+//    public User completePhoneVerification(UUID userId, String code) throws UserNotFoundException, InvalidCredentialsException {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new UserNotFoundException("Usuário não encontrado."));
+//
+//        if (user.getIsPhoneVerified()) {
+//            throw new InvalidCredentialsException("Telefone já verificado.");
+//        }
+//
+//        if (SIMULATED_PHONE_CODE.equals(code)) { // Simulação: código fixo
+//            user.setIsPhoneVerified(true);
+//            return userRepository.save(user);
+//        } else {
+//            throw new InvalidCredentialsException("Código de verificação de telefone inválido.");
+//        }
+//    }
 
     // --- Métodos para Admin/Moderador (setVerificationStatus e setIncomeAndCreditStatus) ---
     @Override
