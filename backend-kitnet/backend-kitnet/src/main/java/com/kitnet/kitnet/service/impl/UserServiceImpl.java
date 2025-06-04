@@ -1,7 +1,6 @@
 package com.kitnet.kitnet.service.impl;
 
 import com.kitnet.kitnet.dto.UserDocumentUploadDTO;
-import com.kitnet.kitnet.dto.emailVerification.EmailVerificationResponseDTO;
 import com.kitnet.kitnet.dto.user.*;
 import com.kitnet.kitnet.exception.*;
 import com.kitnet.kitnet.model.*;
@@ -24,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -35,7 +33,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private UserVerificationRepository userVerificationRepository;
 
     @Autowired
     private EmailService emailService;
@@ -61,23 +59,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDocumentRepository userDocumentRepository;
 
-
     private static final Pattern UUID_PATTERN = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
-//    @Autowired
-//    private EmploymentHistoryRepository employmentHistoryRepository;
-
 
     @Autowired
     private JwtUtil jwtUtil;
-
-    // Estes campos não serão persistidos na entidade User, mas simulados em memória ou em uma tabela temporária.
-    // Para um projeto real, você usaria um serviço de cache (Redis) ou uma tabela separada para códigos de verificação.
-    // Para simplificar no projeto de faculdade, podemos simular.
-    private static final String SIMULATED_EMAIL_CODE = "123456";
-    private static final String SIMULATED_PHONE_CODE = "654321";
-    // Pode ser interessante mapear UUID do usuário para o código e timestamp para expiração
-    // private Map<UUID, String> emailVerificationCodes = new ConcurrentHashMap<>();
-    // private Map<UUID, LocalDateTime> emailCodeExpiry = new ConcurrentHashMap<>();
 
     @Override
     @Transactional

@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-@DependsOn("legalTermsInitializer") // Ensure LegalTermsInitializer runs first
+@DependsOn("legalTermsInitializer")
 public class AdminUserInitializer implements CommandLineRunner {
 
     @Autowired
@@ -41,7 +41,7 @@ public class AdminUserInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // 1. Criar e persistir todas as roles se não existirem
+        // 1. Create and persist all roles if they do not exist
         for (RoleName roleName : RoleName.values()) {
             roleRepository.findByName(roleName)
                     .orElseGet(() -> {
@@ -51,7 +51,7 @@ public class AdminUserInitializer implements CommandLineRunner {
         }
         System.out.println("Roles padrão garantidas no banco de dados.");
 
-        // 2. Verificar e criar o usuário admin
+        // 2. Check and create the admin user
         if (userRepository.findByEmail("admin@kitnet.com").isEmpty()) {
             User admin = new User();
             admin.setName("Admin Kitnet");
@@ -62,7 +62,7 @@ public class AdminUserInitializer implements CommandLineRunner {
             admin.setLegalPersonType(LegalPersonType.PF);
             admin.setAuthorizeCreditCheckAndCommunication(true);
 
-            // Atribuir as roles ao admin
+            // Assign roles to admin
             Set<Role> adminRoles = new HashSet<>();
             roleRepository.findByName(RoleName.ADMIN).ifPresent(adminRoles::add);
             roleRepository.findByName(RoleName.MODERATOR).ifPresent(adminRoles::add);
@@ -76,7 +76,7 @@ public class AdminUserInitializer implements CommandLineRunner {
             admin.setIsPhoneVerified(true);
             admin.setProfilePictureUrl("https://i.imgur.com/your-admin-profile-pic.png");
 
-            // Associate TERMS_OF_USE document
+            // Associated TERMS_OF_USE document
             LegalDocument termsOfUse = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.TERMS_OF_USE)
                     .orElseGet(() -> {
                         LegalDocument tempDoc = new LegalDocument();
@@ -90,7 +90,7 @@ public class AdminUserInitializer implements CommandLineRunner {
             UserLegalDocument userLegalDoc = UserLegalDocument.builder()
                     .user(admin)
                     .legalDocument(termsOfUse)
-                    .type(termsOfUse.getType()) // Define o tipo do documento legal
+                    .type(termsOfUse.getType()) // Defines the type of legal document
                     .acceptanceDate(LocalDate.now())
                     .build();
             admin.getUserLegalDocuments().add(userLegalDoc);

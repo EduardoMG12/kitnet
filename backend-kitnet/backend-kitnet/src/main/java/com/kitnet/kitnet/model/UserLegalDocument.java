@@ -34,7 +34,7 @@ public class UserLegalDocument {
 
     @Builder.Default
     @Column(nullable = false)
-    private Boolean isCurrentOfUser = true; // Se está de acordo com a versão ativa do documento
+    private Boolean isCurrentOfUser = true; // If you agree with the active version of the document of user
 
     @Column(nullable = false)
     private LocalDate acceptanceDate;

@@ -1,6 +1,5 @@
 package com.kitnet.kitnet.controller;
 
-import com.kitnet.kitnet.dto.emailVerification.EmailVerificationRequestDTO;
 import com.kitnet.kitnet.dto.emailVerification.EmailVerificationResponseDTO;
 import com.kitnet.kitnet.dto.user.*;
 import com.kitnet.kitnet.dto.UserResponseDTO;
@@ -18,19 +17,19 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-public class UserController {
+public class AuthUserController {
 
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private CustomUserDetailsService userDetailsService; // Provavelmente não é necessário aqui, mas manter por enquanto
-
-    @Autowired
-    private JwtUtil jwtUtil;
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
+//
+//    @Autowired
+//    private CustomUserDetailsService userDetailsService; // Probably not needed here, but keep for now
+//
+//    @Autowired
+//    private JwtUtil jwtUtil;
 
 
     @PostMapping("/register-simple")
@@ -52,40 +51,6 @@ public class UserController {
         User updatedUser = userService.completeRegistrationDetails(authenticatedUser.getId(), dto);
         return ResponseEntity.ok(toUserResponseDTO(updatedUser));
     }
-
-    @PostMapping("/verify-email/initiate")
-    public ResponseEntity<EmailVerificationResponseDTO> initiateEmailVerification(@AuthenticationPrincipal User authenticatedUser) {
-        EmailVerificationResponseDTO response = userService.initiateEmailVerification(authenticatedUser.getId());
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/verify-email/confirm")
-    public ResponseEntity<EmailVerificationResponseDTO> confirmEmailVerification(@RequestParam("token") String token) {
-        EmailVerificationResponseDTO response = userService.confirmEmailVerification(token);
-        return ResponseEntity.ok(response);
-    }
-//    // Endpoint para iniciar verificação de telefone
-//    @PostMapping("/verify-phone/initiate")
-//    public ResponseEntity<String> initiatePhoneVerification(@AuthenticationPrincipal User authenticatedUser) {
-//        try {
-//            userService.initiatePhoneVerification(authenticatedUser.getId());
-//            return ResponseEntity.ok("Código de verificação de telefone enviado (simulado).");
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(e.getMessage());
-//        }
-//    }
-//
-//    // Endpoint para completar verificação de telefone
-//    @PostMapping("/verify-phone/complete")
-//    public ResponseEntity<UserResponseDTO> completePhoneVerification(@AuthenticationPrincipal User authenticatedUser,
-//                                                                     @RequestParam String code) {
-//        try {
-//            User updatedUser = userService.completePhoneVerification(authenticatedUser.getId(), code);
-//            return ResponseEntity.ok(toUserResponseDTO(updatedUser));
-//        } catch (Exception e) {
-//            return ResponseEntity.badRequest().body(null);
-//        }
-//    }
 
     private UserResponseDTO toUserResponseDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();

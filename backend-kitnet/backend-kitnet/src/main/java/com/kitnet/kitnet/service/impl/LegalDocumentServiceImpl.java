@@ -38,7 +38,7 @@ public class LegalDocumentServiceImpl implements LegalDocumentService {
     @Override
     @Transactional
     public LegalDocument saveLegalDocument(LegalDocument legalDocument) {
-        // Lógica para garantir que apenas uma versão seja ativa por tipo
+        // Logic to ensure only one version is active per type
         if (legalDocument.getIsActive()) {
             legalDocumentRepository.findByTypeAndIsActiveTrue(legalDocument.getType()).ifPresent(activeDoc -> {
                 if (legalDocument.getId() == null || !activeDoc.getId().equals(legalDocument.getId())) {

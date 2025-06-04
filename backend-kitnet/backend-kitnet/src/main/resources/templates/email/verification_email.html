@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Verifique seu E-mail - Kitnet</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<p>Olá <span th:text="${userName}">Usuário</span>,</p>
+<p>Obrigado por se registrar na Kitnet! Para ativar sua conta e acessar todas as funcionalidades, por favor, verifique seu endereço de e-mail clicando no link abaixo:</p>
+<p>
+    <a th:href="${verificationLink}">Verificar E-mail</a>
+</p>
+<p>Se o link acima não funcionar, copie e cole o seguinte URL no seu navegador:</p>
+<p><span th:text="${verificationLink}"></span></p>
+<p>Este link é válido por 15 minutos.</p>
+<p>Se você não solicitou esta verificação, por favor, ignore este e-mail.</p>
+<p>Atenciosamente,</p>
+<p>A Equipe Kitnet</p>
+</body>
+</html>

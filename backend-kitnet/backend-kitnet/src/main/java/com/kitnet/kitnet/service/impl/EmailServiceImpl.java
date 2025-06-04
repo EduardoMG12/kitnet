@@ -2,61 +2,64 @@ package com.kitnet.kitnet.service.impl;
 
 import com.kitnet.kitnet.exception.EmailSendException;
 import com.kitnet.kitnet.service.EmailService;
-import com.sendgrid.*;
-import com.sendgrid.helpers.mail.Mail;
-import com.sendgrid.helpers.mail.objects.Content;
-import com.sendgrid.helpers.mail.objects.Email;
-import com.sendgrid.helpers.mail.objects.Personalization;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Service
-//@Profile("!prod") // Simulação apenas em não-produção
 public class EmailServiceImpl implements EmailService {
 
-    @Value("${sendgrid.api.key}")
-    private String sendGridApiKey;
+    private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
-    @Value("${app.email-from:kitnet.rent@hotmail.com}")
+    @Autowired
+    private JavaMailSender mailSender;
+
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
+    @Autowired
+    private MessageSource messageSource;
+
+    @Value("${app.email-from}")
     private String fromEmail;
 
-    @Value("${sendgrid.template-id:d-8bf6365d3ea2483a9e3c2b7ca0081b31}")
-    private String templateId;
-
     @Override
-    public void sendVerificationEmail(String toEmail, String userName, String subjectType, String verificationLink) throws IOException {
-
+    public void sendEmail(String toEmail, String subject, String templateName, Map<String, Object> templateVariables) throws IOException {
         try {
-            Email from = new Email(fromEmail);
-            Email to = new Email(toEmail);
-            String subject = "Verifique seu E-mail - Kitnet";
+            Context context = new Context();
+            context.setVariables(templateVariables);
+            // templateName is the name of the file (e.g. "verification_email") without the .html and without the prefix.
+            String htmlContent = templateEngine.process(templateName, context);
 
-            Mail mail = new Mail();
-            mail.setFrom(from);
-            mail.setSubject(subject);
-            mail.setTemplateId(templateId);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            Personalization personalization = new Personalization();
-            personalization.addTo(to);
-            personalization.addDynamicTemplateData("user_name", userName != null ? userName : "Usuário");
-            personalization.addDynamicTemplateData("verification_link", verificationLink);
-            mail.addPersonalization(personalization);
+            helper.setFrom(fromEmail);
+            helper.setTo(toEmail);
+            helper.setSubject(subject);
+            helper.setText(htmlContent, true);
 
-            SendGrid sg = new SendGrid(sendGridApiKey);
-            Request request = new Request();
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
-            request.setBody(mail.build());
+            mailSender.send(message);
 
-            Response response = sg.api(request);
+            logger.info("Email '{}' enviado para {}. Template: {}", subject, toEmail, templateName);
 
-        } catch (IOException e) {
-            throw new EmailSendException("Erro ao enviar e-mail de verificação para " + toEmail, e);
-        } catch (Exception e) {
-            throw new EmailSendException("Erro inesperado ao enviar e-mail para " + toEmail, e);
+        } catch (MessagingException e) {
+            logger.error("Erro ao enviar e-mail com JavaMail API para {}. Assunto: {}. Erro: {}", toEmail, subject, e.getMessage(), e);
+            throw new EmailSendException(messageSource.getMessage("error.email.send.failed", null, LocaleContextHolder.getLocale()), e);
         }
     }
 }

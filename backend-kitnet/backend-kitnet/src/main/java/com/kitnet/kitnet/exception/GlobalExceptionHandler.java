@@ -140,4 +140,19 @@ public class GlobalExceptionHandler {
         error.put("message", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(EmailAlreadyVerifiedException.class)
+    public ResponseEntity<String> handleEmailAlreadyVerifiedException(EmailAlreadyVerifiedException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.email.already.verified", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST); // Retorne o mesmo status que no @ResponseStatus
+    }
+
+    @ExceptionHandler(VerificationEmailAlreadySentException.class)
+    public ResponseEntity<String> handleVerificationEmailAlreadySentException(VerificationEmailAlreadySentException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.email.verification.already.sent", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.TOO_MANY_REQUESTS);
+    }
+
 }

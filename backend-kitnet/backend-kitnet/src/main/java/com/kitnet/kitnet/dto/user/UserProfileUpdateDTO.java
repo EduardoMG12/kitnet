@@ -33,14 +33,12 @@ public class UserProfileUpdateDTO {
 
     private Double monthlyGrossIncome;
 
-    // Campos de consentimento (booleanos) - podem ser atualizados
     private Boolean acceptTerms;
     private Boolean agreeToLgpdTerms;
-    private Boolean acceptPrivacyPolicy; // Novo campo
+    private Boolean acceptPrivacyPolicy;
     private Boolean authorizeCreditCheckAndCommunication;
     private Boolean acceptMarketingCommunications;
 
-    // URLs dos documentos (para atualização de documentos existentes ou adição de novos)
     private String rgFrontUrl;
     private String rgBackUrl;
     private String cpfUrl;
@@ -50,6 +48,4 @@ public class UserProfileUpdateDTO {
     private String residenceProofUrl;
     private String selfieWithDocumentUrl;
 
-    // Histórico de emprego (para atualização ou adição de novos registros)
-//    private List<EmploymentHistoryDTO> employmentHistory;
 }

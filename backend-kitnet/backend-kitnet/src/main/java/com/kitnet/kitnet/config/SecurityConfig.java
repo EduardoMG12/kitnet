@@ -49,28 +49,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Desabilita CSRF para APIs RESTful stateless
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless RESTful APIs
                 .authorizeHttpRequests(authorize -> authorize
-                        // Rotas públicas (não exigem autenticação)
+                        // Public routes (do not require authentication)
                         .requestMatchers("/api/auth/register-simple", "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties/{id}").permitAll()
+                        .requestMatchers("/api/users/verify/email/confirm").permitAll()
 
-                        // Rotas protegidas (exigem autenticação)
+                        // Protected routes (require authentication)
                         .requestMatchers(HttpMethod.POST, "/properties").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/properties/{id}").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/properties/{id}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/users/verify/email/initiate").authenticated()
 
-                        // Todas as outras requisições exigem autenticação por padrão
+                        // All other requests require authentication by default.
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        // Gerenciamento de sessão STATELESS (sem estado) - essencial para JWT
+                        // STATELESS session management - essential for JWT
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
-        // Adiciona o JwtRequestFilter antes do filtro padrão de autenticação por nome de usuário/senha.
-        // Isso garante que nosso filtro JWT seja executado primeiro para processar o token.
+        // Adds the JwtRequestFilter before the default username/password authentication filter.
+        // This ensures that our JWT filter runs first to process the token.
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

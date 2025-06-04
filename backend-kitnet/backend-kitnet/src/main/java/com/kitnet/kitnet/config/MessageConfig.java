@@ -29,11 +29,4 @@ public class MessageConfig {
         bean.setValidationMessageSource(messageSource());
         return bean;
     }
-
-//    @Bean
-//    public LocaleResolver localeResolver() {
-//        AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-//        localeResolver.setDefaultLocale(new Locale("pt", "BR"));
-//        return localeResolver;
-//    }
 }

@@ -1,7 +1,7 @@
 package com.kitnet.kitnet.dto;
 
 import com.kitnet.kitnet.dto.user.UserLoginDTO;
-import org.junit.jupiter.api.AfterAll; // Importar AfterAll
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import jakarta.validation.ConstraintViolation;
@@ -68,7 +68,7 @@ class UserLoginDTOTest {
     @Test
     void testNullEmail() {
         UserLoginDTO dto = new UserLoginDTO();
-        dto.setEmail(null); // Nulo
+        dto.setEmail(null);
         dto.setPassword("securepassword123");
 
         Set<ConstraintViolation<UserLoginDTO>> violations = validator.validate(dto);

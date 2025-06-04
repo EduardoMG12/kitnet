@@ -22,18 +22,18 @@ public class LegalDocument {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private LegalDocumentType type; // Ex: TERMS_OF_USE, LGPD_TERMS
+    private LegalDocumentType type;
 
-    @Column(nullable = false) // Ex: "1.0", "1.1", "2023-01-01"
+    @Column(nullable = false)
     private String version;
 
-    @Lob // Para armazenar textos longos
+    @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content; // O texto completo dos termos
+    private String content;
 
     @Column(nullable = false)
-    private LocalDate effectiveDate; // Data em que esta versão se tornou efetiva
+    private LocalDate effectiveDate;
 
     @Column(nullable = false)
-    private Boolean isActive = true; // Indica se esta é a versão atualmente ativa
+    private Boolean isActive = true;
 }

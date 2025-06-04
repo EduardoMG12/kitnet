@@ -359,7 +359,6 @@ class PropertyServiceImplTest {
         propertyWithNulls.setOwner(sampleUser);
         propertyWithNulls.setAdTitle("Test Kitnet");
         propertyWithNulls.setPropertyType("Kitnet");
-        // Deixando bedrooms, bathrooms, parkingSpaces, floor como null
 
         when(propertyRepository.findById(propertyId)).thenReturn(Optional.of(propertyWithNulls));
 

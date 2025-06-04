@@ -21,5 +21,5 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, unique = true)
-    private RoleName name; // Usaremos um enum para os nomes fixos das roles
+    private RoleName name; // We will use an enum for the fixed role names.
 }

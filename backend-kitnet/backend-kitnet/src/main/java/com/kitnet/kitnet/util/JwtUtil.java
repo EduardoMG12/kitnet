@@ -1,6 +1,6 @@
 package com.kitnet.kitnet.util;
 
-import com.kitnet.kitnet.model.Role; // Import Role
+import com.kitnet.kitnet.model.Role;
 import com.kitnet.kitnet.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List; // Import List
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors; // Import Collectors
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {

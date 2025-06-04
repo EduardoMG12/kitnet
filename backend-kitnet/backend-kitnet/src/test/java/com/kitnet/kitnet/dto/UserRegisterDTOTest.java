@@ -17,7 +17,6 @@ class UserRegisterDTOTest {
 
     @BeforeAll
     static void setUp() {
-        // Configura o validador uma vez para todos os testes
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
@@ -38,7 +37,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testValidUserRegisterDTO() {
-        // Testa um DTO de registro válido
         UserRegisterDTO dto = createValidUserRegisterDTO();
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty(), "Não deveria haver violações para um DTO válido");
@@ -46,7 +44,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testBlankFirstName() {
-        // Testa nome em branco
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setFirstName("");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -57,7 +54,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testNullFirstName() {
-        // Testa nome nulo
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setFirstName(null);
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -68,7 +64,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testBlankLastName() {
-        // Testa sobrenome em branco
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setLastName("");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -79,7 +74,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testNullLastName() {
-        // Testa sobrenome nulo
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setLastName(null);
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -90,7 +84,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testInvalidEmailFormat() {
-        // Testa formato de e-mail inválido
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setEmail("invalid-email");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -101,7 +94,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testBlankEmail() {
-        // Testa e-mail em branco
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setEmail("");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -112,7 +104,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testNullEmail() {
-        // Testa e-mail nulo
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setEmail(null);
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -123,18 +114,16 @@ class UserRegisterDTOTest {
 
     @Test
     void testPasswordTooShort() {
-        // Testa senha muito curta
         UserRegisterDTO dto = createValidUserRegisterDTO();
-        dto.setPassword("short"); // Menos de 6 caracteres
+        dto.setPassword("short");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
         assertEquals(1, violations.size());
-        assertTrue(violations.iterator().next().getMessage().contains("size must be between 6 and")); // Mensagem pode variar ligeiramente
+        assertTrue(violations.iterator().next().getMessage().contains("size must be between 6 and"));
     }
 
     @Test
     void testBlankPassword() {
-        // Testa senha em branco
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setPassword("");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -145,7 +134,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testNullPassword() {
-        // Testa senha nula
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setPassword(null);
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -156,7 +144,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testBlankConfirmPassword() {
-        // Testa confirmação de senha em branco
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setConfirmPassword("");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -167,7 +154,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testNullConfirmPassword() {
-        // Testa confirmação de senha nula
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setConfirmPassword(null);
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -178,7 +164,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testNullAcceptTerms() {
-        // Testa aceitação de termos nula
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setAcceptTerms(null);
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -189,7 +174,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testBlankCpf() {
-        // Testa CPF em branco
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setCpf("");
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -200,7 +184,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testNullCpf() {
-        // Testa CPF nulo
         UserRegisterDTO dto = createValidUserRegisterDTO();
         dto.setCpf(null);
         Set<ConstraintViolation<UserRegisterDTO>> violations = validator.validate(dto);
@@ -211,7 +194,6 @@ class UserRegisterDTOTest {
 
     @Test
     void testGettersAndSetters() {
-        // Testa getters e setters básicos
         UserRegisterDTO dto = new UserRegisterDTO();
         String firstName = "Jane";
         String lastName = "Smith";

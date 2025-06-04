@@ -20,22 +20,21 @@ public class UserResponseDTO {
     private Boolean isIdentityConfirmed;
     private Boolean isEmailVerified;
     private Boolean isPhoneVerified;
-
-    // Novos campos para os termos aceitos
+    
     private Boolean acceptTerms;
-    private String acceptedTermsVersion; // Versão dos termos de uso aceitos
-    private LocalDate termsAcceptanceDate; // Data de aceitação dos termos de uso
-    private Boolean isTermsOfUseOutdated; // Indica se os termos de uso estão desatualizados
+    private String acceptedTermsVersion;
+    private LocalDate termsAcceptanceDate;
+    private Boolean isTermsOfUseOutdated;
 
     private Boolean agreeToLgpdTerms;
-    private String acceptedLgpdTermsVersion; // Versão dos termos LGPD aceitos
-    private LocalDate lgpdTermsAcceptanceDate; // Data de aceitação dos termos LGPD
-    private Boolean isLgpdTermsOutdated; // Indica se os termos LGPD estão desatualizados
+    private String acceptedLgpdTermsVersion;
+    private LocalDate lgpdTermsAcceptanceDate;
+    private Boolean isLgpdTermsOutdated;
 
-    private Boolean acceptPrivacyPolicy; // Novo campo
-    private String acceptedPrivacyPolicyVersion; // Versão da política de privacidade aceita
-    private LocalDate privacyPolicyAcceptanceDate; // Data de aceitação da política de privacidade
-    private Boolean isPrivacyPolicyOutdated; // Indica se a política de privacidade está desatualizada
+    private Boolean acceptPrivacyPolicy;
+    private String acceptedPrivacyPolicyVersion;
+    private LocalDate privacyPolicyAcceptanceDate;
+    private Boolean isPrivacyPolicyOutdated;
 
     private Boolean authorizeCreditCheckAndCommunication;
     private Boolean acceptMarketingCommunications;

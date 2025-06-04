@@ -1,22 +1,22 @@
-package com.kitnet.kitnet.service; // Mantenha o pacote do serviço, não da implementação
+package com.kitnet.kitnet.service;
 
 import com.kitnet.kitnet.dto.user.UserLoginDTO;
 import com.kitnet.kitnet.model.User;
-import com.kitnet.kitnet.model.enums.RoleName; // Importar UserType
+import com.kitnet.kitnet.model.enums.RoleName;
 import com.kitnet.kitnet.repository.UserRepository;
-import com.kitnet.kitnet.service.impl.UserServiceImpl; // Importar a implementação real do serviço
+import com.kitnet.kitnet.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus; // Importar HttpStatus
-import org.springframework.security.crypto.password.PasswordEncoder; // Importar PasswordEncoder
-import org.springframework.web.server.ResponseStatusException; // Importar ResponseStatusException
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
-import java.util.UUID; // Importar UUID
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,26 +24,24 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock // Mock do repositório para simular interações com o banco de dados
+    @Mock
     private UserRepository userRepository;
 
-    @Mock // Mock do PasswordEncoder para simular a criptografia e comparação de senhas
+    @Mock
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks // Injeta os mocks (userRepository, passwordEncoder) nesta instância do serviço
-    private UserServiceImpl userService; // Usar a implementação real do serviço
+    @InjectMocks
+    private UserServiceImpl userService;
 
     private UserRegisterDTO registerDto;
     private UserLoginDTO loginDto;
     private User existingUser;
-    private UUID existingUserId; // Para armazenar o UUID do usuário existente
+    private UUID existingUserId;
 
     @BeforeEach
     void setUp() {
-        // Geração de um UUID para o usuário existente
         existingUserId = UUID.randomUUID();
-
-        // DTO de registro
+        
         registerDto = new UserRegisterDTO();
         registerDto.setFirstName("John");
         registerDto.setLastName("Doe");
@@ -54,46 +52,40 @@ class UserServiceTest {
         registerDto.setAcceptTerms(true);
         registerDto.setDocumentImageWithUser(new byte[]{});
         registerDto.setCpf("12345678900");
-        registerDto.setRoleName(RoleName.LESSEE); // Definir UserType
-
-        // DTO de login
+        registerDto.setRoleName(RoleName.LESSEE);
+        
         loginDto = new UserLoginDTO();
         loginDto.setEmail("existing.user@example.com");
         loginDto.setPassword("CorrectPassword123!");
-
-        // Usuário existente no banco de dados (simulado)
+        
         existingUser = new User();
-        existingUser.setId(existingUserId); // Definir UUID
+        existingUser.setId(existingUserId);
         existingUser.setFirstName("Existing");
         existingUser.setLastName("User");
         existingUser.setEmail("existing.user@example.com");
-        // A senha do usuário existente deve ser a senha "criptografada" para simular o banco
         existingUser.setPassword("encodedCorrectPassword123!");
         existingUser.setAcceptTerms(true);
         existingUser.setCpf("00011122233");
-        existingUser.setRoleName(RoleName.LESSOR); // Definir UserType
+        existingUser.setRoleName(RoleName.LESSOR);
     }
 
 
     @Test
     void testRegisterUserSuccess() throws Exception {
-        // Simula que o email não está em uso
         when(userRepository.findByEmail(registerDto.getEmail())).thenReturn(Optional.empty());
-        // Simula a criptografia da senha
         when(passwordEncoder.encode(registerDto.getPassword())).thenReturn("encodedPassword123!");
-        // Simula o salvamento do usuário e atribui um ID UUID
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);
-            user.setId(UUID.randomUUID()); // Atribui um UUID aleatório ao salvar
+            user.setId(UUID.randomUUID());
             return user;
         });
 
         User registeredUser = userService.register(registerDto);
 
         assertNotNull(registeredUser);
-        assertNotNull(registeredUser.getId()); // Verifica se o ID UUID foi gerado
+        assertNotNull(registeredUser.getId());
         assertEquals(registerDto.getEmail(), registeredUser.getEmail());
-        assertEquals("encodedPassword123!", registeredUser.getPassword()); // Verifica se a senha foi codificada
+        assertEquals("encodedPassword123!", registeredUser.getPassword());
 
         verify(userRepository, times(1)).findByEmail(registerDto.getEmail());
         verify(passwordEncoder, times(1)).encode(registerDto.getPassword());
@@ -102,9 +94,8 @@ class UserServiceTest {
 
     @Test
     void testRegisterUserPasswordMismatch() {
-        registerDto.setConfirmPassword("WrongPassword!"); // Senhas não coincidem
-
-        // Espera que uma ResponseStatusException (BAD_REQUEST) seja lançada
+        registerDto.setConfirmPassword("WrongPassword!");
+        
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             userService.register(registerDto);
         });
@@ -119,10 +110,8 @@ class UserServiceTest {
 
     @Test
     void testRegisterUserEmailAlreadyInUse() {
-        // Simula que o email já está em uso
         when(userRepository.findByEmail(registerDto.getEmail())).thenReturn(Optional.of(existingUser));
-
-        // Espera que uma ResponseStatusException (CONFLICT) seja lançada
+        
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             userService.register(registerDto);
         });
@@ -138,9 +127,7 @@ class UserServiceTest {
 
     @Test
     void testLoginUserSuccess() throws Exception {
-        // Simula que o usuário é encontrado pelo email
         when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(Optional.of(existingUser));
-        // Simula que a senha fornecida no login corresponde à senha "criptografada" do usuário existente
         when(passwordEncoder.matches(loginDto.getPassword(), existingUser.getPassword())).thenReturn(true);
 
         User loggedInUser = userService.login(loginDto);
@@ -155,10 +142,8 @@ class UserServiceTest {
 
     @Test
     void testLoginUserNotFound() {
-        // Simula que o usuário não é encontrado
         when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(Optional.empty());
-
-        // Espera que uma ResponseStatusException (NOT_FOUND) seja lançada
+        
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             userService.login(loginDto);
         });
@@ -167,17 +152,14 @@ class UserServiceTest {
         assertEquals("Usuário não encontrado.", exception.getReason());
 
         verify(userRepository, times(1)).findByEmail(loginDto.getEmail());
-        verify(passwordEncoder, never()).matches(anyString(), anyString()); // Não deve chamar matches se o usuário não for encontrado
+        verify(passwordEncoder, never()).matches(anyString(), anyString());
     }
 
     @Test
     void testLoginUserIncorrectPassword() {
-        // Simula que o usuário é encontrado
         when(userRepository.findByEmail(loginDto.getEmail())).thenReturn(Optional.of(existingUser));
-        // Simula que a senha fornecida NÃO corresponde à senha "criptografada"
         when(passwordEncoder.matches(loginDto.getPassword(), existingUser.getPassword())).thenReturn(false);
-
-        // Espera que uma ResponseStatusException (UNAUTHORIZED) seja lançada
+        
         ResponseStatusException exception = assertThrows(ResponseStatusException.class, () -> {
             userService.login(loginDto);
         });
