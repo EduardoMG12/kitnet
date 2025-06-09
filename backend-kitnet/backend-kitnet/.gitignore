@@ -4,6 +4,9 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+src/main/resources/kitnetapi-firebase-adminsdk-fbsvc-f31bd8bec4.json
+**/kitnetapi-firebase-adminsdk-fbsvc-f31bd8bec4.json
+
 
 ### STS ###
 .apt_generated

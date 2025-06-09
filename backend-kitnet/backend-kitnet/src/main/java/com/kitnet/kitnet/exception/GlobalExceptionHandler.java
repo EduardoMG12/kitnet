@@ -155,4 +155,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.TOO_MANY_REQUESTS);
     }
 
+    @ExceptionHandler(FirebaseAuthenticationException.class)
+    public ResponseEntity<String> handleFirebaseAuthenticationException(FirebaseAuthenticationException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.firebase.auth.invalid.token", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ResponseEntity<String> handleInternalServerErrorException(InternalServerErrorException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.internal.server.operation.failed", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }

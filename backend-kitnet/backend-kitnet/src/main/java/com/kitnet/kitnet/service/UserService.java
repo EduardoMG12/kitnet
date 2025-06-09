@@ -15,6 +15,7 @@ public interface UserService {
     User completeRegistrationDetails(UUID userId, UserCompleteRegistrationDTO dto) throws UserNotFoundException, EmailAlreadyInUseException;
     AuthResponseDTO login(UserLoginDTO dto) throws UserNotFoundException, InvalidCredentialsException;
     User updateProfile(UUID userId, UserProfileUpdateDTO dto) throws UserNotFoundException, EmailAlreadyInUseException;
+    AuthResponseDTO authenticateWithFirebase(String firebaseIdToken) throws FirebaseAuthenticationException, UserNotFoundException;
 
 
 //    User addRoleToUser(UUID userId, RoleName roleName);

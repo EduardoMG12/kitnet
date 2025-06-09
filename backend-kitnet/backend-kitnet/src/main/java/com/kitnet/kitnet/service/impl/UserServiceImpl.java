@@ -1,5 +1,8 @@
 package com.kitnet.kitnet.service.impl;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import com.kitnet.kitnet.dto.UserDocumentUploadDTO;
 import com.kitnet.kitnet.dto.user.*;
 import com.kitnet.kitnet.exception.*;
@@ -100,6 +103,7 @@ public class UserServiceImpl implements UserService {
         user.setProfilePictureUrl(null);
         user.setIsEmailVerified(false);
         user.setIsPhoneVerified(false);
+        user.setAuthProvider(AuthProvider.EMAIL_PASSWORD);
 
         if (dto.getAcceptTerms()) {
             LegalDocument termsOfUse = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.TERMS_OF_USE)
@@ -135,6 +139,103 @@ public class UserServiceImpl implements UserService {
 
         return new AuthResponseDTO(userResponse, jwt);
     }
+
+
+    @Override
+    @Transactional
+    public AuthResponseDTO authenticateWithFirebase(String firebaseIdToken) throws FirebaseAuthenticationException, UserNotFoundException {
+        Locale locale = LocaleContextHolder.getLocale();
+        try {
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(firebaseIdToken);
+            String firebaseUid = decodedToken.getUid();
+            String email = decodedToken.getEmail();
+            boolean emailVerified = decodedToken.isEmailVerified();
+            String name = decodedToken.getName();
+            String photoUrl = decodedToken.getPicture();
+
+            AuthProvider authProvider = AuthProvider.EMAIL_PASSWORD; // Default
+
+            if (decodedToken.getClaims().containsKey("firebase") && ((Map<String, Object>) decodedToken.getClaims().get("firebase")).containsKey("sign_in_provider")) {
+                String signInProvider = (String) ((Map<String, Object>) decodedToken.getClaims().get("firebase")).get("sign_in_provider");
+
+                if (signInProvider.equals("google.com")) {
+                    authProvider = AuthProvider.GOOGLE;
+                } else if (signInProvider.equals("apple.com")) {
+                    authProvider = AuthProvider.APPLE;
+                }
+            }
+
+            Optional<User> existingUser = userRepository.findByFirebaseUid(firebaseUid);
+            User user;
+
+            if (existingUser.isPresent()) {
+                user = existingUser.get();
+                user.setEmail(email);
+                user.setIsEmailVerified(emailVerified);
+                user.setName(name);
+                user.setProfilePictureUrl(photoUrl);
+                user.setAuthProvider(authProvider);
+                userRepository.save(user);
+                System.out.println("Usuário existente logado via Firebase: " + user.getFirebaseUid());
+
+            } else {
+                user = new User();
+                user.setId(UUID.randomUUID());
+                user.setFirebaseUid(firebaseUid);
+                user.setEmail(email);
+                user.setIsEmailVerified(true);
+                user.setName(name);
+                user.setProfilePictureUrl(photoUrl);
+                user.setAuthProvider(authProvider);
+
+                user.setPassword(null);
+                user.setAuthorizeCreditCheckAndCommunication(false);
+                user.setAcceptMarketingCommunications(false);
+                user.setPhone(null);
+                user.setLegalDocument(null);
+                user.setLegalPersonType(null);
+
+                Set<Role> defaultRoles = new HashSet<>();
+                roleRepository.findByName(RoleName.LESSEE)
+                        .ifPresentOrElse(defaultRoles::add, () -> {
+                            throw new RuntimeException(messageSource.getMessage("error.role.not.found.default", new Object[]{RoleName.LESSEE}, locale));
+                        });
+                user.setRoles(defaultRoles);
+
+                user.setAccountVerificationStatus(VerificationStatus.NOT_SUBMITTED);
+                user.setMonthlyGrossIncome(null);
+                user.setHasCreditRestrictions(false);
+                user.setIsIdentityConfirmed(false);
+
+                            LegalDocument termsOfUse = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.TERMS_OF_USE)
+                        .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.legal.document.not.found.active", new Object[]{LegalDocumentType.TERMS_OF_USE}, locale)));
+
+                if (user.getUserLegalDocuments() == null) {
+                    user.setUserLegalDocuments(new HashSet<>());
+                }
+                UserLegalDocument userLegalDoc = UserLegalDocument.builder()
+                        .user(user)
+                        .legalDocument(termsOfUse)
+                        .type(termsOfUse.getType())
+                        .acceptanceDate(LocalDate.now())
+                        .build();
+                user.getUserLegalDocuments().add(userLegalDoc);
+
+                userRepository.save(user);
+                System.out.println("Novo usuário criado via Firebase: " + user.getFirebaseUid());
+            }
+
+            final String jwt = jwtUtil.generateToken(user);
+            UserSimpleResponseDTO userResponse = toUserSimpleResponseDTO(user);
+            return new AuthResponseDTO(userResponse, jwt);
+
+        } catch (FirebaseAuthException e) {
+            throw new FirebaseAuthenticationException(messageSource.getMessage("error.firebase.auth.invalid.token", null, locale) + ": " + e.getMessage(), e);
+        } catch (Exception e) {
+                        throw new InternalServerErrorException(messageSource.getMessage("error.firebase.auth.internal.error", null, locale) + ": " + e.getMessage(), e);
+        }
+    }
+
 
     @Override
     @Transactional

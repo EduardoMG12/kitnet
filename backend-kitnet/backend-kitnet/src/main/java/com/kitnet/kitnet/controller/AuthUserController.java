@@ -3,6 +3,7 @@ package com.kitnet.kitnet.controller;
 import com.kitnet.kitnet.dto.emailVerification.EmailVerificationResponseDTO;
 import com.kitnet.kitnet.dto.user.*;
 import com.kitnet.kitnet.dto.UserResponseDTO;
+import com.kitnet.kitnet.exception.FirebaseAuthenticationException;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.CustomUserDetailsService;
 import com.kitnet.kitnet.service.UserService;
@@ -36,6 +37,14 @@ public class AuthUserController {
     public ResponseEntity<AuthResponseDTO> registerSimple(@RequestBody @Valid UserSimpleRegisterDTO dto) throws Exception {
         AuthResponseDTO registeredUser = userService.registerSimple(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+    }
+
+    @PostMapping("/firebase-login")
+    public ResponseEntity<AuthResponseDTO> firebaseLogin(
+            @RequestHeader("Authorization") String authorizationHeader) throws FirebaseAuthenticationException, Exception {
+        String idToken = authorizationHeader.substring(7); // Remove "Bearer "
+        AuthResponseDTO response = userService.authenticateWithFirebase(idToken);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")

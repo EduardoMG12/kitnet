@@ -1,9 +1,6 @@
 package com.kitnet.kitnet.model;
 
-import com.kitnet.kitnet.model.enums.LegalDocumentType;
-import com.kitnet.kitnet.model.enums.LegalPersonType;
-import com.kitnet.kitnet.model.enums.RoleName;
-import com.kitnet.kitnet.model.enums.VerificationStatus;
+import com.kitnet.kitnet.model.enums.*;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -40,6 +37,9 @@ public class User implements UserDetails {
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
 
+    @Column(nullable = false, unique = true)
+    private String firebaseUid;
+
     @NotBlank(message = "O nome/razão social não pode estar em branco")
     @Size(max = 200, message = "O nome/razão social deve ter no máximo 200 caracteres")
     @Column(nullable = false)
@@ -62,6 +62,10 @@ public class User implements UserDetails {
     @Size(max = 20, message = "O telefone deve ter no máximo 20 caracteres")
     @Column(nullable = true)
     private String phone;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuthProvider authProvider;
 
     @NotBlank(message = "A senha não pode estar em branco")
     @Size(min = 8, max = 255, message = "A senha deve ter entre 8 e 255 caracteres")
