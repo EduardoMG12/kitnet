@@ -4,10 +4,7 @@ import com.kitnet.kitnet.model.LegalDocument;
 import com.kitnet.kitnet.model.Role;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.model.UserLegalDocument;
-import com.kitnet.kitnet.model.enums.LegalDocumentType;
-import com.kitnet.kitnet.model.enums.RoleName;
-import com.kitnet.kitnet.model.enums.LegalPersonType;
-import com.kitnet.kitnet.model.enums.VerificationStatus;
+import com.kitnet.kitnet.model.enums.*;
 import com.kitnet.kitnet.repository.LegalDocumentRepository;
 import com.kitnet.kitnet.repository.RoleRepository;
 import com.kitnet.kitnet.repository.UserRepository;
@@ -61,6 +58,7 @@ public class AdminUserInitializer implements CommandLineRunner {
             admin.setLegalDocument("00000000000");
             admin.setLegalPersonType(LegalPersonType.PF);
             admin.setAuthorizeCreditCheckAndCommunication(true);
+            admin.setAuthProvider(AuthProvider.EMAIL_PASSWORD);
 
             // Assign roles to admin
             Set<Role> adminRoles = new HashSet<>();

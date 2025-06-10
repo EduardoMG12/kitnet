@@ -169,4 +169,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(InvalidOperationException.class)
+    public ResponseEntity<String> handleInvalidOperationException(InvalidOperationException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.invalid.operation", null, ex.getMessage(), locale);
+        // Ou use a própria mensagem da exceção se ela já for a chave localizada, como você fez em outros lugares
+        // errorMessage = ex.getMessage();
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
 }

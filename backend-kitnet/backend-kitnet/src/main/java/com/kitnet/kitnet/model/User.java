@@ -16,6 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,10 +35,10 @@ public class User implements UserDetails {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Column(name = "id", updatable = false, nullable = false)
+    @Column(name = "id", updatable = false, nullable = false, unique = true)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = true, unique = true)
     private String firebaseUid;
 
     @NotBlank(message = "O nome/razão social não pode estar em branco")
@@ -67,9 +68,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private AuthProvider authProvider;
 
-    @NotBlank(message = "A senha não pode estar em branco")
     @Size(min = 8, max = 255, message = "A senha deve ter entre 8 e 255 caracteres")
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -102,6 +102,25 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AccountStatus accountStatus = AccountStatus.ACTIVE;
+
+    @Column(nullable = true)
+    private String suspensionReason;
+
+    @Column(nullable = true)
+    private LocalDateTime suspensionEndDate;
+
+    @Column(nullable = false)
+    private Boolean isPremiumAccount = false;
+
+    @Column(nullable = true)
+    private LocalDate premiumSubscriptionEndDate;
+
+    @Column(nullable = true)
+    private String lastPaymentStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -151,7 +170,24 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.userLegalDocuments.stream()
+        // Uma conta está habilitada se não está banida/suspensa E aceitou os termos de uso
+        boolean acceptedTerms = this.userLegalDocuments.stream()
                 .anyMatch(doc -> doc.getLegalDocument().getType() == LegalDocumentType.TERMS_OF_USE);
+
+        boolean isActiveStatus = (this.accountStatus == AccountStatus.ACTIVE);
+
+        // Se a conta está suspensa, verificar se a suspensão já terminou
+        if (this.accountStatus == AccountStatus.SUSPENDED && this.suspensionEndDate != null) {
+            isActiveStatus = LocalDateTime.now().isAfter(this.suspensionEndDate);
+            // Se a suspensão terminou, pode mudar o status para ACTIVE aqui, ou deixar um job/ação admin fazer
+            if (isActiveStatus) {
+                this.accountStatus = AccountStatus.ACTIVE; // Auto-ativar após suspensão
+                this.suspensionReason = null;
+                this.suspensionEndDate = null;
+                // Importante: Salvar essa mudança no DB. Isso pode ser feito num UserDetailsService ou num job.
+            }
+        }
+
+        return isActiveStatus && acceptedTerms;
     }
 }

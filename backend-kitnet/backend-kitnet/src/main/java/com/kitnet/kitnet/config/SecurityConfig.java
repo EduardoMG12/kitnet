@@ -56,6 +56,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/properties").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties/{id}").permitAll()
                         .requestMatchers("/api/users/verify/email/confirm").permitAll()
+                        .requestMatchers("/api/users/verify/password/request").permitAll()
+                        .requestMatchers("/api/users/verify/password/reset").permitAll()
 
                         // Protected routes (require authentication)
                         .requestMatchers(HttpMethod.POST, "/properties").authenticated()
