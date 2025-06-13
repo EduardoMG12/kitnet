@@ -10,6 +10,7 @@ import com.kitnet.kitnet.model.*;
 import com.kitnet.kitnet.model.enums.*;
 import com.kitnet.kitnet.repository.*;
 import com.kitnet.kitnet.service.EmailService;
+import com.kitnet.kitnet.service.RoleService;
 import com.kitnet.kitnet.service.UserService;
 import com.kitnet.kitnet.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roleService;
+
 
     @Autowired
     private LegalDocumentRepository legalDocumentRepository;
@@ -93,7 +95,17 @@ public class UserServiceImpl implements UserService {
         user.setLegalPersonType(null);
 
         Set<Role> defaultRoles = new HashSet<>();
-        roleRepository.findByName(RoleName.LESSEE).ifPresent(defaultRoles::add);
+
+        try {
+            Role lesseeRole = roleService.getRoleByName(RoleName.LESSEE); // NOVO MÉTODO no RoleService
+            defaultRoles.add(lesseeRole);
+            user.setRoles(defaultRoles);
+        } catch (RoleNotFoundException e) {
+            throw new InternalServerErrorException(messageSource.getMessage("error.role.not.found.default", new Object[]{RoleName.LESSEE}, LocaleContextHolder.getLocale()), e);
+        }
+
+        user.setRoles(defaultRoles);
+
         user.setRoles(defaultRoles);
 
         user.setAccountVerificationStatus(VerificationStatus.NOT_SUBMITTED);
@@ -195,10 +207,15 @@ public class UserServiceImpl implements UserService {
                 user.setLegalPersonType(null);
 
                 Set<Role> defaultRoles = new HashSet<>();
-                roleRepository.findByName(RoleName.LESSEE)
-                        .ifPresentOrElse(defaultRoles::add, () -> {
-                            throw new RuntimeException(messageSource.getMessage("error.role.not.found.default", new Object[]{RoleName.LESSEE}, locale));
-                        });
+
+                try {
+                    Role lesseeRole = roleService.getRoleByName(RoleName.LESSEE);
+                    defaultRoles.add(lesseeRole);
+                    user.setRoles(defaultRoles);
+                } catch (RoleNotFoundException e) {
+                    throw new InternalServerErrorException(messageSource.getMessage("error.role.not.found.default", new Object[]{RoleName.LESSEE}, LocaleContextHolder.getLocale()), e);
+                }
+
                 user.setRoles(defaultRoles);
 
                 user.setAccountVerificationStatus(VerificationStatus.NOT_SUBMITTED);
@@ -342,14 +359,15 @@ public class UserServiceImpl implements UserService {
                     messageSource.getMessage("error.documents.required", null, locale));
         }
 
-        // Adicionar roles adicionais
         if (dto.getAdditionalRoles() != null && !dto.getAdditionalRoles().isEmpty()) {
+
+            UUID actingUserId = null; // Mude isso para obter o ID do usuário logado (AuthenticationPrincipal no Controller -> passado para o Service).
+            if (actingUserId == null) {
+                actingUserId = userId;
+            }
+
             for (RoleName roleName : dto.getAdditionalRoles()) {
-                Role role = roleRepository.findByName(roleName)
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                                messageSource.getMessage("error.role.not.found",
-                                        new Object[]{roleName}, locale)));
-                user.getRoles().add(role);
+                roleService.assignRoleToUser(userId, roleName, actingUserId);
             }
         }
 

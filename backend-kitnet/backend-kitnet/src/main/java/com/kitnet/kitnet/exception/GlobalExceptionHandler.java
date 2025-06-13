@@ -177,4 +177,28 @@ public class GlobalExceptionHandler {
         // errorMessage = ex.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        // Assume que a mensagem da exceção já contém a chave do MessageSource ou é a mensagem final
+        String errorMessage = messageSource.getMessage("error.role.not.found", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND); // Role não encontrada
+    }
+
+    @ExceptionHandler(UnauthorizedRoleAssignmentException.class)
+    public ResponseEntity<String> handleUnauthorizedRoleAssignmentException(UnauthorizedRoleAssignmentException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.access.denied", null, ex.getMessage(), locale);
+        // Ou uma chave mais específica como "error.role.assign.unauthorized" se quiser ser granular.
+        return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN); // Acesso negado para atribuir role
+    }
+
+    @ExceptionHandler(InvalidRoleOperationException.class)
+    public ResponseEntity<String> handleInvalidRoleOperationException(InvalidRoleOperationException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        // A mensagem da exceção deve ser clara (ex: "A role padrão LESSEE não pode ser removida")
+        String errorMessage = messageSource.getMessage("error.invalid.role.operation", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST); // Operação inválida na role
+    }
 }

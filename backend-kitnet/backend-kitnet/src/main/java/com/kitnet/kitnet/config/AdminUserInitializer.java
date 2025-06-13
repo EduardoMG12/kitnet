@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Component
-@DependsOn("legalTermsInitializer")
+@DependsOn({"legalTermsInitializer", "roleInitializer"})
 public class AdminUserInitializer implements CommandLineRunner {
 
     @Autowired
@@ -38,15 +38,6 @@ public class AdminUserInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // 1. Create and persist all roles if they do not exist
-        for (RoleName roleName : RoleName.values()) {
-            roleRepository.findByName(roleName)
-                    .orElseGet(() -> {
-                        Role newRole = new Role(null, roleName);
-                        return roleRepository.save(newRole);
-                    });
-        }
-        System.out.println("Roles padrão garantidas no banco de dados.");
 
         // 2. Check and create the admin user
         if (userRepository.findByEmail("admin@kitnet.com").isEmpty()) {
