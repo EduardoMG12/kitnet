@@ -7,6 +7,7 @@ import com.kitnet.kitnet.exception.FirebaseAuthenticationException;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.service.CustomUserDetailsService;
 import com.kitnet.kitnet.service.UserService;
+import com.kitnet.kitnet.service.UserVerificationDataService;
 import com.kitnet.kitnet.util.JwtUtil;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class AuthUserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserVerificationDataService userVerificationDataService;
+
 //    @Autowired
 //    private AuthenticationManager authenticationManager;
 //
@@ -36,6 +40,7 @@ public class AuthUserController {
     @PostMapping("/register-simple")
     public ResponseEntity<AuthResponseDTO> registerSimple(@RequestBody @Valid UserSimpleRegisterDTO dto) throws Exception {
         AuthResponseDTO registeredUser = userService.registerSimple(dto);
+        userVerificationDataService.initiateEmailVerification(registeredUser.getUser().getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
     }
 

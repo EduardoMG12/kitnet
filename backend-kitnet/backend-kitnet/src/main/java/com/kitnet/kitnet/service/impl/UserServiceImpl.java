@@ -122,7 +122,6 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
 
