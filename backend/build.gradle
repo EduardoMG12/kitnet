@@ -55,3 +55,13 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+tasks.named('bootRun') {
+	doFirst {
+		jvmArgs = ["-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"] // Opcional: para debug remoto
+	}
+	if (project.hasProperty('springBoot.hotReload') && project.property('springBoot.hotReload').toBoolean()) {
+		jvmArgs += ["-Dspring.devtools.restart.enabled=true", "-Dspring.devtools.restart.pollInterval=1000", "-Dspring.devtools.restart.quietPeriod=500"]
+		jvmArgs += ["-Dspring.devtools.restart.trigger-file=/app/restarts/trigger"] // Exemplo de trigger file
+	}
+}
