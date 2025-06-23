@@ -1,0 +1,97 @@
+services:
+  backend:
+    build: ./backend
+    # build: backend-kitnet/backend-kitnet
+    ports:
+      - "8081:8081"
+      - "5005:5005"
+    environment:
+      # Todas as variáveis do .env do backend, referenciadas do .env raiz
+      # SPRING_APPLICATION_NAME: ${SPRING_APPLICATION_NAME}
+      # APP_BASE_URL: ${APP_BASE_URL}
+      # APP_TOKEN_EXPIRY_MINUTES: ${APP_TOKEN_EXPIRY_MINUTES}
+      # APP_EMAIL_FROM: ${APP_EMAIL_FROM}
+      # MAIL_HOST: ${MAIL_HOST}
+      # MAIL_PORT: ${MAIL_PORT}
+      # MAIL_USERNAME: ${MAIL_USERNAME}
+      # MAIL_PASSWORD: ${MAIL_PASSWORD}
+      # MAIL_PROPERTIES_MAIL_SMTP_AUTH: ${MAIL_PROPERTIES_MAIL_SMTP_AUTH}
+      # MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: ${MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE}
+      # MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: ${MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST}
+      # DATABASE_URL: jdbc:mysql://db:3306/${DATABASE_NAME}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=America/Sao_Paulo
+      # DATABASE_USERNAME: ${DATABASE_USERNAME}
+      # DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      # DATABASE_DRIVER_CLASS_NAME: ${DATABASE_DRIVER_CLASS_NAME}
+      # JPA_HIBERNATE_DDL_AUTO: ${JPA_HIBERNATE_DDL_AUTO}
+      # JPA_PROPERTIES_HIBERNATE_DIALECT: ${JPA_PROPERTIES_HIBERNATE_DIALECT}
+      # JPA_SHOW_SQL: ${JPA_SHOW_SQL}
+      # JPA_FORMAT_SQL: ${JPA_FORMAT_SQL}
+      # SERVER_PORT: ${SERVER_PORT}
+      # SECURITY_USER_NAME: ${SECURITY_USER_NAME}
+      # SECURITY_USER_PASSWORD: ${SECURITY_USER_PASSWORD}
+      # JWT_SECRET: ${JWT_SECRET}
+      # JWT_EXPIRATION: ${JWT_EXPIRATION}
+      # # Caminho do arquivo Firebase DENTRO do contêiner backend
+      # FIREBASE_SERVICE_ACCOUNT_PATH: /app/src/main/resources/kitnetapi-firebase-adminsdk-fbsvc-f31bd8bec4.json 
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      - db
+      - cdn_temp
+    volumes:
+      # Monta o diretório de recursos do Firebase para o contêiner, garantindo que ele esteja acessível
+      # ./backend/src/main/resources/ é o path no host.
+      # /app/src/main/resources/ é o path dentro do contêiner (WORK_DIR + src/main/resources)
+      - ./backend/src:/app/src
+      - ./backend/src/main/resources/kitnetapi-firebase-adminsdk-fbsvc-f31bd8bec4.json:/app/src/main/resources/kitnetapi-firebase-adminsdk-fbsvc-f31bd8bec4.json
+      - ./.env:/app/.env
+      - ./backend/src/main/resources/:/app/src/main/resources/ 
+    command: ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "/app/app.jar", "--spring.profiles.active=dev"]
+  db:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_USERNAME: ${DATABASE_USERNAME}
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      # - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: --default-authentication-plugin=mysql_native_password
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${MYSQL_USERNAME} -p${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  cdn_temp:
+    build: ./cdn-temp
+    ports:
+     # - "8080:80"
+     - "${CDN_TEMP_PORT}:80"
+    volumes:
+      - cdn_files:/usr/share/nginx/html
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      NEXT_PUBLIC_BACKEND_API_URL: http://backend:8081/api
+      NEXT_PUBLIC_CDN_TEMP_URL: http://cdn_temp:80
+      NODE_ENV: development
+    depends_on:
+      - backend
+      - cdn_temp
+    command: ["node_modules/.bin/next", "dev", "-p", "3000"]
+
+volumes:
+  db_data:      # Volume para persistência do MySQL
+  cdn_files:    # Volume para persistência dos arquivos da CDN temporária
+  backend_jar_data: # Volume para o JAR do backend (usado pelo DevTools para hot-reloading)

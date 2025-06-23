@@ -1,0 +1,11 @@
+.gradle/
+build/
+.env
+.git/
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+node_modules/
+npm-debug.log
