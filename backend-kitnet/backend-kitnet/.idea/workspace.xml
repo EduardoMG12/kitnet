@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e6cc4546-3f28-45d8-ad7a-92b7846010d9" name="Changes" comment="feat(auth): Trigger email verification on simple user registration Automatically initiates email verification for users registering via email and password. This sends a verification email upon successful registration to confirm email ownership, improving account security and user trust. Social login accounts (Google, Apple) are excluded from this flow as their emails are already verified by their respective providers.">
+      <change beforePath="$PROJECT_DIR$/../.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/backend-kitnet.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitattributes" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/KitnetApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/config/AdminUserInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/config/FirebaseAdminConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/config/LegalTermsInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/config/MessageConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/config/RoleInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/controller/AdminUserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/controller/AuthUserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/controller/DocumentValidationController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/controller/LegalDocumentController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/controller/UserVerificationController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/ErrorResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/MessageResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/UserDocumentUploadDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/UserResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/emailVerification/EmailVerificationRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/emailVerification/EmailVerificationResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/legalDocument/LegalDocumentRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/passwordReset/PasswordResetConfirmDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/passwordReset/PasswordResetRequestDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/user/AuthResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/user/UserCompleteRegisterResponseDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/user/UserCompleteRegistrationDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/user/UserLoginDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/user/UserProfileUpdateDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/user/UserSimpleRegisterDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/dto/user/UserSimpleResponseDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/EmailAlreadyInUseException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/EmailAlreadyVerifiedException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/EmailNotVerifiedException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/EmailSendException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/FirebaseAuthenticationException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/GlobalExceptionHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/InternalServerErrorException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/InvalidCredentialsException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/InvalidOperationException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/InvalidRoleOperationException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/InvalidVerificationTokenException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/PasswordMismatchException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/ResourceNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/RoleNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/TermsNotAcceptedException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/UnauthorizedRoleAssignmentException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/UserNotFoundException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/exception/VerificationEmailAlreadySentException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/filter/JwtRequestFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/EmailVerificationToken.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/EmploymentHistory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/LegalDocument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/PasswordResetToken.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/Role.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/UserDocument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/UserLegalDocument.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/AccountStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/AuthProvider.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/DocumentType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/LegalDocumentType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/LegalPersonType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/RentalStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/RoleName.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/model/enums/VerificationStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/repository/EmploymentHistoryRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/repository/LegalDocumentRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/repository/PasswordResetTokenRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/repository/RoleRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/repository/UserDocumentRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/repository/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/repository/UserVerificationRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/CustomUserDetailsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/EmailService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/EmploymentHistoryService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/LegalDocumentService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/RoleService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/UserDocumentService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/UserVerificationDataService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/impl/EmailServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/impl/EmploymentHistoryServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/impl/LegalDocumentServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/impl/RoleServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/impl/UserDocumentServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/impl/UserServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/service/impl/UserVerificationDataServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/kitnet/kitnet/util/JwtUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/errors/messages.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/errors/messages_pt_BR.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/images/kitnetHerYouFindYourLocationOfWorld.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/email/password_reset_email.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/email/verification_email.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/email/verification_email_v2.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/PropertyApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/config/SecurityConfigTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/controller/UserControllerTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/dto/UserLoginDTOTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/dto/UserRegisterDTOTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/model/UserTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/service/UserServiceTest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/kitnet/kitnet/service/impl/RentalServiceImplTest.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CompilerWorkspaceConfiguration">
+    <option name="MAKE_PROJECT_ON_SAVE" value="true" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="backend-kitnet" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+        <option value="Interface" />
+        <option value="Exception" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2xds1uW4XTKO7tl89VSC1cMfGf1" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.backend-kitnet [:com.kitnet.kitnet.KitnetApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/hype/projects/kitnet/backend-kitnet/backend-kitnet/src/main/resources/images&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.Java&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/images" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.kitnet.kitnet.config" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="KitnetApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.kitnet.kitnet.KitnetApplication" />
+      <module name="backend-kitnet.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.kitnet.kitnet.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="backend-kitnet.main" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="backend-kitnet.main" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="backend-kitnet.main" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="backend-kitnet.main" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Autodetect">
+      <module name="backend-kitnet.main" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <module name="backend-kitnet.main" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.KitnetApplication" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e6cc4546-3f28-45d8-ad7a-92b7846010d9" name="Changes" comment="" />
+      <created>1748279073522</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1748279073522</updated>
+    </task>
+    <task id="LOCAL-00001" summary="feat: add multi-language erros implemented for pt-BR and en-US">
+      <option name="closed" value="true" />
+      <created>1748374182561</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1748374182561</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat: add multi-language erros implemented for pt-BR and en-US">
+      <option name="closed" value="true" />
+      <created>1748374280857</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1748374280857</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat: add multi-language erros implemented for pt-BR and en-US">
+      <option name="closed" value="true" />
+      <created>1748374370507</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1748374370507</updated>
+    </task>
+    <task id="LOCAL-00004" summary="refactor: change user entity add new table, table role for relation, because one user can be more one role">
+      <option name="closed" value="true" />
+      <created>1748374464509</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1748374464509</updated>
+    </task>
+    <task id="LOCAL-00005" summary="refactor: change user entity add new table, table role for relation, because one user can be more one role and add userDocument entity for future documents validations">
+      <option name="closed" value="true" />
+      <created>1748374620406</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1748374620406</updated>
+    </task>
+    <task id="LOCAL-00006" summary="refactor: remove some logic of controller and add to service, decrease api response for don't leak sensive data, and restructure dir path of DTO">
+      <option name="closed" value="true" />
+      <created>1748374822229</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1748374822229</updated>
+    </task>
+    <task id="LOCAL-00007" summary="refactor: update UserLoginDto path and jwtUtil logic of role">
+      <option name="closed" value="true" />
+      <created>1748375741691</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1748375741691</updated>
+    </task>
+    <task id="LOCAL-00008" summary="backup: somethings be can apresent errors">
+      <option name="closed" value="true" />
+      <created>1748375819040</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1748375819040</updated>
+    </task>
+    <task id="LOCAL-00009" summary="feat: begin implementation AdminUser controller, create admin with running application">
+      <option name="closed" value="true" />
+      <created>1748375872685</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1748375872685</updated>
+    </task>
+    <task id="LOCAL-00010" summary="feat: login with firebase i need test because just can send request for window explorer">
+      <option name="closed" value="true" />
+      <created>1749495425994</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1749495425994</updated>
+    </task>
+    <task id="LOCAL-00011" summary="feat(auth): Implement password reset and email verification for EMAIL_PASSWORD users:&#10;Implement password reset and email verification flows, specifically for users authenticated via EMAIL_PASSWORD. This includes new token entities, service logic, DTOs, email templates, and API endpoints. Social login accounts (Google, Apple) are now explicitly excluded from these flows to respect their native authentication mechanisms, preventing invalid operations.">
+      <option name="closed" value="true" />
+      <created>1749584031697</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1749584031697</updated>
+    </task>
+    <task id="LOCAL-00012" summary="feat: implement .env file to manage enviroments variables">
+      <option name="closed" value="true" />
+      <created>1749838449750</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1749838449750</updated>
+    </task>
+    <task id="LOCAL-00013" summary="feat(auth): Trigger email verification on simple user registration Automatically initiates email verification for users registering via email and password. This sends a verification email upon successful registration to confirm email ownership, improving account security and user trust. Social login accounts (Google, Apple) are excluded from this flow as their emails are already verified by their respective providers.">
+      <option name="closed" value="true" />
+      <created>1749839614049</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1749839614049</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
+    <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: add multi-language erros implemented for pt-BR and en-US" />
+    <MESSAGE value="refactor: change user entity add new table, table role for relation, because one user can be more one role and add entity userDocument for validation documents how cpf, rg, cnpj..." />
+    <MESSAGE value="refactor: change user entity add new table, table role for relation, because one user can be more one role" />
+    <MESSAGE value="refactor: change user entity add new table, table role for relation, because one user can be more one role and add userDocument entity for future documents validations" />
+    <MESSAGE value="refactor: remove some logic of controller and add to service, decrease api response for don't leak sensive data, and restructure dir path of DTO" />
+    <MESSAGE value="refactor: update UserLoginDto path and jwtUtil logic of role" />
+    <MESSAGE value="backup: somethings be can apresent errors" />
+    <MESSAGE value="feat: begin implementation AdminUser controller, create admin with running application" />
+    <MESSAGE value="feat: login with firebase i need test because just can send request for window explorer" />
+    <MESSAGE value="feat(auth): Implement password reset and email verification for EMAIL_PASSWORD users:&#10;Implement password reset and email verification flows, specifically for users authenticated via EMAIL_PASSWORD. This includes new token entities, service logic, DTOs, email templates, and API endpoints. Social login accounts (Google, Apple) are now explicitly excluded from these flows to respect their native authentication mechanisms, preventing invalid operations." />
+    <MESSAGE value="feat: implement .env file to manage enviroments variables" />
+    <MESSAGE value="feat(auth): Trigger email verification on simple user registration Automatically initiates email verification for users registering via email and password. This sends a verification email upon successful registration to confirm email ownership, improving account security and user trust. Social login accounts (Google, Apple) are excluded from this flow as their emails are already verified by their respective providers." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): Trigger email verification on simple user registration Automatically initiates email verification for users registering via email and password. This sends a verification email upon successful registration to confirm email ownership, improving account security and user trust. Social login accounts (Google, Apple) are excluded from this flow as their emails are already verified by their respective providers." />
+  </component>
+</project>

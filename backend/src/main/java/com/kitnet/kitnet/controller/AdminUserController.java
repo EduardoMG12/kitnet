@@ -14,14 +14,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/admin/users")
+@RequestMapping("/api/admin")
 @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_MODERATOR')")
 public class AdminUserController {
 
     @Autowired
     private UserService userService;
 
-    @GetMapping("/needs-verification")
+    @GetMapping("/users-needs-verification")
     public ResponseEntity<List<UserResponseDTO>> getUsersNeedingVerification(@RequestParam(required = false) VerificationStatus status) {
         List<User> users;
         if (status == null) {
