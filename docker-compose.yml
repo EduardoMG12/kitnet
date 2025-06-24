@@ -46,7 +46,8 @@ services:
     ports:
      - "${CDN_TEMP_PORT}:80"
     volumes:
-      - cdn_files:/usr/share/nginx/html
+      - ./cdn-temp/files:/usr/share/nginx/html
+    restart: on-failure
 
   frontend:
     build: ./frontend

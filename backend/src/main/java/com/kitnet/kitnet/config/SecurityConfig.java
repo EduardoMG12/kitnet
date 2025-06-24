@@ -64,6 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/properties/{id}").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/properties/{id}").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/users/verify/email/initiate").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/uploads/profile-picture").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/uploads/*").authenticated()
 
                         // All other requests require authentication by default.
                         .anyRequest().authenticated()

@@ -23,21 +23,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private UserVerificationRepository userVerificationRepository;
 
     @Autowired
     private EmailService emailService;
@@ -64,10 +62,58 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDocumentRepository userDocumentRepository;
 
-    private static final Pattern UUID_PATTERN = Pattern.compile("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+    @Autowired
+    private  UploadServiceImpl uploadService;
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Override
+    @Transactional
+    public String updateProfilePicture(UUID userId, MultipartFile file) throws UserNotFoundException, IOException, FileUploadException, InvalidFileFormatException, FileSizeExceededException {
+        Locale locale = LocaleContextHolder.getLocale();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, locale)));
+
+        String oldImageUrl = user.getProfilePictureUrl();
+        if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+            try {
+                uploadService.deleteFile(oldImageUrl);
+            } catch (IOException | FileUploadException e) {
+                System.err.println("Failed to delete old profile picture for user " + userId + ": " + oldImageUrl + ". Error: " + e.getMessage());
+            }
+        }
+
+        if (file.isEmpty()) {
+            throw new FileUploadException(messageSource.getMessage("error.file.empty", null, locale));
+        }
+
+        // Validate file size (e.g., max 2MB for profile pictures)
+        final long MAX_PROFILE_PIC_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
+        if (file.getSize() > MAX_PROFILE_PIC_SIZE_BYTES) {
+            long maxFileSizeMB = MAX_PROFILE_PIC_SIZE_BYTES / (1024 * 1024);
+            throw new FileSizeExceededException(messageSource.getMessage("error.file.size.exceeded", new Object[]{maxFileSizeMB}, locale));
+        }
+
+        // Validate file type (only image types are allowed)
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new InvalidFileFormatException(messageSource.getMessage("error.file.format.invalid", null, locale));
+        }
+        // Optional: More specific image types check:
+        // if (!(contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/gif"))) {
+        //     throw new InvalidFileFormatException(messageSource.getMessage("error.file.format.invalid.image", null, locale));
+        // }
+
+        String subdirectory = "users/" + userId.toString() + "/avatar";
+        String imageUrl = uploadService.uploadFile(file, subdirectory);
+
+        user.setProfilePictureUrl(imageUrl);
+        userRepository.save(user);
+
+        return imageUrl;
+    }
 
     @Override
     @Transactional

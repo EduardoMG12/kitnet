@@ -10,8 +10,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-import org.springframework.security.authentication.BadCredentialsException; // Importar esta classe
+import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -59,7 +61,6 @@ public class GlobalExceptionHandler {
         String errorMessage = messageSource.getMessage("error.password.mismatch", null, ex.getMessage(), locale);
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
-
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
         Locale locale = LocaleContextHolder.getLocale();
@@ -145,7 +146,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleEmailAlreadyVerifiedException(EmailAlreadyVerifiedException ex) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.email.already.verified", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST); // Retorne o mesmo status que no @ResponseStatus
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(VerificationEmailAlreadySentException.class)
@@ -173,32 +174,64 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleInvalidOperationException(InvalidOperationException ex) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.invalid.operation", null, ex.getMessage(), locale);
-        // Ou use a própria mensagem da exceção se ela já for a chave localizada, como você fez em outros lugares
-        // errorMessage = ex.getMessage();
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException ex) {
         Locale locale = LocaleContextHolder.getLocale();
-        // Assume que a mensagem da exceção já contém a chave do MessageSource ou é a mensagem final
         String errorMessage = messageSource.getMessage("error.role.not.found", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND); // Role não encontrada
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnauthorizedRoleAssignmentException.class)
     public ResponseEntity<String> handleUnauthorizedRoleAssignmentException(UnauthorizedRoleAssignmentException ex) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.access.denied", null, ex.getMessage(), locale);
-        // Ou uma chave mais específica como "error.role.assign.unauthorized" se quiser ser granular.
-        return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN); // Acesso negado para atribuir role
+        return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(InvalidRoleOperationException.class)
     public ResponseEntity<String> handleInvalidRoleOperationException(InvalidRoleOperationException ex) {
         Locale locale = LocaleContextHolder.getLocale();
-        // A mensagem da exceção deve ser clara (ex: "A role padrão LESSEE não pode ser removida")
         String errorMessage = messageSource.getMessage("error.invalid.role.operation", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST); // Operação inválida na role
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(FileUploadException.class)
+    public ResponseEntity<String> handleFileUploadException(FileUploadException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.file.upload.failed", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(InvalidFileFormatException.class)
+    public ResponseEntity<String> handleInvalidFileFormatException(InvalidFileFormatException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.file.format.invalid", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(FileSizeExceededException.class)
+    public ResponseEntity<String> handleFileSizeExceededException(FileSizeExceededException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.file.size.exceeded", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String maxFileSizeFormatted = (ex.getMaxUploadSize() / (1024 * 1024)) + "MB";
+        String errorMessage = messageSource.getMessage("error.file.size.exceeded", new Object[]{maxFileSizeFormatted}, "File size exceeds limit.", locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.PAYLOAD_TOO_LARGE);
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<String> handleMissingServletRequestPartException(MissingServletRequestPartException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.file.empty", null, "File is required.", locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
 }
