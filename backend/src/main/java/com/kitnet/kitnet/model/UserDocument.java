@@ -1,12 +1,14 @@
 package com.kitnet.kitnet.model;
 
 import com.kitnet.kitnet.model.enums.DocumentType;
-import com.kitnet.kitnet.model.enums.VerificationStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import java.time.LocalDate;
+
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -28,15 +30,11 @@ public class UserDocument {
     @Column(nullable = false)
     private DocumentType documentType;
 
-    @Column(nullable = false)
-    private String documentUrl;
 
-    @Column(nullable = false)
-    private LocalDate uploadDate;
+    @OneToMany(mappedBy = "userDocument", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserDocumentVersion> versions = new HashSet<>();
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private VerificationStatus verificationStatus;
-
-    private String rejectionReason;
+    public Optional<UserDocumentVersion> getCurrentVersion() {
+        return this.versions.stream().filter(UserDocumentVersion::isCurrentVersion).findFirst();
+    }
 }

@@ -3,14 +3,16 @@ package com.kitnet.kitnet.service.impl;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
-import com.kitnet.kitnet.dto.UserDocumentUploadDTO;
+
 import com.kitnet.kitnet.dto.user.*;
+import com.kitnet.kitnet.dto.userDocument.UserDocumentUploadDTO;
 import com.kitnet.kitnet.exception.*;
 import com.kitnet.kitnet.model.*;
 import com.kitnet.kitnet.model.enums.*;
 import com.kitnet.kitnet.repository.*;
 import com.kitnet.kitnet.service.EmailService;
 import com.kitnet.kitnet.service.RoleService;
+import com.kitnet.kitnet.service.UserDocumentService;
 import com.kitnet.kitnet.service.UserService;
 import com.kitnet.kitnet.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +70,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserDocumentService userDocumentService;
 
     @Override
     @Transactional
@@ -302,20 +308,18 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User completeRegistrationDetails(UUID userId, UserCompleteRegistrationDTO dto)
-            throws UserNotFoundException, EmailAlreadyInUseException, EmailNotVerifiedException, TermsNotAcceptedException {
+            throws UserNotFoundException, EmailAlreadyInUseException, EmailNotVerifiedException, TermsNotAcceptedException, IOException {
         Locale locale = LocaleContextHolder.getLocale();
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(
                         messageSource.getMessage("error.user.not.found", null, locale)));
 
-        // Verificar se o e-mail está verificado
         if (!user.getIsEmailVerified()) {
             throw new EmailNotVerifiedException(
                     messageSource.getMessage("error.email.not.verified", null, locale));
         }
 
-        // Validar legalDocument
         if (dto.getLegalDocument() != null && !dto.getLegalDocument().isEmpty()) {
             Optional<User> existingUserWithDoc = userRepository.findByLegalDocument(dto.getLegalDocument());
             if (existingUserWithDoc.isPresent() && !existingUserWithDoc.get().getId().equals(user.getId())) {
@@ -329,18 +333,16 @@ public class UserServiceImpl implements UserService {
                     messageSource.getMessage("error.validation.field.missing", new Object[]{"legalDocument"}, locale));
         }
 
-        // Validar phone
-        if (dto.getPhone() != null && !dto.getPhone().isEmpty()) {
-            if (!dto.getPhone().equals(user.getPhone())) {
-                user.setPhone(dto.getPhone());
-                user.setIsPhoneVerified(false);
-            }
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    messageSource.getMessage("error.phone.required", null, locale));
-        }
+//        if (dto.getPhone() != null && !dto.getPhone().isEmpty()) {
+//            if (!dto.getPhone().equals(user.getPhone())) {
+//                user.setPhone(dto.getPhone());
+//                user.setIsPhoneVerified(false);
+//            }
+//        } else {
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//                    messageSource.getMessage("error.phone.required", null, locale));
+//        }
 
-        // Associar termos de LGPD e Privacidade
         if (!dto.getAcceptTermsOfLGPD()) {
             throw new TermsNotAcceptedException(
                     messageSource.getMessage("error.lgpd.terms.required", null, locale));
@@ -350,7 +352,6 @@ public class UserServiceImpl implements UserService {
                     messageSource.getMessage("error.privacy.policy.required", null, locale));
         }
 
-        // Buscar documentos legais ativos
         LegalDocument lgpdTerms = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.LGPD_TERMS)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         messageSource.getMessage("error.legal.document.not.found.active",
@@ -360,7 +361,6 @@ public class UserServiceImpl implements UserService {
                         messageSource.getMessage("error.legal.document.not.found.active",
                                 new Object[]{LegalDocumentType.PRIVACY_POLICY}, locale)));
 
-        // Criar UserLegalDocuments
         UserLegalDocument lgpdDoc = UserLegalDocument.builder()
                 .user(user)
                 .legalDocument(lgpdTerms)
@@ -376,7 +376,6 @@ public class UserServiceImpl implements UserService {
         user.getUserLegalDocuments().add(lgpdDoc);
         user.getUserLegalDocuments().add(privacyDoc);
 
-        // Validar authorizeCreditCheckAndCommunication
         if (dto.getAuthorizeCreditCheckAndCommunication() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     messageSource.getMessage("error.validation.field.missing",
@@ -384,30 +383,44 @@ public class UserServiceImpl implements UserService {
         }
         user.setAuthorizeCreditCheckAndCommunication(dto.getAuthorizeCreditCheckAndCommunication());
 
-        // Configurar acceptMarketingCommunications
         user.setAcceptMarketingCommunications(dto.getAcceptMarketingCommunications() != null
                 ? dto.getAcceptMarketingCommunications() : false);
 
-        // Configurar campos opcionais
         user.setProfession(dto.getProfession());
         user.setEmergencyContactName(dto.getEmergencyContactName());
         user.setEmergencyContactPhone(dto.getEmergencyContactPhone());
 
-        // Salvar documentos
         if (dto.getDocuments() != null && !dto.getDocuments().isEmpty()) {
-            // Validar documentos obrigatórios
-            validateRequiredDocuments(dto.getDocuments(), user.getLegalPersonType());
+            UUID actingUserId;
+            if (SecurityContextHolder.getContext().getAuthentication() != null &&
+                    SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
+                actingUserId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+            } else {
+                actingUserId = userId; // Fallback para casos de teste/não autenticado
+            }
+
+            List<MultipartFile> filesToUpload = new ArrayList<>();
+            List<DocumentType> typesToUpload = new ArrayList<>();
             for (UserDocumentUploadDTO docDto : dto.getDocuments()) {
-                saveOrUpdateUserDocument(user, docDto.getDocumentType(), docDto.getDocumentUrl());
+                if (docDto.getFile() != null && !docDto.getFile().isEmpty()) {
+                    filesToUpload.add(docDto.getFile());
+                    typesToUpload.add(docDto.getDocumentType());
+                } else {
+                    System.err.println("Warning: UserDocumentUploadDTO contained a null/empty file for type: " + docDto.getDocumentType() + " for user " + userId);
+                }
+            }
+
+            if (!filesToUpload.isEmpty()) {
+                userDocumentService.uploadMultipleVerificationDocuments(userId, filesToUpload, typesToUpload, actingUserId);
             }
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    messageSource.getMessage("error.documents.required", null, locale));
+            System.out.println("No documents provided during completeRegistrationDetails. User will need to upload them later.");
         }
+
 
         if (dto.getAdditionalRoles() != null && !dto.getAdditionalRoles().isEmpty()) {
 
-            UUID actingUserId = null; // Mude isso para obter o ID do usuário logado (AuthenticationPrincipal no Controller -> passado para o Service).
+            UUID actingUserId = null;
             if (actingUserId == null) {
                 actingUserId = userId;
             }
@@ -424,62 +437,62 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
-    private void validateRequiredDocuments(List<UserDocumentUploadDTO> documents, LegalPersonType legalPersonType) {
-        List<DocumentType> requiredDocs = legalPersonType == LegalPersonType.PF
-                ? List.of(DocumentType.CPF, DocumentType.SELFIE_COM_DOCUMENTO, DocumentType.COMPROVANTE_RESIDENCIA)
-                : List.of(DocumentType.CNPJ, DocumentType.CONTRATO_SOCIAL, DocumentType.COMPROVANTE_RESIDENCIA);
+//    private void validateRequiredDocuments(List<UserDocumentUploadDTO> documents, LegalPersonType legalPersonType) {
+//        List<DocumentType> requiredDocs = legalPersonType == LegalPersonType.PF
+//                ? List.of(DocumentType.CPF, DocumentType.SELFIE_COM_DOCUMENTO, DocumentType.COMPROVANTE_RESIDENCIA)
+//                : List.of(DocumentType.CNPJ, DocumentType.CONTRATO_SOCIAL, DocumentType.COMPROVANTE_RESIDENCIA);
+//
+//        // Verificar se todos os documentos obrigatórios estão presentes
+//        for (DocumentType requiredDoc : requiredDocs) {
+//            boolean found = documents.stream().anyMatch(doc -> doc.getDocumentType() == requiredDoc);
+//            if (!found) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//                        messageSource.getMessage("error.document.required",
+//                                new Object[]{requiredDoc}, LocaleContextHolder.getLocale()));
+//            }
+//        }
+//
+//        // Para PF, verificar se RG ou CNH foi enviado
+//        if (legalPersonType == LegalPersonType.PF) {
+//            boolean hasRg = documents.stream().anyMatch(doc ->
+//                    doc.getDocumentType() == DocumentType.RG_FRENTE || doc.getDocumentType() == DocumentType.RG_VERSO);
+//            boolean hasCnh = documents.stream().anyMatch(doc ->
+//                    doc.getDocumentType() == DocumentType.CNH_FRENTE || doc.getDocumentType() == DocumentType.CNH_VERSO);
+//            if (!hasRg && !hasCnh) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//                        messageSource.getMessage("error.identity.document.required", null, LocaleContextHolder.getLocale()));
+//            }
+//        }
+//
+//        // Para REAL_ESTATE_AGENT, verificar CRECI
+//        if (documents.stream().anyMatch(doc -> doc.getDocumentType() == DocumentType.CRECI)) {
+//            boolean hasCreci = documents.stream().anyMatch(doc -> doc.getDocumentType() == DocumentType.CRECI);
+//            if (!hasCreci) {
+//                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+//                        messageSource.getMessage("error.creci.required", null, LocaleContextHolder.getLocale()));
+//            }
+//        }
+//    }
 
-        // Verificar se todos os documentos obrigatórios estão presentes
-        for (DocumentType requiredDoc : requiredDocs) {
-            boolean found = documents.stream().anyMatch(doc -> doc.getDocumentType() == requiredDoc);
-            if (!found) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        messageSource.getMessage("error.document.required",
-                                new Object[]{requiredDoc}, LocaleContextHolder.getLocale()));
-            }
-        }
-
-        // Para PF, verificar se RG ou CNH foi enviado
-        if (legalPersonType == LegalPersonType.PF) {
-            boolean hasRg = documents.stream().anyMatch(doc ->
-                    doc.getDocumentType() == DocumentType.RG_FRENTE || doc.getDocumentType() == DocumentType.RG_VERSO);
-            boolean hasCnh = documents.stream().anyMatch(doc ->
-                    doc.getDocumentType() == DocumentType.CNH_FRENTE || doc.getDocumentType() == DocumentType.CNH_VERSO);
-            if (!hasRg && !hasCnh) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        messageSource.getMessage("error.identity.document.required", null, LocaleContextHolder.getLocale()));
-            }
-        }
-
-        // Para REAL_ESTATE_AGENT, verificar CRECI
-        if (documents.stream().anyMatch(doc -> doc.getDocumentType() == DocumentType.CRECI)) {
-            boolean hasCreci = documents.stream().anyMatch(doc -> doc.getDocumentType() == DocumentType.CRECI);
-            if (!hasCreci) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        messageSource.getMessage("error.creci.required", null, LocaleContextHolder.getLocale()));
-            }
-        }
-    }
-
-    private void saveOrUpdateUserDocument(User user, DocumentType type, String url) {
-        Optional<UserDocument> existingDoc = userDocumentRepository.findByUserIdAndDocumentType(user.getId(), type);
-        UserDocument document;
-        if (existingDoc.isPresent()) {
-            document = existingDoc.get();
-            document.setDocumentUrl(url);
-            document.setUploadDate(LocalDate.now());
-            document.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
-            document.setRejectionReason(null);
-        } else {
-            document = new UserDocument();
-            document.setUser(user);
-            document.setDocumentType(type);
-            document.setDocumentUrl(url);
-            document.setUploadDate(LocalDate.now());
-            document.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
-        }
-        userDocumentRepository.save(document);
-    }
+//    private void saveOrUpdateUserDocument(User user, DocumentType type, String url) {
+//        Optional<UserDocument> existingDoc = userDocumentRepository.findByUserIdAndDocumentType(user.getId(), type);
+//        UserDocument document;
+//        if (existingDoc.isPresent()) {
+//            document = existingDoc.get();
+//            document.setDocumentUrl(url);
+//            document.setUploadDate(LocalDate.now());
+//            document.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
+//            document.setRejectionReason(null);
+//        } else {
+//            document = new UserDocument();
+//            document.setUser(user);
+//            document.setDocumentType(type);
+//            document.setDocumentUrl(url);
+//            document.setUploadDate(LocalDate.now());
+//            document.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
+//        }
+//        userDocumentRepository.save(document);
+//    }
 
 //    @Transactional
 //    public User addRoleToUser(UUID userId, RoleName roleName) throws UserNotFoundException {

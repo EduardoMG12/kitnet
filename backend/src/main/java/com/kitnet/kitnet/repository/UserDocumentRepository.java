@@ -14,5 +14,4 @@ import java.util.UUID;
 public interface UserDocumentRepository extends JpaRepository<UserDocument, UUID> {
     List<UserDocument> findByUserId(UUID userId);
     Optional<UserDocument> findByUserIdAndDocumentType(UUID userId, DocumentType documentType);
-    List<UserDocument> findByVerificationStatus(VerificationStatus status);
 }

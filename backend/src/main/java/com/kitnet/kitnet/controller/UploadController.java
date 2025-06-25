@@ -2,6 +2,7 @@ package com.kitnet.kitnet.controller;
 
 import com.kitnet.kitnet.dto.upload.UserProfilePictureUploadResponseDTO;
 import com.kitnet.kitnet.model.User;
+import com.kitnet.kitnet.model.enums.DocumentType;
 import com.kitnet.kitnet.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,22 +16,26 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/uploads")
 public class UploadController {
 
     @Autowired
-    private UserService userService;
+    private
+    UserService userService;
 
-    @PostMapping("/profile-picture")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserProfilePictureUploadResponseDTO> uploadUserProfilePicture(
-            @AuthenticationPrincipal User authenticatedUser,
-            @RequestParam("file") MultipartFile file) throws IOException, Exception {
-        String imageUrl = userService.updateProfilePicture(authenticatedUser.getId(), file);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new UserProfilePictureUploadResponseDTO("Profile picture uploaded successfully.", imageUrl, authenticatedUser.getId().toString()));
-    }
+
+//    @PostMapping("/documents/upload")
+//    @PreAuthorize("isAuthenticated()")
+//    public ResponseEntity<List<Map<String, String>>> uploadUserDocuments(
+//            @AuthenticationPrincipal User authenticatedUser,
+//            @RequestParam("files") List<MultipartFile> files,
+//            @RequestParam("types") List<DocumentType> documentTypes) throws Exception {
+//
+//    }
+        //
 }

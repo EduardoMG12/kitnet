@@ -14,7 +14,7 @@ import java.util.UUID;
 
 public interface UserService {
     AuthResponseDTO registerSimple(UserSimpleRegisterDTO dto) throws EmailAlreadyInUseException, PasswordMismatchException;
-    User completeRegistrationDetails(UUID userId, UserCompleteRegistrationDTO dto) throws UserNotFoundException, EmailAlreadyInUseException;
+    User completeRegistrationDetails(UUID userId, UserCompleteRegistrationDTO dto) throws UserNotFoundException, EmailAlreadyInUseException, IOException;
     AuthResponseDTO login(UserLoginDTO dto) throws UserNotFoundException, InvalidCredentialsException;
     User updateProfile(UUID userId, UserProfileUpdateDTO dto) throws UserNotFoundException, EmailAlreadyInUseException;
     AuthResponseDTO authenticateWithFirebase(String firebaseIdToken) throws FirebaseAuthenticationException, UserNotFoundException;

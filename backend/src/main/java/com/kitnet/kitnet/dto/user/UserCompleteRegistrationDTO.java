@@ -1,6 +1,6 @@
 package com.kitnet.kitnet.dto.user;
 
-import com.kitnet.kitnet.dto.UserDocumentUploadDTO;
+import com.kitnet.kitnet.dto.userDocument.UserDocumentUploadDTO;
 import com.kitnet.kitnet.model.enums.RoleName;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

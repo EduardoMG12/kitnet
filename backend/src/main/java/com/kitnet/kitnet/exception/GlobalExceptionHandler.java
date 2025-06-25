@@ -234,4 +234,33 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DocumentNotFoundException.class)
+    public ResponseEntity<String> handleDocumentNotFoundException(DocumentNotFoundException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.document.not.found", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnauthorizedOperationException.class)
+    public ResponseEntity<String> handleUnauthorizedOperationException(UnauthorizedOperationException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.document.upload.unauthorized", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN); // HTTP 403 Forbidden
+    }
+
+    @ExceptionHandler(DocumentAlreadyExistsException.class)
+    public ResponseEntity<String> handleDocumentAlreadyExistsException(DocumentAlreadyExistsException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        String errorMessage = messageSource.getMessage("error.document.already.exists", null, ex.getMessage(), locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT); // HTTP 409 Conflict
+    }
+
+    @ExceptionHandler(DocumentValidationException.class)
+    public ResponseEntity<String> handleDocumentValidationException(DocumentValidationException ex) {
+        Locale locale = LocaleContextHolder.getLocale();
+        // Assume que a mensagem da exceção já contém os detalhes da validação falha
+        String errorMessage = messageSource.getMessage("error.document.validation.failed", new Object[]{ex.getMessage()}, "Document validation failed.", locale);
+        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+    }
+
 }
