@@ -16,7 +16,7 @@ import java.util.UUID;
 @Service
 public class UploadServiceImpl implements UploadService {
 
-    @Value("${app.upload.local-base-path:./cdn-temp/files}") // Base path on host or container volume
+    @Value("${app.upload.local-base-path}")
     private String uploadBasePath;
 
     @Value("${app.cdn.temp-url:http://localhost:8080}") // Base URL for the temporary CDN
