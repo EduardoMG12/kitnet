@@ -1,6 +1,5 @@
 package com.kitnet.kitnet.dto.user;
 
-import com.kitnet.kitnet.dto.userDocument.UserDocumentUploadDTO;
 import com.kitnet.kitnet.model.enums.RoleName;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,6 +29,7 @@ public class UserCompleteRegistrationDTO {
     @NotNull(message = "error.validation.field.missing")
     private Boolean authorizeCreditCheckAndCommunication;
 
+    @NotNull(message = "error.validation.field.missing")
     private Boolean acceptMarketingCommunications;
 
     @Size(max = 100, message = "error.profession.invalid")
@@ -40,8 +40,6 @@ public class UserCompleteRegistrationDTO {
 
     @Size(max = 20, message = "error.emergency.contact.phone.invalid")
     private String emergencyContactPhone;
-
-    private List<UserDocumentUploadDTO> documents;
 
     private List<RoleName> additionalRoles;
 }

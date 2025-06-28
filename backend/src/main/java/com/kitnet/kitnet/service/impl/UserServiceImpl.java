@@ -4,9 +4,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 
+import com.kitnet.kitnet.dto.legalDocument.LegalDocumentDTO;
 import com.kitnet.kitnet.dto.user.*;
-import com.kitnet.kitnet.dto.userDocument.UserDocumentUploadDTO;
 import com.kitnet.kitnet.exception.*;
+import com.kitnet.kitnet.mapper.LegalDocumentMapper;
+import com.kitnet.kitnet.mapper.UserMapper;
 import com.kitnet.kitnet.model.*;
 import com.kitnet.kitnet.model.enums.*;
 import com.kitnet.kitnet.repository.*;
@@ -107,10 +109,10 @@ public class UserServiceImpl implements UserService {
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new InvalidFileFormatException(messageSource.getMessage("error.file.format.invalid", null, locale));
         }
-        // Optional: More specific image types check:
-        // if (!(contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/gif"))) {
-        //     throw new InvalidFileFormatException(messageSource.getMessage("error.file.format.invalid.image", null, locale));
-        // }
+        
+         if (!(contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/gif"))) {
+             throw new InvalidFileFormatException(messageSource.getMessage("error.file.format.invalid.image", null, locale));
+         }
 
         String subdirectory = "users/" + userId.toString() + "/avatar";
         String imageUrl = uploadService.uploadFile(file, subdirectory);
@@ -123,7 +125,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public AuthResponseDTO registerSimple(UserSimpleRegisterDTO dto) throws EmailAlreadyInUseException, PasswordMismatchException {
+    public AuthResponseWithTermsDTO registerSimple(UserSimpleRegisterDTO dto) throws EmailAlreadyInUseException, PasswordMismatchException {
         if (!dto.getPassword().equals(dto.getConfirmPassword())) {
             throw new PasswordMismatchException();
         }
@@ -149,16 +151,12 @@ public class UserServiceImpl implements UserService {
         Set<Role> defaultRoles = new HashSet<>();
 
         try {
-            Role lesseeRole = roleService.getRoleByName(RoleName.LESSEE); // NOVO MÉTODO no RoleService
+            Role lesseeRole = roleService.getRoleByName(RoleName.LESSEE);
             defaultRoles.add(lesseeRole);
             user.setRoles(defaultRoles);
         } catch (RoleNotFoundException e) {
             throw new InternalServerErrorException(messageSource.getMessage("error.role.not.found.default", new Object[]{RoleName.LESSEE}, LocaleContextHolder.getLocale()), e);
         }
-
-        user.setRoles(defaultRoles);
-
-        user.setRoles(defaultRoles);
 
         user.setAccountVerificationStatus(VerificationStatus.NOT_SUBMITTED);
         user.setMonthlyGrossIncome(null);
@@ -169,9 +167,12 @@ public class UserServiceImpl implements UserService {
         user.setIsPhoneVerified(false);
         user.setAuthProvider(AuthProvider.EMAIL_PASSWORD);
 
+        LegalDocumentDTO acceptedTermsOfUseDTO = null;
+        List<LegalDocumentDTO> allAcceptedLegalDocuments = new ArrayList<>();
+
         if (dto.getAcceptTerms()) {
             LegalDocument termsOfUse = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.TERMS_OF_USE)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Termos de uso ativos não encontrados."));
+                    .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.legal.document.not.found.active", new Object[]{LegalDocumentType.TERMS_OF_USE}, LocaleContextHolder.getLocale())));
 
             UserLegalDocument userLegalDoc = UserLegalDocument.builder()
                     .user(user)
@@ -180,6 +181,9 @@ public class UserServiceImpl implements UserService {
                     .acceptanceDate(LocalDate.now())
                     .build();
             user.getUserLegalDocuments().add(userLegalDoc);
+
+            acceptedTermsOfUseDTO = LegalDocumentMapper.toLegalDocumentDTO(termsOfUse);
+            allAcceptedLegalDocuments.add(acceptedTermsOfUseDTO);
         } else {
             throw new TermsNotAcceptedException();
         }
@@ -197,10 +201,9 @@ public class UserServiceImpl implements UserService {
 
         final String jwt = jwtUtil.generateToken(user);
 
-        UserSimpleResponseDTO userResponse = toUserSimpleResponseDTO(user);
+        UserSimpleResponseDTO userResponse = UserMapper.toUserSimpleResponseDTO(user);
 
-
-        return new AuthResponseDTO(userResponse, jwt);
+        return new AuthResponseWithTermsDTO(userResponse, allAcceptedLegalDocuments, jwt);
     }
 
 
@@ -294,7 +297,7 @@ public class UserServiceImpl implements UserService {
             }
 
             final String jwt = jwtUtil.generateToken(user);
-            UserSimpleResponseDTO userResponse = toUserSimpleResponseDTO(user);
+            UserSimpleResponseDTO userResponse = UserMapper.toUserSimpleResponseDTO(user);
             return new AuthResponseDTO(userResponse, jwt);
 
         } catch (FirebaseAuthException e) {
@@ -333,21 +336,25 @@ public class UserServiceImpl implements UserService {
                     messageSource.getMessage("error.validation.field.missing", new Object[]{"legalDocument"}, locale));
         }
 
-//        if (dto.getPhone() != null && !dto.getPhone().isEmpty()) {
-//            if (!dto.getPhone().equals(user.getPhone())) {
-//                user.setPhone(dto.getPhone());
-//                user.setIsPhoneVerified(false);
-//            }
-//        } else {
-//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-//                    messageSource.getMessage("error.phone.required", null, locale));
-//        }
+        if (dto.getPhone() != null && !dto.getPhone().isEmpty()) {
+            if (!dto.getPhone().equals(user.getPhone())) {
+                user.setPhone(dto.getPhone());
+                user.setIsPhoneVerified(false);
+            }
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    messageSource.getMessage("error.phone.required", null, locale));
+        }
 
         if (!dto.getAcceptTermsOfLGPD()) {
             throw new TermsNotAcceptedException(
                     messageSource.getMessage("error.lgpd.terms.required", null, locale));
         }
         if (!dto.getAcceptTermsOfPrivacy()) {
+            throw new TermsNotAcceptedException(
+                    messageSource.getMessage("error.privacy.policy.required", null, locale));
+        }
+        if (!dto.getAuthorizeCreditCheckAndCommunication()) {
             throw new TermsNotAcceptedException(
                     messageSource.getMessage("error.privacy.policy.required", null, locale));
         }
@@ -390,33 +397,6 @@ public class UserServiceImpl implements UserService {
         user.setEmergencyContactName(dto.getEmergencyContactName());
         user.setEmergencyContactPhone(dto.getEmergencyContactPhone());
 
-        if (dto.getDocuments() != null && !dto.getDocuments().isEmpty()) {
-            UUID actingUserId;
-            if (SecurityContextHolder.getContext().getAuthentication() != null &&
-                    SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof User) {
-                actingUserId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-            } else {
-                actingUserId = userId; // Fallback para casos de teste/não autenticado
-            }
-
-            List<MultipartFile> filesToUpload = new ArrayList<>();
-            List<DocumentType> typesToUpload = new ArrayList<>();
-            for (UserDocumentUploadDTO docDto : dto.getDocuments()) {
-                if (docDto.getFile() != null && !docDto.getFile().isEmpty()) {
-                    filesToUpload.add(docDto.getFile());
-                    typesToUpload.add(docDto.getDocumentType());
-                } else {
-                    System.err.println("Warning: UserDocumentUploadDTO contained a null/empty file for type: " + docDto.getDocumentType() + " for user " + userId);
-                }
-            }
-
-            if (!filesToUpload.isEmpty()) {
-                userDocumentService.uploadMultipleVerificationDocuments(userId, filesToUpload, typesToUpload, actingUserId);
-            }
-        } else {
-            System.out.println("No documents provided during completeRegistrationDetails. User will need to upload them later.");
-        }
-
 
         if (dto.getAdditionalRoles() != null && !dto.getAdditionalRoles().isEmpty()) {
 
@@ -430,11 +410,11 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        // Atualizar status de verificação
         user.setAccountVerificationStatus(VerificationStatus.PENDING);
         user.setIsIdentityConfirmed(false);
 
-        return userRepository.save(user);
+//        userRepository.save(user);
+        return user;
     }
 
 //    private void validateRequiredDocuments(List<UserDocumentUploadDTO> documents, LegalPersonType legalPersonType) {
@@ -662,7 +642,7 @@ public class UserServiceImpl implements UserService {
 
         final String jwt = jwtUtil.generateToken(user);
 
-        UserSimpleResponseDTO userResponse = toUserSimpleResponseDTO(user);
+        UserSimpleResponseDTO userResponse = UserMapper.toUserSimpleResponseDTO(user);
 
         return new AuthResponseDTO(userResponse, jwt);
     }
@@ -673,21 +653,4 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new UserNotFoundException("Usuário com ID " + id + " não encontrado."));
     }
 
-    private UserSimpleResponseDTO toUserSimpleResponseDTO(User user) {
-        UserSimpleResponseDTO dto = new UserSimpleResponseDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setPhone(user.getPhone());
-        dto.setProfilePictureUrl(user.getProfilePictureUrl());
-        dto.setRoles(user.getRoles().stream()
-                .map(role -> role.getName().toString())
-                .collect(java.util.stream.Collectors.toSet()));
-
-        dto.setAccountVerificationStatus(user.getAccountVerificationStatus().toString());
-        dto.setIsIdentityConfirmed(user.getIsIdentityConfirmed());
-        dto.setIsEmailVerified(user.getIsEmailVerified());
-        dto.setIsPhoneVerified(user.getIsPhoneVerified());
-        return dto;
-    }
 }
