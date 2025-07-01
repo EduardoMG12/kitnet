@@ -6,6 +6,7 @@ import com.kitnet.kitnet.exception.FirebaseAuthenticationException;
 import com.kitnet.kitnet.mapper.LegalDocumentMapper;
 import com.kitnet.kitnet.mapper.UserMapper;
 import com.kitnet.kitnet.model.User;
+import com.kitnet.kitnet.model.enums.LegalDocumentType;
 import com.kitnet.kitnet.service.UserService;
 import com.kitnet.kitnet.service.UserVerificationDataService;
 import jakarta.validation.Valid;
@@ -26,14 +27,11 @@ public class AuthUserController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserVerificationDataService userVerificationDataService;
-
     @PostMapping("/register-simple")
     public ResponseEntity<AuthResponseWithTermsDTO> registerSimple(@RequestBody @Valid UserSimpleRegisterDTO dto) throws Exception {
-        AuthResponseWithTermsDTO registeredUser = userService.registerSimple(dto);
-        userVerificationDataService.initiateEmailVerification(registeredUser.getUser().getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+        AuthResponseWithTermsDTO registeredUserEntity = userService.registerSimple(dto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUserEntity);
     }
 
     @PostMapping("/firebase-login")

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    AuthResponseWithTermsDTO registerSimple(UserSimpleRegisterDTO dto) throws EmailAlreadyInUseException, PasswordMismatchException;
+    AuthResponseWithTermsDTO registerSimple(UserSimpleRegisterDTO dto) throws EmailAlreadyInUseException, PasswordMismatchException, TermsNotAcceptedException, InternalServerErrorException;
     User completeRegistrationDetails(UUID userId, UserCompleteRegistrationDTO dto) throws UserNotFoundException, EmailAlreadyInUseException, IOException;
     AuthResponseDTO login(UserLoginDTO dto) throws UserNotFoundException, InvalidCredentialsException;
     User updateProfile(UUID userId, UserProfileUpdateDTO dto) throws UserNotFoundException, EmailAlreadyInUseException;

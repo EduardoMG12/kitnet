@@ -30,9 +30,6 @@ import java.util.*;
 public class UserVerificationDataServiceImpl implements UserVerificationDataService {
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private UserVerificationRepository userVerificationRepository;
 
     @Autowired
@@ -60,7 +57,7 @@ public class UserVerificationDataServiceImpl implements UserVerificationDataServ
     @Transactional
     public EmailVerificationResponseDTO initiateEmailVerification(UUID userId) throws UserNotFoundException {
         Locale locale = LocaleContextHolder.getLocale();
-        User user = userService.findById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, locale)));
 
         if (user.getAuthProvider() != AuthProvider.EMAIL_PASSWORD) {
             throw new InvalidOperationException(messageSource.getMessage("error.email.verification.social.account", null, locale));

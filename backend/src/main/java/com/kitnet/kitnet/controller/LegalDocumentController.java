@@ -37,7 +37,7 @@ public class LegalDocumentController {
         legalDocument.setEffectiveDate(dto.getEffectiveDate());
         legalDocument.setIsActive(dto.getIsActive());
 
-        LegalDocument savedDocument = legalDocumentService.saveLegalDocument(legalDocument);
+        LegalDocument savedDocument = legalDocumentService.createOrUpdateLegalDocument(legalDocument);
         return new ResponseEntity<>(savedDocument, HttpStatus.CREATED);
     }
 

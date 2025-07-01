@@ -12,10 +12,7 @@ import com.kitnet.kitnet.mapper.UserMapper;
 import com.kitnet.kitnet.model.*;
 import com.kitnet.kitnet.model.enums.*;
 import com.kitnet.kitnet.repository.*;
-import com.kitnet.kitnet.service.EmailService;
-import com.kitnet.kitnet.service.RoleService;
-import com.kitnet.kitnet.service.UserDocumentService;
-import com.kitnet.kitnet.service.UserService;
+import com.kitnet.kitnet.service.*;
 import com.kitnet.kitnet.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +21,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -76,6 +73,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDocumentService userDocumentService;
 
+    @Autowired
+    private LegalDocumentService legalDocumentService;
+
+    @Autowired
+    private UserVerificationDataService userVerificationDataService;
+
     @Override
     @Transactional
     public String updateProfilePicture(UUID userId, MultipartFile file) throws UserNotFoundException, IOException, FileUploadException, InvalidFileFormatException, FileSizeExceededException {
@@ -109,7 +112,7 @@ public class UserServiceImpl implements UserService {
         if (contentType == null || !contentType.startsWith("image/")) {
             throw new InvalidFileFormatException(messageSource.getMessage("error.file.format.invalid", null, locale));
         }
-        
+
          if (!(contentType.equals("image/jpeg") || contentType.equals("image/png") || contentType.equals("image/gif"))) {
              throw new InvalidFileFormatException(messageSource.getMessage("error.file.format.invalid.image", null, locale));
          }
@@ -167,28 +170,38 @@ public class UserServiceImpl implements UserService {
         user.setIsPhoneVerified(false);
         user.setAuthProvider(AuthProvider.EMAIL_PASSWORD);
 
+        user = userRepository.save(user);
+
         LegalDocumentDTO acceptedTermsOfUseDTO = null;
         List<LegalDocumentDTO> allAcceptedLegalDocuments = new ArrayList<>();
 
         if (dto.getAcceptTerms()) {
-            LegalDocument termsOfUse = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.TERMS_OF_USE)
-                    .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.legal.document.not.found.active", new Object[]{LegalDocumentType.TERMS_OF_USE}, LocaleContextHolder.getLocale())));
+            Set<LegalDocumentType> typesToAccept = new HashSet<>();
+            typesToAccept.add(LegalDocumentType.TERMS_OF_USE);
 
-            UserLegalDocument userLegalDoc = UserLegalDocument.builder()
-                    .user(user)
-                    .legalDocument(termsOfUse)
-                    .type(termsOfUse.getType())
-                    .acceptanceDate(LocalDate.now())
-                    .build();
-            user.getUserLegalDocuments().add(userLegalDoc);
+            List<UserLegalDocument> acceptedUlds = legalDocumentService.acceptActiveLegalDocumentsForUser(user, typesToAccept);
 
-            acceptedTermsOfUseDTO = LegalDocumentMapper.toLegalDocumentDTO(termsOfUse);
-            allAcceptedLegalDocuments.add(acceptedTermsOfUseDTO);
+            user.getUserLegalDocuments().addAll(acceptedUlds);
+
+            for (UserLegalDocument uld : acceptedUlds) {
+                LegalDocumentDTO mappedDoc = LegalDocumentMapper.toLegalDocumentDTO(uld.getLegalDocument());
+                if (uld.getType() == LegalDocumentType.TERMS_OF_USE) {
+                    acceptedTermsOfUseDTO = mappedDoc;
+                }
+                allAcceptedLegalDocuments.add(mappedDoc);
+            }
+
         } else {
             throw new TermsNotAcceptedException();
         }
 
-        userRepository.save(user);
+        if (user.getUserLegalDocuments() != null) {
+            user.getUserLegalDocuments().size();
+        }
+
+        userRepository.flush();
+        user = userRepository.findByIdWithCollections(user.getId())
+                .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.user.not.found", null, LocaleContextHolder.getLocale())));
 
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getPassword());
