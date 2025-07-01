@@ -27,10 +27,13 @@ public class AuthUserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserVerificationDataService userVerificationDataService;
+
     @PostMapping("/register-simple")
     public ResponseEntity<AuthResponseWithTermsDTO> registerSimple(@RequestBody @Valid UserSimpleRegisterDTO dto) throws Exception {
         AuthResponseWithTermsDTO registeredUserEntity = userService.registerSimple(dto);
-
+        userVerificationDataService.initiateEmailVerification(registeredUserEntity.getUser().getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(registeredUserEntity);
     }
 

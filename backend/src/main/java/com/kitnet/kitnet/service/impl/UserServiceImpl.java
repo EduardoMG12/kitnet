@@ -76,9 +76,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private LegalDocumentService legalDocumentService;
 
-    @Autowired
-    private UserVerificationDataService userVerificationDataService;
-
     @Override
     @Transactional
     public String updateProfilePicture(UUID userId, MultipartFile file) throws UserNotFoundException, IOException, FileUploadException, InvalidFileFormatException, FileSizeExceededException {
@@ -291,21 +288,35 @@ public class UserServiceImpl implements UserService {
                 user.setHasCreditRestrictions(false);
                 user.setIsIdentityConfirmed(false);
 
-                            LegalDocument termsOfUse = legalDocumentRepository.findByTypeAndIsActiveTrue(LegalDocumentType.TERMS_OF_USE)
-                        .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.legal.document.not.found.active", new Object[]{LegalDocumentType.TERMS_OF_USE}, locale)));
-
-                if (user.getUserLegalDocuments() == null) {
-                    user.setUserLegalDocuments(new HashSet<>());
-                }
-                UserLegalDocument userLegalDoc = UserLegalDocument.builder()
-                        .user(user)
-                        .legalDocument(termsOfUse)
-                        .type(termsOfUse.getType())
-                        .acceptanceDate(LocalDate.now())
-                        .build();
-                user.getUserLegalDocuments().add(userLegalDoc);
-
                 userRepository.save(user);
+
+                LegalDocumentDTO acceptedTermsOfUseDTO = null;
+                List<LegalDocumentDTO> allAcceptedLegalDocuments = new ArrayList<>();
+
+                    Set<LegalDocumentType> typesToAccept = new HashSet<>();
+                    typesToAccept.add(LegalDocumentType.TERMS_OF_USE);
+
+                    List<UserLegalDocument> acceptedUlds = legalDocumentService.acceptActiveLegalDocumentsForUser(user, typesToAccept);
+
+                    user.getUserLegalDocuments().addAll(acceptedUlds);
+
+                    for (UserLegalDocument uld : acceptedUlds) {
+                        LegalDocumentDTO mappedDoc = LegalDocumentMapper.toLegalDocumentDTO(uld.getLegalDocument());
+                        if (uld.getType() == LegalDocumentType.TERMS_OF_USE) {
+                            acceptedTermsOfUseDTO = mappedDoc;
+                        }
+                        allAcceptedLegalDocuments.add(mappedDoc);
+                    }
+
+
+                if (user.getUserLegalDocuments() != null) {
+                    user.getUserLegalDocuments().size();
+                }
+
+                userRepository.flush();
+                user = userRepository.findByIdWithCollections(user.getId())
+                        .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.user.not.found", null, LocaleContextHolder.getLocale())));
+
                 System.out.println("Novo usuário criado via Firebase: " + user.getFirebaseUid());
             }
 
@@ -339,7 +350,7 @@ public class UserServiceImpl implements UserService {
         if (dto.getLegalDocument() != null && !dto.getLegalDocument().isEmpty()) {
             Optional<User> existingUserWithDoc = userRepository.findByLegalDocument(dto.getLegalDocument());
             if (existingUserWithDoc.isPresent() && !existingUserWithDoc.get().getId().equals(user.getId())) {
-                throw new EmailAlreadyInUseException(
+                throw new LegalDocumentAlreadyExistsException(
                         messageSource.getMessage("error.legal.document.in.use", null, locale));
             }
             user.setLegalDocument(dto.getLegalDocument());
@@ -359,6 +370,7 @@ public class UserServiceImpl implements UserService {
                     messageSource.getMessage("error.phone.required", null, locale));
         }
 
+        Set<LegalDocumentType> typesAcceptedInThisRequest = new HashSet<>();
         if (!dto.getAcceptTermsOfLGPD()) {
             throw new TermsNotAcceptedException(
                     messageSource.getMessage("error.lgpd.terms.required", null, locale));
@@ -381,20 +393,27 @@ public class UserServiceImpl implements UserService {
                         messageSource.getMessage("error.legal.document.not.found.active",
                                 new Object[]{LegalDocumentType.PRIVACY_POLICY}, locale)));
 
-        UserLegalDocument lgpdDoc = UserLegalDocument.builder()
-                .user(user)
-                .legalDocument(lgpdTerms)
-                .type(lgpdTerms.getType())
-                .acceptanceDate(LocalDate.now())
-                .build();
-        UserLegalDocument privacyDoc = UserLegalDocument.builder()
-                .user(user)
-                .legalDocument(privacyPolicy)
-                .type(privacyPolicy.getType())
-                .acceptanceDate(LocalDate.now())
-                .build();
-        user.getUserLegalDocuments().add(lgpdDoc);
-        user.getUserLegalDocuments().add(privacyDoc);
+        typesAcceptedInThisRequest.add(LegalDocumentType.LGPD_TERMS);
+        typesAcceptedInThisRequest.add(LegalDocumentType.PRIVACY_POLICY);
+        typesAcceptedInThisRequest.add(LegalDocumentType.TERMS_OF_USE);
+
+        legalDocumentService.acceptActiveLegalDocumentsForUser(user, typesAcceptedInThisRequest);
+
+//
+//        UserLegalDocument lgpdDoc = UserLegalDocument.builder()
+//                .user(user)
+//                .legalDocument(lgpdTerms)
+//                .type(lgpdTerms.getType())
+//                .acceptanceDate(LocalDate.now())
+//                .build();
+//        UserLegalDocument privacyDoc = UserLegalDocument.builder()
+//                .user(user)
+//                .legalDocument(privacyPolicy)
+//                .type(privacyPolicy.getType())
+//                .acceptanceDate(LocalDate.now())
+//                .build();
+//        user.getUserLegalDocuments().add(lgpdDoc);
+//        user.getUserLegalDocuments().add(privacyDoc);
 
         if (dto.getAuthorizeCreditCheckAndCommunication() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -425,6 +444,10 @@ public class UserServiceImpl implements UserService {
 
         user.setAccountVerificationStatus(VerificationStatus.PENDING);
         user.setIsIdentityConfirmed(false);
+
+        userRepository.flush(); // Garante que as mudanças foram para o DB
+        user = userRepository.findByIdWithCollections(user.getId()) // Recarrega o usuário com as coleções carregadas
+                .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.user.not.found", null, locale)));
 
 //        userRepository.save(user);
         return user;
