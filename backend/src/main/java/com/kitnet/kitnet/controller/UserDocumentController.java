@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.controller;
 
+import com.kitnet.kitnet.dto.userDocument.UserDocumentUploadResponseDTO;
 import com.kitnet.kitnet.model.User;
 import com.kitnet.kitnet.model.UserDocument;
 import com.kitnet.kitnet.model.enums.DocumentType;
@@ -28,24 +29,15 @@ public class UserDocumentController {
 
     @PostMapping("/upload")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Map<String, String>>> uploadUserDocuments(
+    public ResponseEntity<UserDocumentUploadResponseDTO> uploadUserDocuments(
             @AuthenticationPrincipal User authenticatedUser,
-            @RequestParam("files") List<MultipartFile> files,
-            @RequestParam("types") List<DocumentType> documentTypes) throws Exception {
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("type") DocumentType documentType) throws Exception {
 
-        List<UserDocument> uploadedDocs = userDocumentService.uploadMultipleVerificationDocuments(
-                authenticatedUser.getId(), files, documentTypes, authenticatedUser.getId());
+        UserDocumentUploadResponseDTO uploadedDoc = userDocumentService.uploadVerificationDocuments(
+                authenticatedUser.getId(), file, documentType, authenticatedUser.getId());
 
-        List<Map<String, String>> response = uploadedDocs.stream().map(doc -> {
-            Map<String, String> docInfo = new HashMap<>();
-            docInfo.put("documentId", doc.getId().toString());
-            docInfo.put("documentType", doc.getDocumentType().toString());
-            docInfo.put("documentUrl", doc.getCurrentVersion().map(v -> v.getDocumentUrl()).orElse("N/A"));
-            docInfo.put("status", doc.getCurrentVersion().map(v -> v.getVerificationStatus().toString()).orElse("N/A"));
-            return docInfo;
-        }).collect(Collectors.toList());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(uploadedDoc);
     }
 
     @GetMapping("/users/{userId}")

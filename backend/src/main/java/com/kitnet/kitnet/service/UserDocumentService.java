@@ -1,5 +1,6 @@
 package com.kitnet.kitnet.service;
 
+import com.kitnet.kitnet.dto.userDocument.UserDocumentUploadResponseDTO;
 import com.kitnet.kitnet.exception.UserNotFoundException;
 import com.kitnet.kitnet.exception.FileUploadException;
 import com.kitnet.kitnet.exception.InvalidFileFormatException;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 public interface UserDocumentService {
 
-    List<UserDocument> uploadMultipleVerificationDocuments(UUID userId, List<MultipartFile> files, List<DocumentType> documentTypes, UUID authenticatedUserId)
+    UserDocumentUploadResponseDTO uploadVerificationDocuments(UUID userId, MultipartFile file, DocumentType documentType, UUID authenticatedUserId)
             throws UserNotFoundException, IOException, FileUploadException, InvalidFileFormatException, FileSizeExceededException, InvalidOperationException, DocumentValidationException, UnauthorizedOperationException, IOException;
     List<UserDocument> getUserDocuments(UUID userId) throws UserNotFoundException;
     UserDocument getDocumentById(UUID documentId) throws DocumentNotFoundException;

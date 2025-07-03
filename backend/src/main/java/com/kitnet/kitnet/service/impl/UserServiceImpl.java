@@ -399,22 +399,6 @@ public class UserServiceImpl implements UserService {
 
         legalDocumentService.acceptActiveLegalDocumentsForUser(user, typesAcceptedInThisRequest);
 
-//
-//        UserLegalDocument lgpdDoc = UserLegalDocument.builder()
-//                .user(user)
-//                .legalDocument(lgpdTerms)
-//                .type(lgpdTerms.getType())
-//                .acceptanceDate(LocalDate.now())
-//                .build();
-//        UserLegalDocument privacyDoc = UserLegalDocument.builder()
-//                .user(user)
-//                .legalDocument(privacyPolicy)
-//                .type(privacyPolicy.getType())
-//                .acceptanceDate(LocalDate.now())
-//                .build();
-//        user.getUserLegalDocuments().add(lgpdDoc);
-//        user.getUserLegalDocuments().add(privacyDoc);
-
         if (dto.getAuthorizeCreditCheckAndCommunication() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     messageSource.getMessage("error.validation.field.missing",
@@ -445,11 +429,11 @@ public class UserServiceImpl implements UserService {
         user.setAccountVerificationStatus(VerificationStatus.PENDING);
         user.setIsIdentityConfirmed(false);
 
-        userRepository.flush(); // Garante que as mudanças foram para o DB
-        user = userRepository.findByIdWithCollections(user.getId()) // Recarrega o usuário com as coleções carregadas
+        userRepository.flush();
+        user = userRepository.findByIdWithCollections(user.getId())
                 .orElseThrow(() -> new InternalServerErrorException(messageSource.getMessage("error.user.not.found", null, locale)));
 
-//        userRepository.save(user);
+        userRepository.save(user);
         return user;
     }
 

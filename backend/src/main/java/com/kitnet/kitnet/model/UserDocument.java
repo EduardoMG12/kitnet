@@ -3,6 +3,7 @@ package com.kitnet.kitnet.model;
 import com.kitnet.kitnet.model.enums.DocumentType;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"user", "versions"})
 public class UserDocument {
 
     @Id
@@ -31,7 +33,7 @@ public class UserDocument {
     private DocumentType documentType;
 
 
-    @OneToMany(mappedBy = "userDocument", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userDocument", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<UserDocumentVersion> versions = new HashSet<>();
 
     public Optional<UserDocumentVersion> getCurrentVersion() {
