@@ -30,9 +30,9 @@ public class PropertyImage {
     private UUID id;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY) // LAZY para não carregar a Property sempre
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "property_id", nullable = false)
-    private Property property; // Referência à Property à qual a imagem pertence
+    private Property property;
 
     @NotBlank(message = "A URL da imagem não pode estar em branco")
     @Size(max = 500, message = "A URL da imagem deve ter no máximo 500 caracteres")
@@ -41,9 +41,9 @@ public class PropertyImage {
 
     @NotNull
     @Column(name = "order_index", nullable = false)
-    private Integer orderIndex; // Usar Integer para permitir null se necessário, mas not null é melhor para ordem
+    private Integer orderIndex;
 
     @NotNull
     @Column(name = "is_main_image", nullable = false)
-    private Boolean isMainImage = false; // Flag para indicar a imagem principal
+    private Boolean isMainImage = false;
 }

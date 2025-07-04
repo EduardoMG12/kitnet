@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-//@EqualsAndHashCode(exclude = {"createdAt", "updatedAt"})
+@EqualsAndHashCode(exclude = {"createdAt", "updatedAt"})
 public class PropertyTemplate {
 
     @Id

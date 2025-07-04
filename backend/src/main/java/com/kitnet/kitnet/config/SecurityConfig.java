@@ -53,23 +53,49 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         // Public routes (do not require authentication)
                         .requestMatchers("/api/auth/register-simple", "/api/auth/login").permitAll()
+                        .requestMatchers("/api/users/verify/email/confirm", "/api/users/verify/password/request", "/api/users/verify/password/reset").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties").permitAll()
                         .requestMatchers(HttpMethod.GET, "/properties/{id}").permitAll()
-                        .requestMatchers("/api/users/verify/email/confirm").permitAll()
-                        .requestMatchers("/api/users/verify/password/request").permitAll()
-                        .requestMatchers("/api/users/verify/password/reset").permitAll()
 
-                        // Protected routes (require authentication)
-                        .requestMatchers(HttpMethod.POST, "/properties").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/properties/{id}").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/properties/{id}").authenticated()
+                        // User Protected routes (required authentication)
+                        .requestMatchers(HttpMethod.PUT, "/api/auth/complete-register").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/users/verify/email/initiate").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/users/me/profile-picture").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/users/me").authenticated()
+
+                        // Documents Protected routes (require authentication)
                         .requestMatchers(HttpMethod.POST, "/api/user-documents/upload").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/api/user-documents/users/{userId}").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/user-documents/{documentId}/status").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/user-documents/{documentId}").authenticated()
+//                        .requestMatchers(HttpMethod.GET, "/api/user-documents/users/{userId}").authenticated()
+//                        .requestMatchers(HttpMethod.PUT, "/api/user-documents/{documentId}/status").authenticated()
+//                        .requestMatchers(HttpMethod.DELETE, "/api/user-documents/{documentId}").authenticated()
+
+                        // Property Protected routes (require authentication)
+                        .requestMatchers(HttpMethod.POST, "/api/properties").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/properties").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/properties/{propertyId}").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/properties/{propertyId}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/properties/{propertyId}/images").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/properties/images/{imageId}").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/properties/{propertyId}/images/{imageId}/main").authenticated()
+
+                        // (Admin/Moderador) Verification Status
+                        .requestMatchers(HttpMethod.PUT, "/api/properties/{propertyId}/status").hasAnyRole("ADMIN", "MODERATOR")
+
+                        // Rotas de ADMIN para PropertyTemplate
+                        .requestMatchers("/api/property-templates/admin/**").hasRole("ADMIN") // Acesso total admin
+
+//                        // Rotas de usuário existentes
+//                        .requestMatchers(HttpMethod.POST, "/api/users/verify/email/initiate").authenticated()
+//                        .requestMatchers(HttpMethod.POST, "/api/users/me/profile-picture").authenticated()
+//                        .requestMatchers(HttpMethod.GET, "/api/users/me").authenticated()
+//                        .requestMatchers(HttpMethod.POST, "/api/user-documents/upload").authenticated()
+//                        .requestMatchers(HttpMethod.GET, "/api/user-documents/users/{userId}").authenticated()
+//                        .requestMatchers(HttpMethod.PUT, "/api/user-documents/{documentId}/status").hasAnyRole("ADMIN", "MODERATOR") // Status de docs (Admin/Moderador)
+//                        .requestMatchers(HttpMethod.DELETE, "/api/user-documents/{documentId}").hasAnyRole("ADMIN", "MODERATOR") // Deleção de docs (Admin/Moderador)
+//                        .requestMatchers(HttpMethod.PUT, "/api/auth/complete-register").authenticated()
+
+
+
 
 
                         // All other requests require authentication by default.

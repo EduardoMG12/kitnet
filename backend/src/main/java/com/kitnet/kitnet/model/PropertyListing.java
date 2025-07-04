@@ -23,7 +23,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"property", "lister", "template"}) // Exclui relações bidirecionais
+@EqualsAndHashCode(exclude = {"property", "lister", "template", "createdAt", "updatedAt"}) // Exclui relações bidirecionais
 public class PropertyListing {
 
     @Id

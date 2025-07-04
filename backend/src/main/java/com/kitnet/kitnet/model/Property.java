@@ -29,7 +29,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"owner", "agent", "images"})
+@EqualsAndHashCode(exclude = {"owner", "agent", "images", "listings", "createdAt", "updatedAt"})
 public class Property {
 
     @Id
@@ -196,6 +196,10 @@ public class Property {
     // --- Relacionamentos OneToMany ---
     @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<PropertyImage> images = new HashSet<>();
+
+    @OneToMany(mappedBy = "property", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    @ToString.Exclude
+    private Set<PropertyListing> listings = new HashSet<>();
 
     // Opcional: Relacionamento com Template se cada propriedade tiver um template fixo
     // @ManyToOne(fetch = FetchType.LAZY)
