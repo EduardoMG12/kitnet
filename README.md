@@ -64,7 +64,8 @@ Certifique-se de ter um dos seguinte instalado em sua máquina:
   - Docker Engine e Docker Compose separadamente.
 
 Estrutura do Projeto
-```json
+
+```Bash
 
 kitnet-project/
 ├── backend/                  # Aplicação Spring Boot Java
@@ -98,7 +99,7 @@ Snippet de código
 
 # .env (na raiz do seu projeto)
 
-```json
+```Bash
 
 # Database Configurations (HIGHLY SENSITIVE!)
 DATABASE_NAME=kitnet
@@ -121,7 +122,7 @@ Importante: Substitua os valores de placeholder como as portas das instancias, s
 
 # backend/.env (backend)
 
-```json
+```Bash
 
 SPRING_APPLICATION_NAME=kitnet-backend
 
@@ -191,7 +192,7 @@ APP_CDN_TEMP_URL=http://cdn_temp:80
 
 # backend/.env.docker (backend rodando no docker)
 
-```json
+```Bash
 
 SPRING_APPLICATION_NAME=kitnet-backend
 
@@ -253,7 +254,7 @@ APP_CDN_TEMP_URL=http://localhost:8080
 
 # frontend/.env (frontend)
 
-```json
+```Bash
 
 # frontend/.env.docker (for 'frontend' service)
 
