@@ -1,0 +1,929 @@
+{
+	"info": {
+		"_postman_id": "85eef460-6d63-4ef1-a0b5-8d7cc690cc14",
+		"name": "kitnet",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "33756963",
+		"_collection_link": "https://planetary-water-186042.postman.co/workspace/my_projects~91c0d67c-574f-4e9b-afa4-02d37cc1f93f/collection/33756963-85eef460-6d63-4ef1-a0b5-8d7cc690cc14?action=share&source=collection_link&creator=33756963"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"item": [
+						{
+							"name": "FirstRegister",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": ""
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "Accept-Language",
+										"value": "pt-BR",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"Charles\",\r\n    \"email\": \"hemopp54699@iridales.com\",\r\n    \"password\": \"123412567\",\r\n    \"confirmPassword\": \"123412567\",\r\n    \"acceptTerms\": true\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}/api/auth/register-simple"
+							},
+							"response": []
+						},
+						{
+							"name": "SecondRegister",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_jwt}}"
+									}
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"legalDocument\": \"12345678901\",\r\n  \"phone\": \"41999999999\",\r\n  \"acceptTermsOfLGPD\": true,\r\n  \"acceptTermsOfPrivacy\": true,\r\n  \"authorizeCreditCheckAndCommunication\": true,\r\n  \"acceptMarketingCommunications\": false,\r\n  \"profession\": \"Engenheiro\",\r\n  \"emergencyContactName\": \"João Silva\",\r\n  \"emergencyContactPhone\": \"41988888888\",\r\n//   \"documents\": [\r\n//     {\r\n//       \"documentType\": \"CPF\",\r\n//       \"documentUrl\": \"http://example.com/cpf.pdf\"\r\n//     },\r\n//     {\r\n//       \"documentType\": \"SELFIE_COM_DOCUMENTO\",\r\n//       \"documentUrl\": \"http://example.com/selfie.jpg\"\r\n//     },\r\n//     {\r\n//       \"documentType\": \"COMPROVANTE_RESIDENCIA\",\r\n//       \"documentUrl\": \"http://example.com/residencia.pdf\"\r\n//     },\r\n//     {\r\n//       \"documentType\": \"RG_FRENTE\",\r\n//       \"documentUrl\": \"http://example.com/rg_frente.jpg\"\r\n//     },\r\n//     {\r\n//       \"documentType\": \"RG_VERSO\",\r\n//       \"documentUrl\": \"http://example.com/rg_verso.jpg\"\r\n//     }\r\n//   ],\r\n  \"additionalRoles\": [\"LESSOR\"]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}/api/auth/complete-register"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"item": [
+						{
+							"name": "Login",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// {\r\n//     \"email\": \"charles@email.com\",\r\n//     \"password\": \"123412567\"\r\n// }\r\n{\r\n    \"email\": \"rasaci1798@fenexy.com\",\r\n    \"password\": \"123412567\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}/api/auth/login"
+							},
+							"response": []
+						},
+						{
+							"name": "LoginAdmin",
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "// {\r\n//     \"email\": \"charles@email.com\",\r\n//     \"password\": \"123412567\"\r\n// }\r\n{\r\n    \"email\": \"yakil14204@jio1.com\",\r\n    \"password\": \"MinhaNovaSenhaForte123!\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}/api/auth/login"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Me",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Charles\",\r\n  \"email\": \"charles@email.com\",\r\n  \"password\": \"123412567\",\r\n  \"phone\": \"41999999999\",\r\n  \"confirmPassword\": \"123412567\",\r\n  \"acceptTerms\": true\r\n}\r\n\r\n// {\r\n//   \"firstName\": \"Charles\",\r\n//   \"lastName\": \"Guimarães\",\r\n//   \"email\": \"charles@email.com\",\r\n//   \"password\": \"123412567\",\r\n//   \"phone\": \"41999999999\",\r\n//   \"confirmPassword\": \"123412567\",\r\n//   \"acceptTerms\": true,\r\n//   \"cpf\": \"12345678952\",\r\n//   \"documentImageWithUser\": null,\r\n//   \"userType\": \"LESSEE\"  //LESSOR - (Owner / Landlord) - Pessoa que CEDE a propriedade em aluguel ou vende, LESSEE - (Tenant) - Pessoa que TOMA a propriedade em aluguel, REAL_ESTATE_AGENT - Corretor de Imóveis (Real Estate Agent)\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/users/me"
+					},
+					"response": []
+				},
+				{
+					"name": "UploadProfile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/hype/Pictures/image.png"
+								}
+							]
+						},
+						"url": "{{url}}/api/users/me/profile-picture"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Documents",
+			"item": [
+				{
+					"name": "Documents",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/hype/Pictures/Screenshots/swappy-20250627-004453.png"
+								},
+								{
+									"key": "type",
+									"value": "RG_VERSO",
+									"type": "text"
+								},
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/hype/Downloads/status.pdf",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "RG_FRENTE",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": "{{url}}/api/user-documents/upload"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "AllUsers",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// Endpoint para aprovar/rejeitar/definir status de verificação de um usuário\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/admin/users"
+					},
+					"response": []
+				},
+				{
+					"name": "AllUsersNeedsVerification",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/admin/users-needs-verification"
+					},
+					"response": []
+				},
+				{
+					"name": "DefineVerificationStatus aprove/reject",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// Endpoint para aprovar/rejeitar/definir status de verificação de um usuário\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/admin//{userId}/verify-status"
+					},
+					"response": []
+				},
+				{
+					"name": "DefineIncomeRestriction",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "// Endpoint para definir renda e restrições de crédito",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/admin/{userId}/financial-data"
+					},
+					"response": []
+				},
+				{
+					"name": "{{url}}/api/auth/profile Copy 5",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Charles\",\r\n  \"email\": \"charles@email.com\",\r\n  \"password\": \"123412567\",\r\n  \"phone\": \"41999999999\",\r\n  \"confirmPassword\": \"123412567\",\r\n  \"acceptTerms\": true\r\n}\r\n\r\n// {\r\n//   \"firstName\": \"Charles\",\r\n//   \"lastName\": \"Guimarães\",\r\n//   \"email\": \"charles@email.com\",\r\n//   \"password\": \"123412567\",\r\n//   \"phone\": \"41999999999\",\r\n//   \"confirmPassword\": \"123412567\",\r\n//   \"acceptTerms\": true,\r\n//   \"cpf\": \"12345678952\",\r\n//   \"documentImageWithUser\": null,\r\n//   \"userType\": \"LESSEE\"  //LESSOR - (Owner / Landlord) - Pessoa que CEDE a propriedade em aluguel ou vende, LESSEE - (Tenant) - Pessoa que TOMA a propriedade em aluguel, REAL_ESTATE_AGENT - Corretor de Imóveis (Real Estate Agent)\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/auth/profile"
+					},
+					"response": []
+				},
+				{
+					"name": "{{url}}/api/auth/profile Copy 6",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Charles\",\r\n  \"email\": \"charles@email.com\",\r\n  \"password\": \"123412567\",\r\n  \"phone\": \"41999999999\",\r\n  \"confirmPassword\": \"123412567\",\r\n  \"acceptTerms\": true\r\n}\r\n\r\n// {\r\n//   \"firstName\": \"Charles\",\r\n//   \"lastName\": \"Guimarães\",\r\n//   \"email\": \"charles@email.com\",\r\n//   \"password\": \"123412567\",\r\n//   \"phone\": \"41999999999\",\r\n//   \"confirmPassword\": \"123412567\",\r\n//   \"acceptTerms\": true,\r\n//   \"cpf\": \"12345678952\",\r\n//   \"documentImageWithUser\": null,\r\n//   \"userType\": \"LESSEE\"  //LESSOR - (Owner / Landlord) - Pessoa que CEDE a propriedade em aluguel ou vende, LESSEE - (Tenant) - Pessoa que TOMA a propriedade em aluguel, REAL_ESTATE_AGENT - Corretor de Imóveis (Real Estate Agent)\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/auth/profile"
+					},
+					"response": []
+				},
+				{
+					"name": "{{url}}/api/auth/profile Copy 7",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Charles\",\r\n  \"email\": \"charles@email.com\",\r\n  \"password\": \"123412567\",\r\n  \"phone\": \"41999999999\",\r\n  \"confirmPassword\": \"123412567\",\r\n  \"acceptTerms\": true\r\n}\r\n\r\n// {\r\n//   \"firstName\": \"Charles\",\r\n//   \"lastName\": \"Guimarães\",\r\n//   \"email\": \"charles@email.com\",\r\n//   \"password\": \"123412567\",\r\n//   \"phone\": \"41999999999\",\r\n//   \"confirmPassword\": \"123412567\",\r\n//   \"acceptTerms\": true,\r\n//   \"cpf\": \"12345678952\",\r\n//   \"documentImageWithUser\": null,\r\n//   \"userType\": \"LESSEE\"  //LESSOR - (Owner / Landlord) - Pessoa que CEDE a propriedade em aluguel ou vende, LESSEE - (Tenant) - Pessoa que TOMA a propriedade em aluguel, REAL_ESTATE_AGENT - Corretor de Imóveis (Real Estate Agent)\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/auth/profile"
+					},
+					"response": []
+				},
+				{
+					"name": "{{url}}/api/auth/profile Copy 8",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Charles\",\r\n  \"email\": \"charles@email.com\",\r\n  \"password\": \"123412567\",\r\n  \"phone\": \"41999999999\",\r\n  \"confirmPassword\": \"123412567\",\r\n  \"acceptTerms\": true\r\n}\r\n\r\n// {\r\n//   \"firstName\": \"Charles\",\r\n//   \"lastName\": \"Guimarães\",\r\n//   \"email\": \"charles@email.com\",\r\n//   \"password\": \"123412567\",\r\n//   \"phone\": \"41999999999\",\r\n//   \"confirmPassword\": \"123412567\",\r\n//   \"acceptTerms\": true,\r\n//   \"cpf\": \"12345678952\",\r\n//   \"documentImageWithUser\": null,\r\n//   \"userType\": \"LESSEE\"  //LESSOR - (Owner / Landlord) - Pessoa que CEDE a propriedade em aluguel ou vende, LESSEE - (Tenant) - Pessoa que TOMA a propriedade em aluguel, REAL_ESTATE_AGENT - Corretor de Imóveis (Real Estate Agent)\r\n// }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/auth/profile"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Properties",
+			"item": [
+				{
+					"name": "CreateProperty",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Apartamento Moderno no Centro\",\n  \"description\": \"Apartamento espaçoso e iluminado, localizado no coração da cidade. Ideal para quem busca conforto e praticidade. Próximo a shoppings, restaurantes e transporte público.\",\n  \"type\": \"APARTAMENTO\",\n  \"purpose\": \"ALUGUEL\",\n  \"rentalPrice\": 2500.00,\n  \"salePrice\": 0.00,\n  \"showRentalPrice\": true,\n  \"showSalePrice\": false,\n  \"zipCode\": \"85800000\",\n  \"state\": \"PR\",\n  \"city\": \"Cascavel\",\n  \"neighborhood\": \"Centro\",\n  \"addressStreet\": \"Rua das Flores, 1234\",\n  \"addressComplement\": \"Apto 505, Bloco B\",\n  \"hideExactAddress\": false,\n  \"latitude\": -24.9575,\n  \"longitude\": -53.4567,\n  \"squareMeters\": 75.50,\n  \"builtArea\": 70.00,\n  \"bedrooms\": 2,\n  \"bathrooms\": 1,\n  \"parkingSpaces\": 1,\n  \"acceptsPets\": true,\n//   \"amenities\": [\"Academia\", \"Piscina\", \"Salão de Festas\", \"Portaria 24h\"],\n\"amenities\": \"Academia\",\n  \"floor\": 5,\n  \"condominiumFee\": 350.00,\n  \"isAvailable\": true,\n  \"ownerConfirmation\": true,\n  \"termsAgreement\": true,\n  \"allowOtherAgents\": false,\n  \"maxAllowedAgents\": 0,\n  \"brokerageFeePercentage\": 6.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/properties"
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateProperty",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Apartamento Moderno no Centro\",\n  \"description\": \"Apartamento espaçoso e iluminado, localizado no coração da cidade. Ideal para quem busca conforto e praticidade. Próximo a shoppings, restaurantes e transporte público.\",\n  \"type\": \"APARTAMENTO\",\n  \"purpose\": \"ALUGUEL\",\n  \"rentalPrice\": 2500.00,\n  \"salePrice\": 0.00,\n  \"showRentalPrice\": true,\n  \"showSalePrice\": false,\n  \"zipCode\": \"85800000\",\n  \"state\": \"PR\",\n  \"city\": \"Cascavel\",\n  \"neighborhood\": \"Centro\",\n  \"addressStreet\": \"Rua das Flores, 1234\",\n  \"addressComplement\": \"Apto 505, Bloco B\",\n  \"hideExactAddress\": false,\n  \"latitude\": -24.9575,\n  \"longitude\": -53.4567,\n  \"squareMeters\": 75.50,\n  \"builtArea\": 70.00,\n  \"bedrooms\": 2,\n  \"bathrooms\": 1,\n  \"parkingSpaces\": 1,\n  \"acceptsPets\": true,\n  //   \"amenities\": [\"Academia\", \"Piscina\", \"Salão de Festas\", \"Portaria 24h\"],\n  \"amenities\": \"Piscina\",\n  \"floor\": 5,\n  \"condominiumFee\": 350.00,\n  \"isAvailable\": true,\n  \"ownerConfirmation\": true,\n  \"termsAgreement\": true,\n  \"allowOtherAgents\": false,\n  \"maxAllowedAgents\": 0,\n  \"brokerageFeePercentage\": 6.0\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/properties/{{propertyId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteProperty",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{url}}/api/properties/{{propertyId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "getAllAvailableProperties",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/hype/Pictures/image.png"
+								}
+							]
+						},
+						"url": "{{url}}/api/properties"
+					},
+					"response": []
+				},
+				{
+					"name": "GetPropertyById",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": "{{url}}/api/properties/{{propertyId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "Arrumar daq para baixo e depois refatorar",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": "{{url}}/api/properties/{{propertyId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "GetPropertyByIdImages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": "{{url}}/api/properties/{{propertyId}}/images"
+					},
+					"response": []
+				},
+				{
+					"name": "AddPropertyByIdImages",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/hype/Pictures/image.png"
+								},
+								{
+									"key": "isMainImage",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "isMainImage",
+									"value": "false",
+									"type": "text"
+								}
+							]
+						},
+						"url": "{{url}}/api/properties/{{propertyId}}/images"
+					},
+					"response": []
+				},
+				{
+					"name": "DeletePropertyByIdImage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": "{{url}}/api/properties/images/{{imageId}}"
+					},
+					"response": []
+				},
+				{
+					"name": "SetMainPropertyImage",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": "{{url}}/api/properties/{{propertyId}}/status"
+					},
+					"response": []
+				},
+				{
+					"name": "UpdatePropertyVerificationStatus",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": "{{url}}/api/properties/{{propertyId}}/status"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Email",
+			"item": [
+				{
+					"name": "ConfirmationEmail",
+					"item": [
+						{
+							"name": "ConfirmationEmail",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_jwt}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/users/verify/email/confirm?token=362506bb-1020-410e-aeb9-e7e980df42e7",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"verify",
+										"email",
+										"confirm"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "362506bb-1020-410e-aeb9-e7e980df42e7"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "SendEmail",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_jwt}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "pt-BR",
+										"type": "text"
+									}
+								],
+								"url": "{{url}}/api/users/verify/email/initiate"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "ChangePassword",
+					"item": [
+						{
+							"name": "SendEmail",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_jwt}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "pt-BR",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"yakil14204@jio1.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{url}}/api/users/verify/password/request"
+							},
+							"response": []
+						},
+						{
+							"name": "ChangePassword",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token_jwt}}"
+									}
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "pt-BR",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    // \"token\": \"3776ebba-4606-4ee8-b763-080dbf9cce35\",\n    \"newPassword\": \"MinhaNovaSenhaForte123!\",\n    \"confirmNewPassword\": \"MinhaNovaSenhaForte123!\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/users/verify/password/reset?token=090560a5-ea41-42b6-b1a6-f10b3130d64d",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"users",
+										"verify",
+										"password",
+										"reset"
+									],
+									"query": [
+										{
+											"key": "token",
+											"value": "090560a5-ea41-42b6-b1a6-f10b3130d64d"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "PropertyTemplate",
+			"item": [
+				{
+					"name": "Properties Copy",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{token_jwt}}"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept-Language",
+								"value": "pt-BR",
+								"type": "text"
+							}
+						],
+						"url": "{{url}}/api/users/verify/email/initiate"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
