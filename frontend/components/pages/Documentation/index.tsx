@@ -432,6 +432,32 @@ const DocumentationContent = () => {
                             </CardContent>
                         </Card>
                     </div>
+                    <Separator className="my-8" />
+
+                    <div className="mt-12 text-center">
+                        <h2 className="text-2xl font-heading font-bold text-[#2c3e50] mb-4">
+                            Documento de Software Detalhada em PDF
+                        </h2>
+                        <p className="text-muted-foreground mb-6">
+                            Confira a versão completa da documentação do projeto.
+                        </p>
+                        <p className="text-muted-foreground mb-6">
+                            que serve como um artefato crucial para a disciplina SIS05501 - Análise e Projeto de Sistemas.
+                        </p>
+                        <Card className="bg-white shadow-md max-w-5xl mx-auto p-4">
+                            <CardContent>
+                                <iframe
+                                    src="/Documento Software KitNet - Analise e Projeto de Sistemas.pdf" // Caminho para o seu PDF na pasta public
+                                    width="100%"
+                                    height="800px" // Ajuste a altura conforme necessário
+                                    style={{ border: 'none' }}
+                                    title="Documentação do Projeto Casa Alegria"
+                                >
+                                    Seu navegador não suporta a incorporação de PDFs. Você pode <a href="/documentacao.pdf" target="_blank" rel="noopener noreferrer">baixar o PDF aqui</a>.
+                                </iframe>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </MainLayout>
