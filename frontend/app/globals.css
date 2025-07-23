@@ -75,6 +75,9 @@
 }
 
 :root {
+	--color-deepblue: #2c3e50;
+	--color-terracotta: #e56b4e;
+	--color-cream: #f9f4e8;
 	--radius: 0.625rem;
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.145 0 0);
