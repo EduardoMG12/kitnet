@@ -13,7 +13,7 @@ const HeaderDefault = () => {
                     <span className="text-xl font-heading font-semibold">KitNet</span>
                 </Link>
                 <nav className="hidden md:flex items-center gap-6">
-                    <Link href="/properties" className="text-foreground/80 hover:text-primary transition-colors">
+                    <Link href="/avalible-properties" className="text-foreground/80 hover:text-primary transition-colors">
                         Propriedades
                     </Link>
                     <Link href="/add-property" className="text-foreground/80 hover:text-primary transition-colors">

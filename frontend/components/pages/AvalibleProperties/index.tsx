@@ -59,7 +59,7 @@ const AvalibleProperties = () => {
                                     variant={viewMode === "grid" ? "default" : "ghost"}
                                     size="icon"
                                     onClick={() => setViewMode("grid")}
-                                    className={viewMode === "grid" ? "bg-terracotta hover:bg-terracotta/90" : ""}
+                                    className={viewMode === "grid" ? "bg-[#e56b4e] hover:bg-[#e56b4e]/90" : ""}
                                 >
                                     <Grid3X3 className="h-4 w-4" />
                                 </Button>
@@ -67,7 +67,7 @@ const AvalibleProperties = () => {
                                     variant={viewMode === "list" ? "default" : "ghost"}
                                     size="icon"
                                     onClick={() => setViewMode("list")}
-                                    className={viewMode === "list" ? "bg-terracotta hover:bg-terracotta/90" : ""}
+                                    className={viewMode === "list" ? "bg-[#e56b4e] hover:bg-[#e56b4e]/90" : ""}
                                 >
                                     <LayoutList className="h-4 w-4" />
                                 </Button>
@@ -86,7 +86,7 @@ const AvalibleProperties = () => {
                                 Apartamento
                                 <span className="ml-1">×</span>
                             </Button>
-                            <Button variant="link" size="sm" className="h-7 text-xs text-terracotta">
+                            <Button variant="link" size="sm" className="h-7 text-xs text-[#e56b4e]">
                                 Limpar todos
                             </Button>
                         </div>
@@ -130,7 +130,7 @@ const AvalibleProperties = () => {
                                                 </div>
                                             </div>
                                             <div className="mt-2 md:mt-0">
-                                                <p className="text-terracotta font-heading font-medium text-lg">
+                                                <p className="text-[#e56b4e] font-heading font-medium text-lg">
                                                     R${property.price.toLocaleString('pt-BR')}
                                                 </p>
                                                 <span className="text-xs text-muted-foreground">por mês</span>
@@ -154,7 +154,7 @@ const AvalibleProperties = () => {
                                             <div className="ml-auto">
                                                 <Link
                                                     href={`/properties/${property.id}`}
-                                                    className="text-terracotta hover:underline text-sm font-medium flex items-center"
+                                                    className="text-[#e56b4e] hover:underline text-sm font-medium flex items-center"
                                                 >
                                                     Ver detalhes
                                                     <ArrowRight className="ml-1 h-3.5 w-3.5" />
@@ -172,7 +172,7 @@ const AvalibleProperties = () => {
                             <Button variant="outline" size="sm" className="join-item">
                                 Anterior
                             </Button>
-                            <Button variant="outline" size="sm" className="join-item bg-terracotta text-white hover:bg-terracotta/90">
+                            <Button variant="outline" size="sm" className="join-item bg-[#e56b4e] text-white hover:bg-[#e56b4e]/90">
                                 1
                             </Button>
                             <Button variant="outline" size="sm" className="join-item">

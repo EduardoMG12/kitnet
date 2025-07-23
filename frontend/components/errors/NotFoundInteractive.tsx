@@ -121,7 +121,7 @@ const NotFoundInteractive = () => {
                                     Tentar novamente
                                 </Button>
                                 <Link href="/" className="flex-1">
-                                    <Button className="w-full bg-terracotta hover:bg-terracotta/90">
+                                    <Button className="w-full bg-[#e56b4e] hover:bg-[#e56b4e]/90">
                                         <HomeIcon className="h-4 w-4 mr-2" />
                                         Início
                                     </Button>
