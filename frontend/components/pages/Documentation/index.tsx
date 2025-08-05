@@ -240,10 +240,10 @@ const DocumentationContent = () => {
             icon: <Calculator className="h-5 w-5" />,
             routes: [
                 {
-                    path: "/tools/calculadora-aluguel",
+                    path: "/guides/tools/rental-calculator",
                     name: "Calculadora de Aluguel",
                     description: "Calcular valores de aluguel",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
                     path: "/guides",
@@ -255,19 +255,19 @@ const DocumentationContent = () => {
                     path: "/guides/rental-contract",
                     name: "Guia de Contrato",
                     description: "Como fazer um contrato de aluguel",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
                     path: "/guides/contract-model",
                     name: "Modelo de Contrato",
                     description: "Modelo de contrato de aluguel provido por nos",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
                     path: "/guides/broken-contract",
                     name: "Quebra de Contrato",
                     description: "Quebras de contrato segundo nossas diretrizes",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
                     path: "/guides/tenancy-law",
