@@ -273,7 +273,7 @@ const DocumentationContent = () => {
                     path: "/guides/tenancy-law",
                     name: "Lei do inquilinato",
                     description: "Lei do inquilinato completa",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
                     path: "/guides/owner-law",
@@ -289,22 +289,22 @@ const DocumentationContent = () => {
                 },
 
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/condominium-fees",
                     name: "Taxas de condomínio",
                     description: "Entendendo taxas de condomínio",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/condominium-rules",
                     name: "Regras de condomínio",
                     description: "Regras de condomínio",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/assemblies",
                     name: "Assembleias",
                     description: "Como funcionam as assembleias",
-                    implemented: false,
+                    implemented: true,
                 },
 
                 {
