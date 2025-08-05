@@ -352,16 +352,16 @@ const DocumentationContent = () => {
                 },
 
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/tools/property-value",
                     name: "Quanto vale meu imóvel?",
                     description: "Direitos do inquilino",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/pricing-guide",
                     name: "Quanto cobrar de aluguel",
                     description: "Direitos do inquilino",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
                     path: "/guides/tenant-right",
