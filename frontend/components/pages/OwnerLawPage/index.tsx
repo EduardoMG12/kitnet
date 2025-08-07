@@ -1,11 +1,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Shield, CheckCircle } from "lucide-react";
+import { ArrowLeft, Home, CheckCircle } from "lucide-react";
 import MainLayout from "@/components/layout/MainLayout";
 import Link from "next/link";
 
-const TenancyLawPage = () => {
+const OwnerLawPage = () => {
     return (
         <MainLayout>
             <div className="py-16 bg-gradient-to-b from-[#f9f4e8] to-white">
@@ -15,9 +15,9 @@ const TenancyLawPage = () => {
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Voltar aos Guias
                         </Link>
-                        <h1 className="text-4xl font-heading font-bold mb-4">Direitos do Inquilino</h1>
+                        <h1 className="text-4xl font-heading font-bold mb-4">Direitos do Proprietário</h1>
                         <p className="text-xl text-muted-foreground">
-                            Conheça seus direitos como inquilino segundo a Lei do Inquilinato
+                            Conheça seus direitos como proprietário locador
                         </p>
                     </div>
 
@@ -26,7 +26,7 @@ const TenancyLawPage = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Shield className="h-5 w-5 text-[#e56b4e]" />
+                                        <Home className="h-5 w-5 text-[#e56b4e]" />
                                         Principais Direitos
                                     </CardTitle>
                                 </CardHeader>
@@ -35,29 +35,29 @@ const TenancyLawPage = () => {
                                         <div className="flex items-start gap-3">
                                             <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                                             <div>
-                                                <h3 className="font-semibold">Uso pacífico do imóvel</h3>
-                                                <p className="text-muted-foreground">Direito de usar o imóvel sem interferência do proprietário</p>
+                                                <h3 className="font-semibold">Recebimento pontual do aluguel</h3>
+                                                <p className="text-muted-foreground">Direito ao pagamento em dia conforme contrato</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
                                             <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                                             <div>
-                                                <h3 className="font-semibold">Preferência na renovação</h3>
-                                                <p className="text-muted-foreground">Direito de renovar o contrato nas mesmas condições</p>
+                                                <h3 className="font-semibold">Reajuste anual</h3>
+                                                <p className="text-muted-foreground">Direito de reajustar o aluguel por índice oficial</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
                                             <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                                             <div>
-                                                <h3 className="font-semibold">Benfeitorias necessárias</h3>
-                                                <p className="text-muted-foreground">Direito de fazer reparos essenciais e ser indenizado</p>
+                                                <h3 className="font-semibold">Retomada do imóvel</h3>
+                                                <p className="text-muted-foreground">Direito de retomar para uso próprio ou familiar</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
                                             <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                                             <div>
-                                                <h3 className="font-semibold">Desconto proporcional</h3>
-                                                <p className="text-muted-foreground">Redução do aluguel em caso de vícios no imóvel</p>
+                                                <h3 className="font-semibold">Fiscalização do imóvel</h3>
+                                                <p className="text-muted-foreground">Direito de vistoriar mediante aviso prévio</p>
                                             </div>
                                         </div>
                                     </div>
@@ -66,33 +66,34 @@ const TenancyLawPage = () => {
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Proteção contra aumento abusivo</CardTitle>
+                                    <CardTitle>Garantias de pagamento</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <p className="mb-4">
-                                        O aluguel só pode ser reajustado conforme previsto no contrato ou por acordo entre as partes.
+                                        O proprietário pode exigir garantias para assegurar o cumprimento das obrigações.
                                     </p>
                                     <ul className="space-y-2 text-muted-foreground">
-                                        <li>• Reajuste anual por índice oficial (IGP-M, IPCA)</li>
-                                        <li>• Aumento só após 12 meses do último reajuste</li>
-                                        <li>• Revisão judicial em caso de aumento abusivo</li>
+                                        <li>• Depósito caução (até 3 aluguéis)</li>
+                                        <li>• Fiador com renda comprovada</li>
+                                        <li>• Seguro fiança</li>
+                                        <li>• Título de capitalização</li>
                                     </ul>
                                 </CardContent>
                             </Card>
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Devolução do depósito caução</CardTitle>
+                                    <CardTitle>Ação de despejo</CardTitle>
                                 </CardHeader>
                                 <CardContent>
                                     <p className="mb-4">
-                                        O proprietário deve devolver o depósito caução ao final do contrato,
-                                        descontando apenas eventuais danos.
+                                        Em caso de descumprimento do contrato, o proprietário pode entrar com ação de despejo.
                                     </p>
                                     <ul className="space-y-2 text-muted-foreground">
-                                        <li>• Devolução em até 30 dias após entrega das chaves</li>
-                                        <li>• Desconto apenas de danos comprovados</li>
-                                        <li>• Direito a vistoria de saída</li>
+                                        <li>• Falta de pagamento (após 3 dias de atraso)</li>
+                                        <li>• Infração contratual ou legal</li>
+                                        <li>• Falta de caução ou fiador</li>
+                                        <li>• Uso inadequado do imóvel</li>
                                     </ul>
                                 </CardContent>
                             </Card>
@@ -110,8 +111,8 @@ const TenancyLawPage = () => {
                                     <Link href="/guides/lei-inquilinato" className="block text-sm text-[#e56b4e] hover:underline">
                                         → Lei do Inquilinato completa
                                     </Link>
-                                    <Link href="/guides/vistoria" className="block text-sm text-[#e56b4e] hover:underline">
-                                        → Como fazer vistoria
+                                    <Link href="/tools/quanto-cobrar" className="block text-sm text-[#e56b4e] hover:underline">
+                                        → Quanto cobrar de aluguel
                                     </Link>
                                 </CardContent>
                             </Card>
@@ -137,4 +138,4 @@ const TenancyLawPage = () => {
     );
 };
 
-export default TenancyLawPage;
+export default OwnerLawPage;

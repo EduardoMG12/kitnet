@@ -1,14 +1,12 @@
-'use client';
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Download, CheckCircle } from "lucide-react";
+import { ArrowLeft, Scale, BookOpen } from "lucide-react";
 import MainLayout from "@/components/layout/MainLayout";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import Link from "next/link";
 
-const RentalContractPage = () => {
+const RightsAndResponsabilitiesPage = () => {
     return (
         <MainLayout>
             <div className="py-8 bg-white">
@@ -21,17 +19,17 @@ const RentalContractPage = () => {
                                 </BreadcrumbLink>
                             </BreadcrumbItem>
                             <BreadcrumbSeparator />
-                            <BreadcrumbPage>Contrato de Aluguel</BreadcrumbPage>
+                            <BreadcrumbPage>Lei do Inquilinato</BreadcrumbPage>
                         </BreadcrumbList>
                     </Breadcrumb>
 
                     <div className="max-w-4xl mx-auto">
                         <header className="mb-8">
                             <h1 className="text-3xl md:text-4xl font-heading font-bold mb-4">
-                                O que deve constar em um contrato de aluguel
+                                Lei do Inquilinato (Lei 8.245/91)
                             </h1>
                             <p className="text-lg text-muted-foreground">
-                                Guia completo sobre os elementos essenciais de um contrato de aluguel + modelo para download
+                                Guia completo sobre a lei que regula as locações urbanas no Brasil
                             </p>
                         </header>
 
@@ -40,38 +38,38 @@ const RentalContractPage = () => {
                                 <Card>
                                     <CardHeader>
                                         <CardTitle className="flex items-center gap-2">
-                                            <CheckCircle className="h-5 w-5 text-green-600" />
-                                            Informações Básicas Obrigatórias
+                                            <Scale className="h-5 w-5 text-blue-600" />
+                                            Principais Pontos da Lei
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div>
-                                            <h3 className="font-medium mb-2">1. Dados das Partes</h3>
+                                            <h3 className="font-medium mb-2">Direitos do Locatário</h3>
                                             <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                                                <li>• Nome completo, CPF/CNPJ, RG, estado civil</li>
-                                                <li>• Endereço completo de locador e locatário</li>
-                                                <li>• Dados dos fiadores (se houver)</li>
+                                                <li>• Uso pacífico do imóvel</li>
+                                                <li>• Receber o imóvel em bom estado</li>
+                                                <li>• Direito à renovação (casos específicos)</li>
+                                                <li>• Indenização por benfeitorias necessárias</li>
                                             </ul>
                                         </div>
 
                                         <div>
-                                            <h3 className="font-medium mb-2">2. Descrição do Imóvel</h3>
+                                            <h3 className="font-medium mb-2">Deveres do Locatário</h3>
                                             <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                                                <li>• Endereço completo do imóvel</li>
-                                                <li>• Área, número de cômodos, características</li>
-                                                <li>• Estado de conservação</li>
-                                                <li>• Mobília inclusa (se aplicável)</li>
+                                                <li>• Pagar aluguel pontualmente</li>
+                                                <li>• Conservar o imóvel</li>
+                                                <li>• Permitir vistorias</li>
+                                                <li>• Devolver o imóvel no mesmo estado</li>
                                             </ul>
                                         </div>
 
                                         <div>
-                                            <h3 className="font-medium mb-2">3. Condições Financeiras</h3>
+                                            <h3 className="font-medium mb-2">Direitos do Locador</h3>
                                             <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                                                <li>• Valor do aluguel mensal</li>
-                                                <li>• Forma e data de pagamento</li>
-                                                <li>• Reajuste anual (índice utilizado)</li>
-                                                <li>• Valor do depósito caução</li>
-                                                <li>• Taxas de condomínio e IPTU</li>
+                                                <li>• Receber aluguel pontualmente</li>
+                                                <li>• Vistoriar o imóvel (24h de antecedência)</li>
+                                                <li>• Retomar o imóvel ao fim do contrato</li>
+                                                <li>• Reajustar o aluguel anualmente</li>
                                             </ul>
                                         </div>
                                     </CardContent>
@@ -79,30 +77,22 @@ const RentalContractPage = () => {
 
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>Cláusulas Importantes</CardTitle>
+                                        <CardTitle>Tipos de Contrato</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
                                         <div>
-                                            <h3 className="font-medium mb-2">Prazo e Renovação</h3>
+                                            <h3 className="font-medium mb-2">Prazo Determinado</h3>
                                             <p className="text-sm text-muted-foreground">
-                                                Definir se o contrato é por prazo determinado (até 30 meses) ou indeterminado.
-                                                Incluir condições para renovação automática ou renegociação.
+                                                Até 30 meses. Não pode ser rescindido antes do prazo,
+                                                exceto se houver cláusula específica.
                                             </p>
                                         </div>
 
                                         <div>
-                                            <h3 className="font-medium mb-2">Rescisão Antecipada</h3>
+                                            <h3 className="font-medium mb-2">Prazo Indeterminado</h3>
                                             <p className="text-sm text-muted-foreground">
-                                                Condições e multas para rescisão antes do prazo. Geralmente equivale a
-                                                3 meses de aluguel ou proporcional ao tempo restante.
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <h3 className="font-medium mb-2">Benfeitorias</h3>
-                                            <p className="text-sm text-muted-foreground">
-                                                Definir quais melhorias podem ser feitas pelo inquilino e se serão
-                                                indenizadas ao final do contrato.
+                                                Pode ser rescindido a qualquer momento com aviso prévio
+                                                de 30 dias.
                                             </p>
                                         </div>
                                     </CardContent>
@@ -110,22 +100,14 @@ const RentalContractPage = () => {
 
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle>Dicas Importantes</CardTitle>
+                                        <CardTitle>Reajuste de Aluguel</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-4">
-                                        <div className="bg-amber-50 p-4 rounded-lg border-l-4 border-amber-400">
-                                            <h4 className="font-medium text-amber-800 mb-2">⚠️ Atenção</h4>
-                                            <p className="text-sm text-amber-700">
-                                                Sempre leia todo o contrato antes de assinar. Se tiver dúvidas,
-                                                consulte um advogado especializado em direito imobiliário.
-                                            </p>
-                                        </div>
-
-                                        <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-400">
-                                            <h4 className="font-medium text-green-800 mb-2">✅ Recomendação</h4>
-                                            <p className="text-sm text-green-700">
-                                                Faça uma vistoria detalhada antes da assinatura e documente
-                                                o estado do imóvel com fotos.
+                                        <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400">
+                                            <h4 className="font-medium text-yellow-800 mb-2">📊 Índices Permitidos</h4>
+                                            <p className="text-sm text-yellow-700">
+                                                IGP-M, IPCA, INPC são os índices mais utilizados.
+                                                O reajuste só pode ocorrer após 12 meses.
                                             </p>
                                         </div>
                                     </CardContent>
@@ -135,15 +117,15 @@ const RentalContractPage = () => {
                             <div className="space-y-6">
                                 <Card>
                                     <CardHeader>
-                                        <CardTitle className="text-lg">Modelo de Contrato</CardTitle>
+                                        <CardTitle className="text-lg">Lei Completa</CardTitle>
                                     </CardHeader>
                                     <CardContent>
                                         <p className="text-sm text-muted-foreground mb-4">
-                                            Baixe nosso modelo de contrato de aluguel completo e personalizado
+                                            Acesse o texto completo da Lei 8.245/91
                                         </p>
                                         <Button className="w-full bg-[#e56b4e] hover:bg-[#e56b4e]/90">
-                                            <Download className="mr-2 h-4 w-4" />
-                                            Baixar Modelo
+                                            <BookOpen className="mr-2 h-4 w-4" />
+                                            Ler Lei Completa
                                         </Button>
                                     </CardContent>
                                 </Card>
@@ -153,14 +135,14 @@ const RentalContractPage = () => {
                                         <CardTitle className="text-lg">Artigos Relacionados</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-3">
-                                        <Link href="/guides/lei-inquilinato" className="block text-sm text-[#e56b4e] hover:underline">
-                                            → Lei do Inquilinato
+                                        <Link href="/guides/contrato-aluguel" className="block text-sm text-[#e56b4e] hover:underline">
+                                            → Contrato de Aluguel
                                         </Link>
                                         <Link href="/guides/quebra-contrato" className="block text-sm text-[#e56b4e] hover:underline">
                                             → Quebra de Contrato
                                         </Link>
-                                        <Link href="/guides/vistoria" className="block text-sm text-[#e56b4e] hover:underline">
-                                            → Como fazer vistoria
+                                        <Link href="/guides/modelo-contrato" className="block text-sm text-[#e56b4e] hover:underline">
+                                            → Modelo de Contrato
                                         </Link>
                                     </CardContent>
                                 </Card>
@@ -182,4 +164,4 @@ const RentalContractPage = () => {
     );
 };
 
-export default RentalContractPage;
+export default RightsAndResponsabilitiesPage;

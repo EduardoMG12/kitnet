@@ -31,6 +31,7 @@ import {
     Triangle,
     XCircle,
     CheckCircle,
+    Video,
 } from "lucide-react";
 import Link from "next/link";
 import postmanCollection from "@/data/kitnet.postman_collectionV21.json";
@@ -270,22 +271,22 @@ const DocumentationContent = () => {
                     implemented: true,
                 },
                 {
-                    path: "/guides/tenancy-law",
+                    path: "/guides/rights-and-responsabilities",
                     name: "Lei do inquilinato",
                     description: "Lei do inquilinato completa",
                     implemented: true,
                 },
                 {
                     path: "/guides/owner-law",
-                    name: "Lei do inquilinato",
-                    description: "Direitos do proprietário",
-                    implemented: false,
+                    name: "Direitos do Proprietário",
+                    description: "Conheça seus direitos como proprietário locador",
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
-                    name: "Lei do inquilinato",
-                    description: "Direitos do inquilino",
-                    implemented: false,
+                    path: "/guides/tenancy-law",
+                    name: "Direitos do Inquilino",
+                    description: "Conheça seus direitos como inquilino segundo a Lei do Inquilinato",
+                    implemented: true,
                 },
 
                 {
@@ -308,29 +309,22 @@ const DocumentationContent = () => {
                 },
 
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/how-to-rent",
                     name: "Como alugar um imóvel",
                     description: "Direitos do inquilino",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/required-documents",
                     name: "Documentos necessários",
-                    description: "Direitos do inquilino",
-                    implemented: false,
+                    description: "Lista completa de documentos para alugar um imóvel",
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/property-inspection",
                     name: "Como fazer vistoria",
-                    description: "Direitos do inquilino",
-                    implemented: false,
-                },
-
-                {
-                    path: "/guides/tenant-right",
-                    name: "Calculadora de aluguel",
-                    description: "Direitos do inquilino",
-                    implemented: false,
+                    description: "Guia completo para vistoria de entrada e saída",
+                    implemented: true,
                 },
                 {
                     path: "/guides/tools/igpm-calculator",
@@ -364,47 +358,47 @@ const DocumentationContent = () => {
                     implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/tools/rent-budget",
                     name: "Que aluguel cabe no meu bolso?",
-                    description: "Direitos do inquilino",
-                    implemented: false,
+                    description: "Descubra qual valor de aluguel é adequado para sua renda e situação financeira",
+                    implemented: true,
                 },
 
                 {
                     path: "/guides/tenant-right",
                     name: "Tendências do mercado",
-                    description: "Direitos do inquilino",
+                    description: "Mockados, entender como irei fazer, se tiro esta pagina, deixo a mesma mockada, ou acho uma api para pegar essas infos",
                     implemented: false,
                 },
                 {
                     path: "/guides/tenant-right",
                     name: "Preços por região",
-                    description: "Direitos do inquilino",
+                    description: "Mockados, entender como irei fazer, se tiro esta pagina, deixo a mesma mockada, ou acho uma api para pegar essas infos",
                     implemented: false,
                 },
                 {
                     path: "/guides/tenant-right",
                     name: "Análise de investimento",
-                    description: "Direitos do inquilino",
+                    description: "Mockados, entender como irei fazer, se tiro esta pagina, deixo a mesma mockada, ou acho uma api para pegar essas infos",
                     implemented: false,
                 },
 
                 {
                     path: "/guides/tenant-right",
                     name: "Condomínios de luxo",
-                    description: "Direitos do inquilino",
+                    description: "Mockados, entender como irei fazer, se tiro esta pagina, deixo a mesma mockada, ou acho uma api para pegar essas infos",
                     implemented: false,
                 },
                 {
                     path: "/guides/tenant-right",
                     name: "Condomínios para família",
-                    description: "Direitos do inquilino",
+                    description: "Mockados, entender como irei fazer, se tiro esta pagina, deixo a mesma mockada, ou acho uma api para pegar essas infos",
                     implemented: false,
                 },
                 {
                     path: "/guides/tenant-right",
                     name: "Melhores para investimento",
-                    description: "Direitos do inquilino",
+                    description: "Mockados, entender como irei fazer, se tiro esta pagina, deixo a mesma mockada, ou acho uma api para pegar essas infos",
                     implemented: false,
                 },
             ],
@@ -746,6 +740,36 @@ const DocumentationContent = () => {
                                     </div>
                                 ))}
                             </div>
+                        </CardContent>
+                    </Card>
+
+                    <Separator className="my-8" />
+
+                    <Card className="mb-12">
+                        <CardHeader>
+                            <div className="flex items-center gap-2 mb-2">
+                                <Video className="h-6 w-6 text-[#e56b4e]" />
+                                <CardTitle className="text-2xl">Vídeo Explicativo</CardTitle>
+                            </div>
+                            <CardDescription>
+                                Uma descricao bem feita
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="aspect-video w-full rounded-lg overflow-hidden bg-muted">
+                                <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                                    title="Mostrando o projeto KitNet"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                    allowFullScreen
+                                    className="w-full h-full"
+                                />
+                            </div>
+                            <p className="text-sm text-muted-foreground mt-4">
+                                <strong>Nota:</strong> teste.
+                            </p>
                         </CardContent>
                     </Card>
 

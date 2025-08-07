@@ -72,7 +72,7 @@ const RentalCalculatorPage = () => {
                             <Card>
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2">
-                                        <Calculator className="h-5 w-5 text-terracotta" />
+                                        <Calculator className="h-5 w-5 text-[#e56b4e]" />
                                         Calculadora
                                     </CardTitle>
                                 </CardHeader>
@@ -179,13 +179,13 @@ const RentalCalculatorPage = () => {
                                         <CardTitle>Outras Calculadoras</CardTitle>
                                     </CardHeader>
                                     <CardContent className="space-y-3">
-                                        <Link href="/tools/comprar-ou-alugar" className="block text-sm text-terracotta hover:underline">
+                                        <Link href="/tools/comprar-ou-alugar" className="block text-sm text-[#e56b4e] hover:underline">
                                             → Comprar ou Alugar?
                                         </Link>
-                                        <Link href="/tools/valor-imovel" className="block text-sm text-terracotta hover:underline">
+                                        <Link href="/tools/valor-imovel" className="block text-sm text-[#e56b4e] hover:underline">
                                             → Quanto vale meu imóvel?
                                         </Link>
-                                        <Link href="/tools/calculadora-igpm" className="block text-sm text-terracotta hover:underline">
+                                        <Link href="/tools/calculadora-igpm" className="block text-sm text-[#e56b4e] hover:underline">
                                             → Calculadora IGP-M
                                         </Link>
                                     </CardContent>
