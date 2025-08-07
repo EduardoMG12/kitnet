@@ -24,6 +24,8 @@ export interface Route {
 	name: string;
 	description: string;
 	implemented: boolean;
+	needsAuth: boolean;
+	espeficicRole: string[];
 }
 
 export interface RouteCategory {
