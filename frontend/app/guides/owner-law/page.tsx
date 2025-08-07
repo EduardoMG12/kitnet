@@ -4,7 +4,7 @@ import OwnerLawPage from '@/components/pages/OwnerLawPage';
 
 import React from 'react';
 
-const PropertyInspection = () => {
+const OwnerLaw = () => {
     return (
         <>
             <HeaderDefault />
@@ -14,4 +14,4 @@ const PropertyInspection = () => {
     );
 };
 
-export default PropertyInspection;
+export default OwnerLaw;
