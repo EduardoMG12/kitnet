@@ -333,22 +333,22 @@ const DocumentationContent = () => {
                     implemented: false,
                 },
                 {
-                    path: "/guides/tenant-right",
+                    path: "/guides/tools/igpm-calculator",
                     name: "Calculadora IGP-M",
-                    description: "Direitos do inquilino",
-                    implemented: false,
+                    description: "Calcule o reajuste do aluguel pelo IGP-M",
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
-                    name: "Calculadora IPCA",
+                    path: "/guides/tools/ipca-calculator",
+                    name: "Calcule o reajuste do aluguel pelo IPCA",
                     description: "Direitos do inquilino",
-                    implemented: false,
+                    implemented: true,
                 },
                 {
-                    path: "/guides/tenant-right",
-                    name: "Comprar ou Alugar?",
+                    path: "/guides/tools/purchase-or-rent",
+                    name: "Comprar ou Alugar? Análise financeira para tomar a melhor decisão",
                     description: "Direitos do inquilino",
-                    implemented: false,
+                    implemented: true,
                 },
 
                 {
@@ -358,7 +358,7 @@ const DocumentationContent = () => {
                     implemented: true,
                 },
                 {
-                    path: "/guides/pricing-guide",
+                    path: "/guides/tools/pricing-guide",
                     name: "Quanto cobrar de aluguel",
                     description: "Direitos do inquilino",
                     implemented: true,
