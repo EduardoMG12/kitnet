@@ -1,5 +1,5 @@
 import MainLayout from "@/components/layout/MainLayout";
-import AccessDeniedInteractiveContent from '@/components/errors/AccessDeniedInteractiveContent';
+import AccessDeniedInteractiveContent from '@/components/pages/errors/AccessDeniedInteractiveContent';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -49,8 +49,6 @@ export const metadata: Metadata = {
 
 export default function AccessDeniedPage() {
     return (
-        <MainLayout hideFooter>
-            <AccessDeniedInteractiveContent />
-        </MainLayout>
+        <AccessDeniedInteractiveContent />
     );
 }

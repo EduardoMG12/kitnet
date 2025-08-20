@@ -1,4 +1,4 @@
-import InternalServerErrorContent from "@/components/errors/InternalServerErrorContent";
+import InternalServerErrorContent from "@/components/pages/errors/InternalServerErrorContent";
 import MainLayout from "@/components/layout/MainLayout";
 import type { Metadata } from 'next';
 
@@ -46,9 +46,7 @@ export const metadata: Metadata = {
 
 export default function InternalServerErrorPage() {
     return (
-        <MainLayout hideFooter>
-            <InternalServerErrorContent />
-        </MainLayout>
+        <InternalServerErrorContent />
     );
 }
 

@@ -1,5 +1,5 @@
-import Footer from '@/components/Footer';
-import HeaderDefault from '@/components/headers/HeaderDefault';
+
+
 import MyPropertiesPage from '@/components/pages/MyPropertiesPage';
 import React from 'react';
 
@@ -51,9 +51,8 @@ const mockProperties = [
 const MyProperties = () => {
     return (
         <>
-            <HeaderDefault />
+
             <MyPropertiesPage properties={mockProperties} />
-            <Footer />
         </>
     );
 };

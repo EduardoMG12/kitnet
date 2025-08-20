@@ -1,4 +1,4 @@
-import ServiceUnavalibleContent from "@/components/errors/ServiceUnavalibleContent";
+import ServiceUnavalibleContent from "@/components/pages/errors/ServiceUnavalibleContent";
 import MainLayout from "@/components/layout/MainLayout";
 import type { Metadata } from 'next';
 
@@ -47,9 +47,7 @@ export const metadata: Metadata = {
 
 export default function ServiceUnavaliblePage() {
     return (
-        <MainLayout hideFooter>
-            <ServiceUnavalibleContent />
-        </MainLayout>
+        <ServiceUnavalibleContent />
     );
 }
 

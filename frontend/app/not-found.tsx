@@ -1,5 +1,5 @@
 import MainLayout from "@/components/layout/MainLayout";
-import NotFoundInteractive from '@/components/errors/NotFoundInteractive';
+import NotFoundInteractive from '@/components/pages/errors/NotFoundInteractive';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -38,8 +38,6 @@ export const metadata: Metadata = {
 
 export default function NotFoundPage() {
     return (
-        <MainLayout hideFooter>
-            <NotFoundInteractive />
-        </MainLayout>
+        <NotFoundInteractive />
     );
 }

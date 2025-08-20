@@ -1,4 +1,4 @@
-import TooManyRequestContent from "@/components/errors/TooManyRequestContent";
+import TooManyRequestContent from "@/components/pages/errors/TooManyRequestContent";
 import MainLayout from "@/components/layout/MainLayout";
 import type { Metadata } from 'next';
 
@@ -47,8 +47,6 @@ export const metadata: Metadata = {
 
 export default function TooManyRequestPage() {
     return (
-        <MainLayout hideFooter>
-            <TooManyRequestContent />
-        </MainLayout>
+        <TooManyRequestContent />
     );
 }

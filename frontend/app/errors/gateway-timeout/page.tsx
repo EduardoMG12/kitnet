@@ -1,4 +1,4 @@
-import GatewayTimeoutContent from "@/components/errors/GatewayTimeoutContent";
+import GatewayTimeoutContent from "@/components/pages/errors/GatewayTimeoutContent";
 import MainLayout from "@/components/layout/MainLayout";
 import type { Metadata } from 'next';
 
@@ -47,9 +47,7 @@ export const metadata: Metadata = {
 
 export default function GatewayTimeoutPage() {
     return (
-        <MainLayout hideFooter>
-            <GatewayTimeoutContent />
-        </MainLayout>
+        <GatewayTimeoutContent />
     );
 }
 

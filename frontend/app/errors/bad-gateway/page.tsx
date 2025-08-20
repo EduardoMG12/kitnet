@@ -1,4 +1,4 @@
-import BadGatewayContent from "@/components/errors/BadGatewayContent";
+import BadGatewayContent from "@/components/pages/errors/BadGatewayContent";
 import MainLayout from "@/components/layout/MainLayout";
 import type { Metadata } from 'next';
 
@@ -47,8 +47,6 @@ export const metadata: Metadata = {
 
 export default function BadGatewayPage() {
     return (
-        <MainLayout hideFooter>
-            <BadGatewayContent />
-        </MainLayout>
+        <BadGatewayContent />
     );
 }

@@ -1,4 +1,4 @@
-import UnauthorizedContent from "@/components/errors/UnauthorizedContent";
+import UnauthorizedContent from "@/components/pages/errors/UnauthorizedContent";
 import MainLayout from "@/components/layout/MainLayout";
 import type { Metadata } from 'next';
 
@@ -47,8 +47,6 @@ export const metadata: Metadata = {
 
 export default function UnauthorizedPage() {
     return (
-        <MainLayout hideFooter>
-            <UnauthorizedContent />
-        </MainLayout>
+        <UnauthorizedContent />
     );
 }

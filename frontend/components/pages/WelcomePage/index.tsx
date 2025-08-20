@@ -7,7 +7,7 @@ import Link from "next/link";
 
 const WelcomePage = () => {
     return (
-        <MainLayout>
+        <>
             <HeroSection />
 
             {/* How it works section */}
@@ -256,7 +256,7 @@ const WelcomePage = () => {
                     </div>
                 </div>
             </section>
-        </MainLayout >
+        </>
     );
 };
 
@@ -288,4 +288,4 @@ const featuredProperties = [
     }
 ];
 
-export default WelcomePage;
+export default WelcomePage;;

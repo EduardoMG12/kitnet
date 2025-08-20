@@ -34,17 +34,16 @@ const properties = [
     }
 ];
 
-import Footer from '@/components/Footer';
-import HeaderDefault from '@/components/headers/HeaderDefault';
+
+
 import EditPropertyPage from '@/components/pages/EditPropertyPage';
 import React from 'react';
 
 const EditProperty = () => {
     return (
         <>
-            <HeaderDefault />
+
             <EditPropertyPage properties={properties} />
-            <Footer />
         </>
     );
 };

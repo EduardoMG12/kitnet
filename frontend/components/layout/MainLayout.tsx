@@ -7,9 +7,9 @@ interface MainLayoutProps {
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, hideFooter }) => {
     return (
-        <div className="flex flex-col min-h-screen">
-            {/* <Header /> Your Header component */}
-            <main className="flex-grow">
+        <div className="flex flex-col min-h-full h-full">
+            {/*  Your Header component */}
+            <main className="flex-grow h-full">
                 {children}
             </main>
             {/* {!hideFooter && <Footer />} Your Footer component */}

@@ -1,11 +1,11 @@
 import Footer from "@/components/Footer";
-import HeaderDefault from "@/components/headers/HeaderDefault";
+import Header from "@/components/headers";
 import WelcomePage from "@/components/pages/WelcomePage";
 
 export default function Home() {
   return (
     <>
-      <HeaderDefault />
+      <Header />
       <WelcomePage />
       <Footer />
     </>
