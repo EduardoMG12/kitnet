@@ -21,6 +21,8 @@ export interface Professor {
 
 export interface Route {
 	path: string;
+	beforePathNotVisible?: string;
+	afterPathNotVisible?: string;
 	name: string;
 	description: string;
 	implemented: boolean;

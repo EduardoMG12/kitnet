@@ -366,22 +366,34 @@ const DocumentationContent = () => {
                                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                         {category.routes.map((route) => {
                                             const rolePaths = {
-                                                "tenant": "examples/lessee",
-                                                "lessor": "examples/lessee",
-                                                "broker": "examples/real-state-agent"
+                                                "Inquilino": "examples/lessee",
+                                                "Proprietário": "examples/lessor",
+                                                "Corretor": "examples/real-state-agent"
                                             };
 
                                             let href = route.path;
 
+                                            if (route.beforePathNotVisible) {
+                                                href = `${route.beforePathNotVisible}/${href}`;
+                                            }
+
+                                            if (route.afterPathNotVisible) {
+                                                href = `${href}/${route.afterPathNotVisible}`;
+                                            }
+
+
                                             if (route.espeficicRole.length > 0) {
-                                                if (route.espeficicRole.includes("tenant")) {
-                                                    href = `examples/lessee/${route.path}`;
+                                                let basePath = '';
+                                                if (route.espeficicRole.includes("Inquilino")) {
+                                                    basePath = "examples/lessee";
+                                                } else if (route.espeficicRole.includes("Corretor")) {
+                                                    basePath = "examples/real-state-agent";
+                                                } else if (route.espeficicRole.includes("Proprietário")) {
+                                                    basePath = "examples/lessor";
                                                 }
-                                                if (route.espeficicRole.includes("broker")) {
-                                                    href = `examples/real-state-agent/${route.path}`;
-                                                }
-                                                if (route.espeficicRole.includes("landlord")) {
-                                                    href = `examples/lessor/${route.path}`;
+
+                                                if (basePath) {
+                                                    href = `${basePath}/${route.path}`;
                                                 }
                                             }
 
@@ -535,7 +547,9 @@ const DocumentationContent = () => {
                                     height="800px"
                                     style={{ border: "none" }}
                                     title="Documentação do Projeto KitNet"
-                                >
+                                />
+
+                                <p className="text-sm text-muted-foreground mt-4">
                                     Seu navegador não suporta a incorporação de PDFs. Você pode{" "}
                                     <a
                                         href="/documentacao.pdf"
@@ -545,7 +559,7 @@ const DocumentationContent = () => {
                                         baixar o PDF aqui
                                     </a>
                                     .
-                                </iframe>
+                                </p>
                             </CardContent>
                         </Card>
                     </div>

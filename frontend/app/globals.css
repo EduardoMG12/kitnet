@@ -154,3 +154,8 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+/* @layer components {
+	.casa-container {
+	  @apply container px-4 mx-auto max-w-7xl;
+} */
