@@ -47,7 +47,6 @@ const DocumentationContent = () => {
         linkElement.click();
     };
 
-
     return (
         <MainLayout>
             <div className="min-h-screen bg-[#f9f4e8] py-12">
@@ -365,88 +364,110 @@ const DocumentationContent = () => {
                                 </CardHeader>
                                 <CardContent>
                                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                        {category.routes.map((route) => (
-                                            <div
-                                                key={route.name}
-                                                className="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow flex flex-col justify-between"
-                                            >
-                                                <div className="flex-1">
-                                                    <div className="flex items-start justify-between mb-2">
-                                                        <div>
-                                                            <h3 className="font-semibold text-[#2c3e50]">
-                                                                {route.name}
-                                                            </h3>
-                                                            <Badge variant="outline" className="text-xs mt-1">
-                                                                {route.path}
-                                                            </Badge>
+                                        {category.routes.map((route) => {
+                                            const rolePaths = {
+                                                "tenant": "examples/lessee",
+                                                "lessor": "examples/lessee",
+                                                "broker": "examples/real-state-agent"
+                                            };
+
+                                            let href = route.path;
+
+                                            if (route.espeficicRole.length > 0) {
+                                                if (route.espeficicRole.includes("tenant")) {
+                                                    href = `examples/lessee/${route.path}`;
+                                                }
+                                                if (route.espeficicRole.includes("broker")) {
+                                                    href = `examples/real-state-agent/${route.path}`;
+                                                }
+                                                if (route.espeficicRole.includes("landlord")) {
+                                                    href = `examples/lessor/${route.path}`;
+                                                }
+                                            }
+
+                                            return (
+                                                <div
+                                                    key={route.name}
+                                                    className="p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow flex flex-col justify-between"
+                                                >
+                                                    <div className="flex-1">
+                                                        <div className="flex items-start justify-between mb-2">
+                                                            <div>
+                                                                <h3 className="font-semibold text-[#2c3e50]">
+                                                                    {route.name}
+                                                                </h3>
+                                                                <Badge variant="outline" className="text-xs mt-1">
+                                                                    {route.path}
+                                                                </Badge>
+                                                            </div>
+                                                            <div className="flex gap-2">
+                                                                {/* Status de Autenticação */}
+                                                                {route.needsAuth === false && (
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className="bg-gray-100 text-gray-600 flex items-center gap-1 text-xs"
+                                                                    >
+                                                                        <Globe2 className="h-3 w-3" />
+                                                                        Pública
+                                                                    </Badge>
+                                                                )}
+                                                                {route.needsAuth === true && (
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className="bg-blue-100 text-blue-600 flex items-center gap-1 text-xs"
+                                                                    >
+                                                                        <Lock className="h-3 w-3" />
+                                                                        Autenticada
+                                                                    </Badge>
+                                                                )}
+                                                                {(route.needsAuth === true && route.espeficicRole.length > 0) && (
+                                                                    <Badge
+                                                                        variant="outline"
+                                                                        className="bg-purple-100 text-purple-600 flex items-center gap-1 text-xs"
+                                                                    >
+                                                                        <Shield className="h-3 w-3" />
+                                                                        Restrita
+                                                                    </Badge>
+                                                                )}
+                                                                {/* Status de Implementação */}
+                                                                <Badge
+                                                                    variant="outline"
+                                                                    className={`flex items-center gap-1 text-xs ${route.implemented ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
+                                                                >
+                                                                    {route.implemented ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
+                                                                    {route.implemented ? "Implementada" : "Não Implementada"}
+                                                                </Badge>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex gap-2">
-                                                            {/* Status de Autenticação */}
-                                                            {route.needsAuth === false && (
-                                                                <Badge
-                                                                    variant="outline"
-                                                                    className="bg-gray-100 text-gray-600 flex items-center gap-1 text-xs"
-                                                                >
-                                                                    <Globe2 className="h-3 w-3" />
-                                                                    Pública
-                                                                </Badge>
-                                                            )}
-                                                            {route.needsAuth === true && (
-                                                                <Badge
-                                                                    variant="outline"
-                                                                    className="bg-blue-100 text-blue-600 flex items-center gap-1 text-xs"
-                                                                >
-                                                                    <Lock className="h-3 w-3" />
-                                                                    Autenticada
-                                                                </Badge>
-                                                            )}
-                                                            {(route.needsAuth === true && route.espeficicRole.length > 0) && (
-                                                                <Badge
-                                                                    variant="outline"
-                                                                    className="bg-purple-100 text-purple-600 flex items-center gap-1 text-xs"
-                                                                >
-                                                                    <Shield className="h-3 w-3" />
-                                                                    Restrita
-                                                                </Badge>
-                                                            )}
-                                                            {/* Status de Implementação */}
-                                                            <Badge
-                                                                variant="outline"
-                                                                className={`flex items-center gap-1 text-xs ${route.implemented ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}
-                                                            >
-                                                                {route.implemented ? <CheckCircle className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-                                                                {route.implemented ? "Implementada" : "Não Implementada"}
-                                                            </Badge>
-                                                        </div>
+
+                                                        <p className="text-sm text-muted-foreground mb-3">
+                                                            {route.description}
+                                                        </p>
+
+                                                        {route.needsAuth === true && route.espeficicRole && route.espeficicRole.length > 0 && (
+                                                            <div className="flex items-center gap-1 mt-2 flex-wrap">
+                                                                <User className="h-4 w-4 text-purple-600 flex-shrink-0" />
+                                                                <p className="text-xs text-purple-600 font-semibold flex-shrink-0">Acesso:</p>
+                                                                {route.espeficicRole.map((role) => (
+                                                                    <Badge key={role} variant="outline" className="text-xs bg-purple-50 text-purple-600 font-medium">
+                                                                        {role}
+                                                                    </Badge>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                     </div>
 
-                                                    <p className="text-sm text-muted-foreground mb-3">
-                                                        {route.description}
-                                                    </p>
-
-                                                    {route.needsAuth === true && route.espeficicRole && route.espeficicRole.length > 0 && (
-                                                        <div className="flex items-center gap-1 mt-2 flex-wrap">
-                                                            <User className="h-4 w-4 text-purple-600 flex-shrink-0" />
-                                                            <p className="text-xs text-purple-600 font-semibold flex-shrink-0">Acesso:</p>
-                                                            {route.espeficicRole.map((role) => (
-                                                                <Badge key={role} variant="outline" className="text-xs bg-purple-50 text-purple-600 font-medium">
-                                                                    {role}
-                                                                </Badge>
-                                                            ))}
-                                                        </div>
-                                                    )}
+                                                    <Button
+                                                        asChild
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="self-start mt-4 hover:bg-[#e56b4e] hover:text-white hover:border-[#e56b4e]"
+                                                    >
+                                                        <Link href={href}>Visitar página</Link>
+                                                    </Button>
                                                 </div>
-
-                                                <Button
-                                                    asChild
-                                                    variant="outline"
-                                                    size="sm"
-                                                    className="self-start mt-4 hover:bg-[#e56b4e] hover:text-white hover:border-[#e56b4e]"
-                                                >
-                                                    <Link href={route.path}>Visitar página</Link>
-                                                </Button>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -530,7 +551,7 @@ const DocumentationContent = () => {
                     </div>
                 </div>
             </div>
-        </MainLayout>
+        </MainLayout >
     );
 };
 
