@@ -77,10 +77,10 @@ const UserVerificationPage = () => {
 
     return (
         <MainLayout>
-            <div className="min-h-screen bg-cream py-8">
+            <div className="min-h-screen bg-[#f9f4e8] py-8">
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="mb-6">
-                        <Link href="/properties" className="inline-flex items-center text-terracotta hover:underline">
+                        <Link href="/properties" className="inline-flex items-center text-[#e56b4e] hover:underline">
                             <ArrowLeft className="h-4 w-4 mr-2" />
                             Voltar para imóveis
                         </Link>
@@ -88,8 +88,8 @@ const UserVerificationPage = () => {
 
                     <Card className="mb-8">
                         <CardHeader className="text-center">
-                            <CardTitle className="text-3xl font-heading text-deepblue flex items-center justify-center gap-2">
-                                <Shield className="h-8 w-8 text-terracotta" />
+                            <CardTitle className="text-3xl font-heading text-[#2c3e50] flex items-center justify-center gap-2">
+                                <Shield className="h-8 w-8 text-[#e56b4e]" />
                                 Verificação de Dados
                             </CardTitle>
                             <CardDescription className="text-lg">
@@ -254,7 +254,7 @@ const UserVerificationPage = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
                                                 <Label>Foto do RG (frente e verso) *</Label>
-                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-terracotta transition-colors">
+                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#e56b4e] transition-colors">
                                                     <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                                                     <p className="text-sm text-gray-600 mb-2">Clique para enviar ou arraste aqui</p>
                                                     <Button
@@ -269,7 +269,7 @@ const UserVerificationPage = () => {
 
                                             <div className="space-y-2">
                                                 <Label>Foto do CPF *</Label>
-                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-terracotta transition-colors">
+                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#e56b4e] transition-colors">
                                                     <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                                                     <p className="text-sm text-gray-600 mb-2">Clique para enviar ou arraste aqui</p>
                                                     <Button
@@ -284,7 +284,7 @@ const UserVerificationPage = () => {
 
                                             <div className="space-y-2">
                                                 <Label>Comprovante de Renda *</Label>
-                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-terracotta transition-colors">
+                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#e56b4e] transition-colors">
                                                     <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                                                     <p className="text-sm text-gray-600 mb-2">Holerite, declaração de IR, etc.</p>
                                                     <Button
@@ -299,7 +299,7 @@ const UserVerificationPage = () => {
 
                                             <div className="space-y-2">
                                                 <Label>Comprovante de Residência *</Label>
-                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-terracotta transition-colors">
+                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#e56b4e] transition-colors">
                                                     <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                                                     <p className="text-sm text-gray-600 mb-2">Conta de luz, água, telefone, etc.</p>
                                                     <Button
@@ -314,7 +314,7 @@ const UserVerificationPage = () => {
 
                                             <div className="space-y-2">
                                                 <Label>Foto (selfie) *</Label>
-                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-terracotta transition-colors">
+                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#e56b4e] transition-colors">
                                                     <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                                                     <p className="text-sm text-gray-600 mb-2">Foto atual para verificação</p>
                                                     <Button
@@ -329,7 +329,7 @@ const UserVerificationPage = () => {
 
                                             <div className="space-y-2">
                                                 <Label>CNH (se informada)</Label>
-                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-terracotta transition-colors">
+                                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#e56b4e] transition-colors">
                                                     <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                                                     <p className="text-sm text-gray-600 mb-2">Frente e verso da CNH</p>
                                                     <Button
@@ -379,7 +379,7 @@ const UserVerificationPage = () => {
                                                     </Label>
                                                     <p className="text-xs text-muted-foreground">
                                                         Autorizo o uso dos meus dados para verificação de capacidade locatícia e comunicação sobre propostas.
-                                                        <Link href="/privacy" className="text-terracotta hover:underline ml-1">
+                                                        <Link href="/privacy" className="text-[#e56b4e] hover:underline ml-1">
                                                             Leia nossa Política de Privacidade
                                                         </Link>
                                                     </p>
@@ -416,7 +416,7 @@ const UserVerificationPage = () => {
                         <div className="mt-8 text-center">
                             <Button
                                 type="submit"
-                                className="bg-terracotta hover:bg-terracotta/90 px-8 py-3"
+                                className="bg-[#e56b4e] hover:bg-[#e56b4e]/90 px-8 py-3"
                                 disabled={!lgpdConsent}
                             >
                                 Enviar Dados para Verificação

@@ -56,7 +56,7 @@ const EmailConfirmationPage = () => {
 
     if (status === "loading") {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
                         <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
@@ -81,7 +81,7 @@ const EmailConfirmationPage = () => {
 
     if (status === "success") {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
                         <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -113,7 +113,7 @@ const EmailConfirmationPage = () => {
                         <div className="space-y-3 pt-4">
                             <Button
                                 onClick={handleContinue}
-                                className="w-full bg-terracotta hover:bg-terracotta/90"
+                                className="w-full bg-[#e56b4e] hover:bg-[#e56b4e]/90"
                                 disabled={isRedirecting}
                             >
                                 {isRedirecting ? (
@@ -153,7 +153,7 @@ const EmailConfirmationPage = () => {
 
     if (status === "expired") {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
                         <div className="mx-auto w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
@@ -176,7 +176,7 @@ const EmailConfirmationPage = () => {
                         <div className="space-y-3">
                             <Button
                                 onClick={resendConfirmation}
-                                className="w-full bg-terracotta hover:bg-terracotta/90"
+                                className="w-full bg-[#e56b4e] hover:bg-[#e56b4e]/90"
                             >
                                 Reenviar email de confirmação
                             </Button>
@@ -191,7 +191,7 @@ const EmailConfirmationPage = () => {
                         <div className="text-center pt-4">
                             <p className="text-xs text-muted-foreground">
                                 Problemas com a confirmação?
-                                <Link href="/contact" className="text-terracotta hover:underline ml-1">
+                                <Link href="/contact" className="text-[#e56b4e] hover:underline ml-1">
                                     Entre em contato
                                 </Link>
                             </p>
@@ -204,7 +204,7 @@ const EmailConfirmationPage = () => {
 
     // Error state
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
                     <div className="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
@@ -226,7 +226,7 @@ const EmailConfirmationPage = () => {
                     <div className="space-y-3">
                         <Button
                             onClick={resendConfirmation}
-                            className="w-full bg-terracotta hover:bg-terracotta/90"
+                            className="w-full bg-[#e56b4e] hover:bg-[#e56b4e]/90"
                         >
                             Reenviar email de confirmação
                         </Button>
@@ -250,7 +250,7 @@ const EmailConfirmationPage = () => {
                         <p className="text-xs text-muted-foreground mb-2">
                             Precisa de ajuda?
                         </p>
-                        <Link href="/contact" className="text-terracotta hover:underline text-sm">
+                        <Link href="/contact" className="text-[#e56b4e] hover:underline text-sm">
                             Entre em contato com o suporte
                         </Link>
                     </div>

@@ -108,7 +108,7 @@ const ResetPasswordPage = () => {
 
     if (isSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
                         <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -128,7 +128,7 @@ const ResetPasswordPage = () => {
                         </Alert>
 
                         <Link href="/login">
-                            <Button className="w-full bg-terracotta hover:bg-terracotta/90">
+                            <Button className="w-full bg-[#e56b4e] hover:bg-[#e56b4e]/90">
                                 Ir para o login
                             </Button>
                         </Link>
@@ -140,7 +140,7 @@ const ResetPasswordPage = () => {
 
     if (!token) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
                         <CardTitle className="text-2xl font-bold">Link Inválido</CardTitle>
@@ -157,7 +157,7 @@ const ResetPasswordPage = () => {
 
                         <div className="space-y-3">
                             <Link href="/forgot-password">
-                                <Button className="w-full bg-terracotta hover:bg-terracotta/90">
+                                <Button className="w-full bg-[#e56b4e] hover:bg-[#e56b4e]/90">
                                     Solicitar novo link
                                 </Button>
                             </Link>
@@ -176,7 +176,7 @@ const ResetPasswordPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold">Nova Senha</CardTitle>
@@ -287,7 +287,7 @@ const ResetPasswordPage = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-12 bg-terracotta hover:bg-terracotta/90"
+                            className="w-full h-12 bg-[#e56b4e] hover:bg-[#e56b4e]/90"
                             disabled={isLoading || passwords.new_password !== passwords.confirm_password || passwordStrength < 60}
                         >
                             {isLoading ? "Alterando senha..." : "Alterar senha"}
@@ -297,7 +297,7 @@ const ResetPasswordPage = () => {
                     <div className="mt-6 text-center">
                         <Link
                             href="/login"
-                            className="inline-flex items-center text-sm text-muted-foreground hover:text-terracotta transition-colors"
+                            className="inline-flex items-center text-sm text-muted-foreground hover:text-[#e56b4e] transition-colors"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Voltar ao login

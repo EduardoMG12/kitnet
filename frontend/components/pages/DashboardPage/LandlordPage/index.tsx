@@ -40,7 +40,7 @@ const DashboardLandlordPage = () => {
                                     <p className="text-sm font-medium text-muted-foreground">Imóveis Ativos</p>
                                     <p className="text-2xl font-bold">12</p>
                                 </div>
-                                <Home className="h-8 w-8 text-terracotta" />
+                                <Home className="h-8 w-8 text-[#e56b4e]" />
                             </div>
                             <p className="text-xs text-muted-foreground mt-2">
                                 <span className="text-green-600">+2</span> este mês
@@ -97,9 +97,9 @@ const DashboardLandlordPage = () => {
                 {/* Quick Actions */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     <Link href="/add-property">
-                        <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed border-2 border-terracotta/30">
+                        <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed border-2 border-[#e56b4e]/30">
                             <CardContent className="p-4 text-center">
-                                <Plus className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                                <Plus className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                                 <h3 className="font-semibold mb-1">Anunciar Imóvel</h3>
                                 <p className="text-sm text-muted-foreground">Adicione um novo imóvel</p>
                             </CardContent>
@@ -108,7 +108,7 @@ const DashboardLandlordPage = () => {
 
                     <Card className="hover:shadow-md transition-shadow cursor-pointer">
                         <CardContent className="p-4 text-center">
-                            <FileText className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                            <FileText className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                             <h3 className="font-semibold mb-1">Propostas</h3>
                             <p className="text-sm text-muted-foreground">Gerencie solicitações</p>
                         </CardContent>
@@ -116,7 +116,7 @@ const DashboardLandlordPage = () => {
 
                     <Card className="hover:shadow-md transition-shadow cursor-pointer">
                         <CardContent className="p-4 text-center">
-                            <MessageSquare className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                            <MessageSquare className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                             <h3 className="font-semibold mb-1">Mensagens</h3>
                             <p className="text-sm text-muted-foreground">5 não lidas</p>
                         </CardContent>
@@ -124,7 +124,7 @@ const DashboardLandlordPage = () => {
 
                     <Card className="hover:shadow-md transition-shadow cursor-pointer">
                         <CardContent className="p-4 text-center">
-                            <TrendingUp className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                            <TrendingUp className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                             <h3 className="font-semibold mb-1">Relatórios</h3>
                             <p className="text-sm text-muted-foreground">Análise de desempenho</p>
                         </CardContent>
@@ -291,7 +291,7 @@ const DashboardLandlordPage = () => {
                                             <span>112%</span>
                                         </div>
                                         <div className="w-full bg-gray-200 rounded-full h-2">
-                                            <div className="bg-terracotta h-2 rounded-full" style={{ width: '100%' }} />
+                                            <div className="bg-[#e56b4e] h-2 rounded-full" style={{ width: '100%' }} />
                                         </div>
                                     </div>
                                 </div>
@@ -311,7 +311,7 @@ const DashboardLandlordPage = () => {
                                     <div className="flex items-center gap-3 p-2 border rounded">
                                         <div className="text-center">
                                             <p className="text-xs font-medium">HOJ</p>
-                                            <p className="text-lg font-bold text-terracotta">20</p>
+                                            <p className="text-lg font-bold text-[#e56b4e]">20</p>
                                         </div>
                                         <div className="flex-1">
                                             <p className="font-medium text-sm">Visita agendada</p>

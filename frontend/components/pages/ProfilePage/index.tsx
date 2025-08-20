@@ -123,7 +123,7 @@ const ProfilePage = () => {
                         <div className="flex flex-col md:flex-row items-start gap-6">
                             <Avatar className="h-24 w-24">
                                 <AvatarImage src={user.avatar} alt={user.name} />
-                                <AvatarFallback className="text-2xl bg-terracotta text-white">
+                                <AvatarFallback className="text-2xl bg-[#e56b4e] text-white">
                                     {user.name.split(' ').map(n => n[0]).join('')}
                                 </AvatarFallback>
                             </Avatar>
@@ -135,7 +135,7 @@ const ProfilePage = () => {
                                         {userType === 'broker' && 'creci' in user && 'company' in user && (
                                             <div className="flex items-center gap-2 mb-2">
                                                 <Badge variant="secondary">CRECI: {user.creci}</Badge>
-                                                <Badge className="bg-terracotta">{user.company}</Badge>
+                                                <Badge className="bg-[#e56b4e]">{user.company}</Badge>
                                             </div>
                                         )}
                                         <div className="flex items-center gap-4 text-muted-foreground mb-2">
@@ -159,7 +159,7 @@ const ProfilePage = () => {
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        <Button className="bg-terracotta hover:bg-terracotta/90">
+                                        <Button className="bg-[#e56b4e] hover:bg-[#e56b4e]/90">
                                             <MessageCircle className="h-4 w-4 mr-2" />
                                             Enviar Mensagem
                                         </Button>
@@ -178,7 +178,7 @@ const ProfilePage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <Card>
                         <CardContent className="p-6 text-center">
-                            <Building2 className="h-8 w-8 text-terracotta mx-auto mb-2" />
+                            <Building2 className="h-8 w-8 text-[#e56b4e] mx-auto mb-2" />
                             <h3 className="text-2xl font-bold">{user.propertiesCount}</h3>
                             <p className="text-sm text-muted-foreground">
                                 {userType === 'tenant' ? 'Imóveis Alugados' : 'Propriedades'}
@@ -189,7 +189,7 @@ const ProfilePage = () => {
                     {userType === 'broker' && 'clientsServed' in user && (
                         <Card>
                             <CardContent className="p-6 text-center">
-                                <Users className="h-8 w-8 text-terracotta mx-auto mb-2" />
+                                <Users className="h-8 w-8 text-[#e56b4e] mx-auto mb-2" />
                                 <h3 className="text-2xl font-bold">{user.clientsServed}</h3>
                                 <p className="text-sm text-muted-foreground">Clientes Atendidos</p>
                             </CardContent>
@@ -198,7 +198,7 @@ const ProfilePage = () => {
 
                     <Card>
                         <CardContent className="p-6 text-center">
-                            <Award className="h-8 w-8 text-terracotta mx-auto mb-2" />
+                            <Award className="h-8 w-8 text-[#e56b4e] mx-auto mb-2" />
                             <h3 className="text-2xl font-bold">{user.rating}</h3>
                             <p className="text-sm text-muted-foreground">Avaliação Média</p>
                         </CardContent>
@@ -207,7 +207,7 @@ const ProfilePage = () => {
                     {userType === 'broker' && 'experience' in user && (
                         <Card>
                             <CardContent className="p-6 text-center">
-                                <Shield className="h-8 w-8 text-terracotta mx-auto mb-2" />
+                                <Shield className="h-8 w-8 text-[#e56b4e] mx-auto mb-2" />
                                 <h3 className="text-2xl font-bold">{user.experience}</h3>
                                 <p className="text-sm text-muted-foreground">Experiência</p>
                             </CardContent>
@@ -273,20 +273,20 @@ const ProfilePage = () => {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <Mail className="h-5 w-5 text-terracotta" />
+                                    <Mail className="h-5 w-5 text-[#e56b4e]" />
                                     <span>{user.email}</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <Phone className="h-5 w-5 text-terracotta" />
+                                    <Phone className="h-5 w-5 text-[#e56b4e]" />
                                     <span>{user.phone}</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <MapPin className="h-5 w-5 text-terracotta" />
+                                    <MapPin className="h-5 w-5 text-[#e56b4e]" />
                                     <span>{user.location}</span>
                                 </div>
                                 {userType === 'broker' && 'company' in user && (
                                     <div className="flex items-center gap-3">
-                                        <Building2 className="h-5 w-5 text-terracotta" />
+                                        <Building2 className="h-5 w-5 text-[#e56b4e]" />
                                         <span>{user.company}</span>
                                     </div>
                                 )}

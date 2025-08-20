@@ -36,7 +36,7 @@ const DashboardTenantPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     <Card className="hover:shadow-md transition-shadow cursor-pointer">
                         <CardContent className="p-4 text-center">
-                            <Search className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                            <Search className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                             <h3 className="font-semibold mb-1">Buscar Imóveis</h3>
                             <p className="text-sm text-muted-foreground">Encontre sua casa ideal</p>
                         </CardContent>
@@ -44,7 +44,7 @@ const DashboardTenantPage = () => {
 
                     <Card className="hover:shadow-md transition-shadow cursor-pointer">
                         <CardContent className="p-4 text-center">
-                            <Heart className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                            <Heart className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                             <h3 className="font-semibold mb-1">Favoritos</h3>
                             <p className="text-sm text-muted-foreground">Seus imóveis salvos</p>
                         </CardContent>
@@ -52,7 +52,7 @@ const DashboardTenantPage = () => {
 
                     <Card className="hover:shadow-md transition-shadow cursor-pointer">
                         <CardContent className="p-4 text-center">
-                            <FileText className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                            <FileText className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                             <h3 className="font-semibold mb-1">Propostas</h3>
                             <p className="text-sm text-muted-foreground">Acompanhe suas propostas</p>
                         </CardContent>
@@ -60,7 +60,7 @@ const DashboardTenantPage = () => {
 
                     <Card className="hover:shadow-md transition-shadow cursor-pointer">
                         <CardContent className="p-4 text-center">
-                            <MessageSquare className="h-8 w-8 mx-auto mb-2 text-terracotta" />
+                            <MessageSquare className="h-8 w-8 mx-auto mb-2 text-[#e56b4e]" />
                             <h3 className="font-semibold mb-1">Mensagens</h3>
                             <p className="text-sm text-muted-foreground">2 novas mensagens</p>
                         </CardContent>
@@ -131,7 +131,7 @@ const DashboardTenantPage = () => {
                                         <div className="p-3">
                                             <h4 className="font-semibold mb-1">Apartamento em Ipanema</h4>
                                             <p className="text-sm text-muted-foreground mb-2">2 quartos • 1 banheiro • 75m²</p>
-                                            <p className="text-terracotta font-semibold">R$ 3.200/mês</p>
+                                            <p className="text-[#e56b4e] font-semibold">R$ 3.200/mês</p>
                                         </div>
                                     </div>
 
@@ -144,7 +144,7 @@ const DashboardTenantPage = () => {
                                         <div className="p-3">
                                             <h4 className="font-semibold mb-1">Casa em Botafogo</h4>
                                             <p className="text-sm text-muted-foreground mb-2">3 quartos • 2 banheiros • 120m²</p>
-                                            <p className="text-terracotta font-semibold">R$ 4.500/mês</p>
+                                            <p className="text-[#e56b4e] font-semibold">R$ 4.500/mês</p>
                                         </div>
                                     </div>
                                 </div>
@@ -224,7 +224,7 @@ const DashboardTenantPage = () => {
                                     <div className="flex items-center gap-3 p-2 border rounded">
                                         <div className="text-center">
                                             <p className="text-xs font-medium">SEX</p>
-                                            <p className="text-lg font-bold text-terracotta">15</p>
+                                            <p className="text-lg font-bold text-[#e56b4e]">15</p>
                                         </div>
                                         <div className="flex-1">
                                             <p className="font-medium text-sm">Apt. em Ipanema</p>
@@ -243,7 +243,7 @@ const DashboardTenantPage = () => {
 
                 {/* CTA Section */}
                 <div className="mt-12 text-center">
-                    <Card className="bg-gradient-to-r from-terracotta/10 to-terracotta/5 border-terracotta/20">
+                    <Card className="bg-gradient-to-r from-[#e56b4e]/10 to-[#e56b4e]/5 border-[#e56b4e]/20">
                         <CardContent className="p-8">
                             <h2 className="font-heading text-2xl font-bold mb-4">
                                 Pronto para encontrar sua nova casa?
@@ -252,7 +252,7 @@ const DashboardTenantPage = () => {
                                 Explore nossa seleção de imóveis cuidadosamente verificados e encontre o lar perfeito para você.
                             </p>
                             <Link href="/properties">
-                                <Button size="lg" className="bg-terracotta hover:bg-terracotta/90">
+                                <Button size="lg" className="bg-[#e56b4e] hover:bg-[#e56b4e]/90">
                                     Explorar Imóveis
                                 </Button>
                             </Link>

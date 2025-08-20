@@ -37,7 +37,7 @@ const ForgotPasswordPage = () => {
 
     if (isSuccess) {
         return (
-            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+            <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
                         <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
@@ -53,7 +53,7 @@ const ForgotPasswordPage = () => {
                             <p className="text-sm text-muted-foreground">
                                 Enviamos um link de recuperação de senha para:
                             </p>
-                            <p className="font-medium text-terracotta">{email}</p>
+                            <p className="font-medium text-[#e56b4e]">{email}</p>
                         </div>
 
                         <Alert>
@@ -90,7 +90,7 @@ const ForgotPasswordPage = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-terracotta/5 to-sage/5">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-[#e56b4e]/5 to-sage/5">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
                     <CardTitle className="text-2xl font-bold">Esqueceu sua senha?</CardTitle>
@@ -122,7 +122,7 @@ const ForgotPasswordPage = () => {
 
                         <Button
                             type="submit"
-                            className="w-full h-12 bg-terracotta hover:bg-terracotta/90"
+                            className="w-full h-12 bg-[#e56b4e] hover:bg-[#e56b4e]/90"
                             disabled={isLoading}
                         >
                             {isLoading ? "Enviando..." : "Enviar link de recuperação"}
@@ -132,7 +132,7 @@ const ForgotPasswordPage = () => {
                     <div className="mt-6 text-center">
                         <Link
                             href="/login"
-                            className="inline-flex items-center text-sm text-muted-foreground hover:text-terracotta transition-colors"
+                            className="inline-flex items-center text-sm text-muted-foreground hover:text-[#e56b4e] transition-colors"
                         >
                             <ArrowLeft className="mr-2 h-4 w-4" />
                             Voltar ao login

@@ -78,7 +78,7 @@ const UserSettingsPage = () => {
                                     <div className="flex items-center gap-6">
                                         <Avatar className="h-24 w-24">
                                             <AvatarImage src="/placeholder.svg" alt={profileData.name} />
-                                            <AvatarFallback className="bg-terracotta text-white text-lg">
+                                            <AvatarFallback className="bg-[#e56b4e] text-white text-lg">
                                                 {profileData.name.split(' ').map(n => n[0]).join('')}
                                             </AvatarFallback>
                                         </Avatar>
@@ -146,7 +146,7 @@ const UserSettingsPage = () => {
                                     </div>
 
                                     <div className="flex justify-end">
-                                        <Button className="bg-terracotta hover:bg-terracotta/90 gap-2">
+                                        <Button className="bg-[#e56b4e] hover:bg-[#e56b4e]/90 gap-2">
                                             <Save className="h-4 w-4" />
                                             Salvar Alterações
                                         </Button>
@@ -222,7 +222,7 @@ const UserSettingsPage = () => {
                                     </div>
 
                                     <div className="flex justify-end">
-                                        <Button className="bg-terracotta hover:bg-terracotta/90 gap-2">
+                                        <Button className="bg-[#e56b4e] hover:bg-[#e56b4e]/90 gap-2">
                                             <Save className="h-4 w-4" />
                                             Salvar Preferências
                                         </Button>
@@ -279,7 +279,7 @@ const UserSettingsPage = () => {
                                     </div>
 
                                     <div className="flex justify-end">
-                                        <Button className="bg-terracotta hover:bg-terracotta/90 gap-2">
+                                        <Button className="bg-[#e56b4e] hover:bg-[#e56b4e]/90 gap-2">
                                             <Save className="h-4 w-4" />
                                             Atualizar Segurança
                                         </Button>
