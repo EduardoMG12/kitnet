@@ -7,7 +7,7 @@ const PropertyProposal = () => {
     return (
         <>
 
-            <PropertyProposalsPage />
+            {/* <PropertyProposalsPage /> */}
         </>
     );
 };

@@ -1,13 +1,14 @@
 
 
 import EmailConfirmationPage from '@/components/pages/EmailConfirmationPage';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 const EmailConfirm = () => {
     return (
         <>
-
-            <EmailConfirmationPage />
+            <Suspense fallback={<div>Loading...</div>}>
+                <EmailConfirmationPage />
+            </Suspense>
         </>
     );
 };
