@@ -49,91 +49,91 @@ public class UserDocumentServiceImpl implements UserDocumentService {
     @Autowired
     private MessageSource messageSource;
 
-        @Override
-        @Transactional
-        public UserDocumentUploadResponseDTO uploadVerificationDocuments(UUID userId, MultipartFile file, DocumentType documentType, UUID authenticatedUserId)
-                throws UserNotFoundException, IOException, FileUploadException, InvalidFileFormatException, FileSizeExceededException, InvalidOperationException, DocumentValidationException, UnauthorizedOperationException {
-            Locale locale = LocaleContextHolder.getLocale();
+    @Override
+    @Transactional
+    public UserDocumentUploadResponseDTO uploadVerificationDocuments(UUID userId, MultipartFile file, DocumentType documentType, UUID authenticatedUserId)
+            throws UserNotFoundException, IOException, FileUploadException, InvalidFileFormatException, FileSizeExceededException, InvalidOperationException, DocumentValidationException, UnauthorizedOperationException {
+        Locale locale = LocaleContextHolder.getLocale();
 
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, locale)));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(messageSource.getMessage("error.user.not.found", null, locale)));
 
-            User actingUser = userRepository.findById(authenticatedUserId)
-                    .orElseThrow(() -> new UserNotFoundException(messageSource.getMessage("error.acting.user.not.found", null, locale)));
+        User actingUser = userRepository.findById(authenticatedUserId)
+                .orElseThrow(() -> new UserNotFoundException(messageSource.getMessage("error.acting.user.not.found", null, locale)));
 
-            if (!userId.equals(authenticatedUserId) && !actingUser.hasRole(RoleName.ADMIN) && !actingUser.hasRole(RoleName.MODERATOR)) {
-                throw new UnauthorizedOperationException(messageSource.getMessage("error.document.upload.unauthorized", null, locale));
-            }
-
-            if (file.isEmpty()) {
-                throw new FileUploadException(messageSource.getMessage("error.file.empty", null, locale));
-            }
-
-            try {
-                validateDocumentTypeAndContent(file, documentType, user, locale);
-            } catch (Exception e) {
-                System.err.println("ERRO na validação para o documento " + documentType + ": " + e.getMessage());
-                e.printStackTrace();
-                throw e;
-            }
-
-            UserDocument userDocument = userDocumentRepository.findByUserIdAndDocumentType(user.getId(), documentType)
-                    .orElseGet(() -> {
-                        UserDocument newDoc = new UserDocument();
-                        newDoc.setUser(user);
-                        newDoc.setDocumentType(documentType);
-                        return userDocumentRepository.save(newDoc);
-                    });
-
-            userDocument = userDocumentRepository.findByIdWithVersions(userDocument.getId())
-                    .orElseThrow(() -> new InvalidOperationException("UserDocument not found after creation/lookup."));
-
-            final UserDocument finalUserDocument = userDocument;
-
-            finalUserDocument.getVersions().stream()
-                    .filter(UserDocumentVersion::isCurrentVersion)
-                    .findFirst()
-                    .ifPresent(oldVersion -> {
-                        oldVersion.setCurrentVersion(false);
-                        userDocumentVersionRepository.save(oldVersion);
-                        try {
-                            uploadService.deleteFile(oldVersion.getDocumentUrl());
-                        } catch (IOException | FileUploadException e) {
-                            System.err.println("Failed to delete old document file: " + e.getMessage());
-                        }
-                    });
-
-            String subdirectory = "users/" + userId.toString() + "/documents/" + documentType.name().toLowerCase();
-            String documentUrl = uploadService.uploadFile(file, subdirectory);
-
-            UserDocumentVersion newVersion = new UserDocumentVersion();
-            newVersion.setUserDocument(finalUserDocument);
-            newVersion.setDocumentUrl(documentUrl);
-            newVersion.setUploadDate(LocalDate.now());
-            newVersion.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
-            newVersion.setRejectionReason(null);
-            newVersion.setCurrentVersion(true);
-
-            userDocumentVersionRepository.save(newVersion);
-            finalUserDocument.getVersions().add(newVersion);
-
-            boolean updateNeeded = isCriticalDocumentType(documentType) ||
-                    user.getAccountVerificationStatus() == VerificationStatus.REJECTED ||
-                    user.getAccountVerificationStatus() == VerificationStatus.NOT_SUBMITTED;
-            if (updateNeeded) {
-                user.setAccountVerificationStatus(VerificationStatus.PENDING);
-                user.setIsIdentityConfirmed(false);
-                userRepository.save(user);
-            }
-
-            UserDocumentUploadResponseDTO responseDTO = new UserDocumentUploadResponseDTO(
-                    finalUserDocument.getId().toString(),
-                    finalUserDocument.getDocumentType().toString(),
-                    finalUserDocument.getCurrentVersion().map(UserDocumentVersion::getDocumentUrl).orElse("URL_NOT_FOUND"),
-                    user.getId().toString()
-            );
-            return responseDTO;
+        if (!userId.equals(authenticatedUserId) && !actingUser.hasRole(RoleName.ADMIN) && !actingUser.hasRole(RoleName.MODERATOR)) {
+            throw new UnauthorizedOperationException(messageSource.getMessage("error.document.upload.unauthorized", null, locale));
         }
+
+        if (file.isEmpty()) {
+            throw new FileUploadException(messageSource.getMessage("error.file.empty", null, locale));
+        }
+
+        try {
+            validateDocumentTypeAndContent(file, documentType, user, locale);
+        } catch (Exception e) {
+            System.err.println("ERRO na validação para o documento " + documentType + ": " + e.getMessage());
+            e.printStackTrace();
+            throw e;
+        }
+
+        UserDocument userDocument = userDocumentRepository.findByUserIdAndDocumentType(user.getId(), documentType)
+                .orElseGet(() -> {
+                    UserDocument newDoc = new UserDocument();
+                    newDoc.setUser(user);
+                    newDoc.setDocumentType(documentType);
+                    return userDocumentRepository.save(newDoc);
+                });
+
+        userDocument = userDocumentRepository.findByIdWithVersions(userDocument.getId())
+                .orElseThrow(() -> new InvalidOperationException("UserDocument not found after creation/lookup."));
+
+        final UserDocument finalUserDocument = userDocument;
+
+        finalUserDocument.getVersions().stream()
+                .filter(UserDocumentVersion::isCurrentVersion)
+                .findFirst()
+                .ifPresent(oldVersion -> {
+                    oldVersion.setCurrentVersion(false);
+                    userDocumentVersionRepository.save(oldVersion);
+                    try {
+                        uploadService.deleteFile(oldVersion.getDocumentUrl());
+                    } catch (IOException | FileUploadException e) {
+                        System.err.println("Failed to delete old document file: " + e.getMessage());
+                    }
+                });
+
+        String subdirectory = "users/" + userId.toString() + "/documents/" + documentType.name().toLowerCase();
+        String documentUrl = uploadService.uploadFile(file, subdirectory);
+
+        UserDocumentVersion newVersion = new UserDocumentVersion();
+        newVersion.setUserDocument(finalUserDocument);
+        newVersion.setDocumentUrl(documentUrl);
+        newVersion.setUploadDate(LocalDate.now());
+        newVersion.setVerificationStatus(VerificationStatus.NOT_SUBMITTED);
+        newVersion.setRejectionReason(null);
+        newVersion.setCurrentVersion(true);
+
+        userDocumentVersionRepository.save(newVersion);
+        finalUserDocument.getVersions().add(newVersion);
+
+        boolean updateNeeded = isCriticalDocumentType(documentType) ||
+                user.getAccountVerificationStatus() == VerificationStatus.REJECTED ||
+                user.getAccountVerificationStatus() == VerificationStatus.NOT_SUBMITTED;
+        if (updateNeeded) {
+            user.setAccountVerificationStatus(VerificationStatus.PENDING);
+            user.setIsIdentityConfirmed(false);
+            userRepository.save(user);
+        }
+
+        UserDocumentUploadResponseDTO responseDTO = new UserDocumentUploadResponseDTO(
+                finalUserDocument.getId().toString(),
+                finalUserDocument.getDocumentType().toString(),
+                finalUserDocument.getCurrentVersion().map(UserDocumentVersion::getDocumentUrl).orElse("URL_NOT_FOUND"),
+                user.getId().toString()
+        );
+        return responseDTO;
+    }
 
     private void validateDocumentTypeAndContent(MultipartFile file, DocumentType documentType, User user, Locale locale) {
         String contentType = Objects.requireNonNull(file.getContentType());
