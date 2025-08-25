@@ -30,7 +30,7 @@ export const routes: RouteCategory[] = [
                 espeficicRole: [],
             },
             {
-                path: "/login",
+                path: "/sign-in",
                 name: "Login",
                 description: "Usuario entra em sua conta",
                 implemented: true,
@@ -38,7 +38,7 @@ export const routes: RouteCategory[] = [
                 espeficicRole: [],
             },
             {
-                path: "/register",
+                path: "/sign-up",
                 name: "Registro",
                 description: "Usuario se registra",
                 implemented: true,
