@@ -53,16 +53,16 @@ export function middleware(request: NextRequest) {
 
 	if (authToken && !publicRoute) {
 		try {
-			const decodedToken = jwtDecode<typeJwtDecode>(authToken);
+			const decodedToken = jwtDecode<typeJwtDecode>(authToken) as typeJwtDecode;
 
-			if (decodedToken?.exp * 1000 > Date.now()) {
+			if (decodedToken?.payload.exp * 1000 > Date.now()) {
 				const redirectUrl = request.nextUrl.clone();
 				redirectUrl.pathname = REDIRECT_WHEN_NOT_AUTHENTICATED_ROUTE;
 
 				return NextResponse.redirect(redirectUrl);
 			}
 
-			const userRoles = decodedToken?.roles || [];
+			const userRoles = decodedToken?.payload.roles || ([] as string[]);
 			const requestedPath = request.nextUrl.pathname;
 
 			const pathKeys = Object.keys(roleMappings);
