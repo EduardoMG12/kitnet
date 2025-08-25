@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.s3.model.PutBucketPolicyRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.util.logging.Logger;
+import java.util.Objects;
 
 @Component
 public class S3BucketInitializer implements CommandLineRunner {
@@ -27,27 +28,28 @@ public class S3BucketInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        logger.info("Verificando e configurando o bucket S3: " + bucketName);
+        logger.info("Verify to configuration of S3: " + bucketName);
         try {
             boolean bucketExists = s3Client.listBuckets().buckets().stream()
-                .anyMatch(bucket -> bucket.name().equals(bucketName));
+                    .anyMatch(bucket -> bucket.name().equals(bucketName));
 
             if (!bucketExists) {
-                logger.info("Bucket '" + bucketName + "' não encontrado. Criando...");
+                logger.info("Bucket '" + bucketName + "' not found. Creating...");
                 s3Client.createBucket(b -> b.bucket(bucketName));
                 logger.info("Bucket '" + bucketName + "' create with success.");
+            } else {
+                logger.info("Bucket '" + bucketName + "' alredy exist.");
             }
-            
             configureBucketPolicy();
 
         } catch (S3Exception e) {
             logger.severe("Error to begin bucket: " + e.awsErrorDetails().errorMessage());
-            throw new RuntimeException("Fail to begin MinIO", e);
+            throw new RuntimeException("Fail to inicialization MinIO", e);
         }
     }
 
     private void configureBucketPolicy() {
-        String publicPolicy = String.format("""
+        String policyJson = String.format("""
             {
               "Version": "2012-10-17",
               "Statement": [
@@ -58,24 +60,33 @@ public class S3BucketInitializer implements CommandLineRunner {
                     "s3:GetObject"
                   ],
                   "Resource": [
-                    "arn:aws:s3:::%s/users/*",
-                    "arn:aws:s3:::%s/properties/*"
+                    "arn:aws:s3:::%s/properties/*",
+                    "arn:aws:s3:::%s/users/*/avatar/*"
+                  ]
+                },  
+                {
+                  "Effect": "Deny",
+                  "Principal": "*",
+                  "Action": ["s3:GetObject"],
+                  "Resource": [
+                    "arn:aws:s3:::%s/users/*/documents/*"
                   ]
                 }
               ]
             }
-            """, bucketName, bucketName);
-        
+            """, bucketName, bucketName, bucketName, bucketName);
+
         PutBucketPolicyRequest putBucketPolicyRequest = PutBucketPolicyRequest.builder()
-            .bucket(bucketName)
-            .policy(publicPolicy)
-            .build();
-        
+                .bucket(bucketName)
+                .policy(policyJson)
+                .build();
+
         try {
             s3Client.putBucketPolicy(putBucketPolicyRequest);
-            logger.info("Access granular policy is configured for bucket '" + bucketName + "'.");
+            logger.info("Policy for granular access configure to bucket '" + bucketName + "'.");
         } catch (S3Exception e) {
-            logger.severe("Error to configure policy of bucket: " + e.awsErrorDetails().errorMessage());
+            logger.severe("Error to configure polícy of bucket: " + Objects.requireNonNullElse(e.awsErrorDetails().errorMessage(), e.getMessage()));
+            throw new RuntimeException("Fail to configure polícy of MinIO", e);
         }
     }
 }
