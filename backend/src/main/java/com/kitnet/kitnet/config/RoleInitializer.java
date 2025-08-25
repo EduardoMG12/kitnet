@@ -9,8 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
-
 @Component
 @DependsOn("legalTermsInitializer")
 public class RoleInitializer implements CommandLineRunner {

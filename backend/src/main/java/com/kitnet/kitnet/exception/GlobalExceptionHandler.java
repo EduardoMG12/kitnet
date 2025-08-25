@@ -1,5 +1,7 @@
 package com.kitnet.kitnet.exception;
 
+import com.kitnet.kitnet.dto.ErrorResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -15,9 +17,11 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,246 +31,477 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        Map<String, String> fieldErrors = new HashMap<>();
         Locale locale = LocaleContextHolder.getLocale();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), messageSource.getMessage(error.getDefaultMessage(), null, error.getDefaultMessage(), locale)));
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+        ex.getBindingResult().getFieldErrors().forEach(error -> {
+            String errorMessageKey = Objects.requireNonNullElse(error.getDefaultMessage(), "error.validation.default");
+
+            Object[] args = {error.getField()};
+
+            String defaultMessage = messageSource.getMessage("error.validation.default", args, "Validation failed for field: " + error.getField(), locale);
+            String finalMessage = messageSource.getMessage(errorMessageKey, args, defaultMessage, locale);
+            fieldErrors.put(error.getField(), finalMessage);
+        });
+
+        String mainMessage = messageSource.getMessage("error.validation.message", null, "Validation failed for one or more fields.", locale);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                mainMessage,
+                request.getRequestURI(),
+                fieldErrors);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleNoResourceFoundException(NoResourceFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.resource.not.found", null, "Resource not found.", locale);
-        return new ResponseEntity<>(errorMessage + ": " + ex.getMessage(), HttpStatus.NOT_FOUND);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                errorMessage + ": " + ex.getMessage(),
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<String> handleCustomResourceNotFoundException(ResourceNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorResponse> handleCustomResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                ex.getMessage(),
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmailAlreadyInUseException.class)
-    public ResponseEntity<String> handleEmailAlreadyInUseException(EmailAlreadyInUseException ex) {
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyInUseException(EmailAlreadyInUseException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.email.already.in.use", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(PasswordMismatchException.class)
-    public ResponseEntity<String> handlePasswordMismatchException(PasswordMismatchException ex) {
+    public ResponseEntity<ErrorResponse> handlePasswordMismatchException(PasswordMismatchException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.password.mismatch", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.user.not.found", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<String> handleInvalidCredentialsException(InvalidCredentialsException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidCredentialsException(InvalidCredentialsException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.invalid.credentials", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<String> handleBadCredentialsException(BadCredentialsException ex) {
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.invalid.credentials", null, "Credenciais inválidas.", locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
-    public ResponseEntity<String> handleResponseStatusException(org.springframework.web.server.ResponseStatusException ex) {
-        Locale locale = LocaleContextHolder.getLocale();
-        String reason = ex.getReason();
-
-        String errorMessage;
-        if (reason != null && messageSource.getMessage(reason, null, reason, locale) != null) {
-            errorMessage = messageSource.getMessage(reason, null, reason, locale);
-        } else {
-            errorMessage = (reason != null) ? reason : ex.getMessage();
-        }
-        return new ResponseEntity<>(errorMessage, ex.getStatusCode());
-    }
+//    @ExceptionHandler(ResponseStatusException.class)
+//    public ResponseEntity<ErrorResponse> handleResponseStatusException(ResponseStatusException ex, HttpServletRequest request) {
+//        Locale locale = LocaleContextHolder.getLocale();
+//        String reason = ex.getReason();
+//        String errorMessage = (reason != null) ? messageSource.getMessage(reason, null, reason, locale) : ex.getMessage();
+//
+//        ErrorResponse errorResponse = new ErrorResponse(
+//                HttpStatus.resolve(ex.getStatusCode().value()),
+//                errorMessage,
+//                request.getRequestURI(),
+//                null);
+//
+//        return new ResponseEntity<>(errorResponse, ex.getStatusCode());
+//    }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.internal.runtime", null, "Ocorreu um erro interno: " + ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        ex.printStackTrace();
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> handleGenericException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.unexpected", null, "Ocorreu um erro inesperado: " + ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        ex.printStackTrace();
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(TermsNotAcceptedException.class)
-    public ResponseEntity<String> handleTermsNotAcceptedException(TermsNotAcceptedException ex) {
+    public ResponseEntity<ErrorResponse> handleTermsNotAcceptedException(TermsNotAcceptedException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.terms.of.use.required", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailNotVerifiedException.class)
-    public ResponseEntity<String> handleEmailNotVerifiedException(EmailNotVerifiedException ex) {
+    public ResponseEntity<ErrorResponse> handleEmailNotVerifiedException(EmailNotVerifiedException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.email.not.verified", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
-        String errorMessage = messageSource.getMessage("error.invalid.request.body",
-                new Object[]{ex.getLocalizedMessage()},
-                "Invalid request body: " + ex.getLocalizedMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+        String errorMessage = messageSource.getMessage("error.invalid.request.body", new Object[]{ex.getLocalizedMessage()}, "Invalid request body: " + ex.getLocalizedMessage(), locale);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(EmailSendException.class)
-    public ResponseEntity<Map<String, String>> handleEmailSendException(EmailSendException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Failed to send email");
-        error.put("message", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handleEmailSendException(EmailSendException ex, HttpServletRequest request) {
+        String errorMessage = "Failed to send email: " + ex.getMessage();
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(EmailAlreadyVerifiedException.class)
-    public ResponseEntity<String> handleEmailAlreadyVerifiedException(EmailAlreadyVerifiedException ex) {
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyVerifiedException(EmailAlreadyVerifiedException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.email.already.verified", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(VerificationEmailAlreadySentException.class)
-    public ResponseEntity<String> handleVerificationEmailAlreadySentException(VerificationEmailAlreadySentException ex) {
+    public ResponseEntity<ErrorResponse> handleVerificationEmailAlreadySentException(VerificationEmailAlreadySentException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.email.verification.already.sent", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.TOO_MANY_REQUESTS);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.TOO_MANY_REQUESTS,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
     }
 
     @ExceptionHandler(FirebaseAuthenticationException.class)
-    public ResponseEntity<String> handleFirebaseAuthenticationException(FirebaseAuthenticationException ex) {
+    public ResponseEntity<ErrorResponse> handleFirebaseAuthenticationException(FirebaseAuthenticationException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.firebase.auth.invalid.token", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.UNAUTHORIZED);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(InternalServerErrorException.class)
-    public ResponseEntity<String> handleInternalServerErrorException(InternalServerErrorException ex) {
+    public ResponseEntity<ErrorResponse> handleInternalServerErrorException(InternalServerErrorException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.internal.server.operation.failed", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(InvalidOperationException.class)
-    public ResponseEntity<String> handleInvalidOperationException(InvalidOperationException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidOperationException(InvalidOperationException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.invalid.operation", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(RoleNotFoundException.class)
-    public ResponseEntity<String> handleRoleNotFoundException(RoleNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleRoleNotFoundException(RoleNotFoundException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.role.not.found", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnauthorizedRoleAssignmentException.class)
-    public ResponseEntity<String> handleUnauthorizedRoleAssignmentException(UnauthorizedRoleAssignmentException ex) {
+    public ResponseEntity<ErrorResponse> handleUnauthorizedRoleAssignmentException(UnauthorizedRoleAssignmentException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.access.denied", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.FORBIDDEN,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(InvalidRoleOperationException.class)
-    public ResponseEntity<String> handleInvalidRoleOperationException(InvalidRoleOperationException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidRoleOperationException(InvalidRoleOperationException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.invalid.role.operation", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FileUploadException.class)
-    public ResponseEntity<String> handleFileUploadException(FileUploadException ex) {
+    public ResponseEntity<ErrorResponse> handleFileUploadException(FileUploadException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.file.upload.failed", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(InvalidFileFormatException.class)
-    public ResponseEntity<String> handleInvalidFileFormatException(InvalidFileFormatException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidFileFormatException(InvalidFileFormatException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.file.format.invalid", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(FileSizeExceededException.class)
-    public ResponseEntity<String> handleFileSizeExceededException(FileSizeExceededException ex) {
+    public ResponseEntity<ErrorResponse> handleFileSizeExceededException(FileSizeExceededException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.file.size.exceeded", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<String> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex) {
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String maxFileSizeFormatted = (ex.getMaxUploadSize() / (1024 * 1024)) + "MB";
         String errorMessage = messageSource.getMessage("error.file.size.exceeded", new Object[]{maxFileSizeFormatted}, "File size exceeds limit.", locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.PAYLOAD_TOO_LARGE);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.PAYLOAD_TOO_LARGE);
     }
 
     @ExceptionHandler(MissingServletRequestPartException.class)
-    public ResponseEntity<String> handleMissingServletRequestPartException(MissingServletRequestPartException ex) {
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestPartException(MissingServletRequestPartException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.file.empty", null, "File is required.", locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DocumentNotFoundException.class)
-    public ResponseEntity<String> handleDocumentNotFoundException(DocumentNotFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleDocumentNotFoundException(DocumentNotFoundException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.document.not.found", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.NOT_FOUND);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UnauthorizedOperationException.class)
-    public ResponseEntity<String> handleUnauthorizedOperationException(UnauthorizedOperationException ex) {
+    public ResponseEntity<ErrorResponse> handleUnauthorizedOperationException(UnauthorizedOperationException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.document.upload.unauthorized", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.FORBIDDEN);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.FORBIDDEN,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(DocumentAlreadyExistsException.class)
-    public ResponseEntity<String> handleDocumentAlreadyExistsException(DocumentAlreadyExistsException ex) {
+    public ResponseEntity<ErrorResponse> handleDocumentAlreadyExistsException(DocumentAlreadyExistsException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.document.already.exists", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(LegalDocumentAlreadyExistsException.class)
-    public ResponseEntity<String> handleLegalDocumentAlreadyExistsException(LegalDocumentAlreadyExistsException ex) {
+    public ResponseEntity<ErrorResponse> handleLegalDocumentAlreadyExistsException(LegalDocumentAlreadyExistsException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.legal.document.in.use", null, ex.getMessage(), locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.CONFLICT);
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(DocumentValidationException.class)
-    public ResponseEntity<String> handleDocumentValidationException(DocumentValidationException ex) {
+    public ResponseEntity<ErrorResponse> handleDocumentValidationException(DocumentValidationException ex, HttpServletRequest request) {
         Locale locale = LocaleContextHolder.getLocale();
         String errorMessage = messageSource.getMessage("error.document.validation.failed", new Object[]{ex.getMessage()}, "Document validation failed.", locale);
-        return new ResponseEntity<>(errorMessage, HttpStatus.BAD_REQUEST);
-    }
 
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST,
+                errorMessage,
+                request.getRequestURI(),
+                null);
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
